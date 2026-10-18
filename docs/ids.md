@@ -25,6 +25,7 @@
 | 修正 | `TSOD_TYPHON_` |
 | 需求 / 需求组 | `REQ_TSOD_TYPHON_` / `REQSET_TSOD_TYPHON_` |
 | 内容类型 | `<类型>_TSOD_<名>`，见 §3 |
+| 相邻加成 `YieldChangeId`、AI 清单、百科分组 / 页面 ID | `TSOD_TYPHON_` |
 | LOC tag | `LOC_<类型ID>_NAME` / `_DESCRIPTION`，与塞西尔一致 |
 
 ## 3. 内容 ID 登记
@@ -51,7 +52,7 @@
 | 城市项目 | `PROJECT_TSOD_DESANCTIFICATION` | WP16 |
 | 世界议会决议 | `WC_RES_TSOD_THEOCRATIC_COUNCIL` | WP17 |
 | 配色 | 照塞西尔 `TsoDCE_Colors.sql` 的命名 | WP1 |
-| 城市名 | `LOC_CITY_NAME_TSOD_<英文名>`，57 个，见 §6 | WP1 |
+| 城市名 | `LOC_CITY_NAME_TSOD_<英文名>`，57 个，见 §7.1 | WP1 |
 
 修正、需求、需求组的具体 ID 由各包在自己的前缀下自定，不必预先登记；但**跨包引用**的必须登记在这里。
 
@@ -70,9 +71,16 @@
 | `LOC_DISTRICT_TSOD_MAGE_TOWER_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
 | `LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_AGENDA_TSOD_KINDRED_NAME` / `_DESCRIPTION`，及议程态度说明 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 |
+| `LOC_DIPLO_MODIFIER_TSOD_KINDRED_STRONG_MILITARY` / `_RELIGION_RECEIVED`，`LOC_DIPLO_KUDO_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED`，`LOC_DIPLO_WARNING_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED` | 同上 | WP7（不归 WP8） |
+| `LOC_ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_CivTrait.sql` | WP2 |
+| `LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE`（相邻加成说明） | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
+| `LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
+| `LOC_ABILITY_TSOD_BATTLE_MAGE_*_PREVIEW`（战斗预览说明） | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
 | 全部 `LOC_PEDIA_*`（文明、领袖、单位、区域、建筑、人物、地点） | `Texts/TsoDTE_Text_Pedia.sql` | WP8 |
 | 全部 `LOC_DIPLO_*_LEADER_TSOD_ROSETTA_AUGUSTUS_*` / `LOC_DIPLO_*_TSOD_ROSETTA_AUGUSTUS_*` 外交台词 | 同上 | WP8 |
-| `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、领袖与文明引言 | 同上 | WP8（WP1 的 `LoadingInfo` 等行只引用） |
+| `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、`LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE`（领袖引言） | 同上 | WP8（WP1 的 `LoadingInfo`、`LeaderQuotes` 行只引用） |
+
+特色单位、区域的特性行直接用单位 / 区域自己的 NAME 与 DESCRIPTION tag，没有单独的特性 tag（照塞西尔与官方先例）；特色建筑的特性另有一个 NAME tag（见上）。
 
 ## 5. 文件归属与工程动作
 
@@ -101,6 +109,7 @@
 | `Core/TsoDTE_Agenda_AI.sql` | WP7 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 | IG UpdateText |
 | `Texts/TsoDTE_Text_Pedia.sql` | WP8 | IG UpdateText |
+| `Core/TsoDTE_Pedia.sql` | WP8 | IG UpdateDatabase（百科自定义分组与页面） |
 
 FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界面（WP1 的 `Config`）要显示它们的名字和说明。
 
@@ -111,7 +120,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
 3. `TsoDTE_Unit_BattleMage.sql` → 4. `TsoDTE_District_MageTower.sql` → 5. `TsoDTE_Building_Burnstone.sql`
 6. `TsoDTE_CivTrait.sql` → 7. `TsoDTE_LeaderTrait.sql`
-8. `TsoDTE_Agenda_AI.sql`
+8. `TsoDTE_Agenda_AI.sql` → 9. `TsoDTE_Pedia.sql`
 
 ### 5.3 LoadOrder
 
@@ -124,14 +133,149 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 
 ### 5.4 美术动作（阶段 1 暂缺）
 
-`UpdateArt (Mod Art Dependency File)` 与 `TSODTyphonEmpire.Art.xml` 里的 artdef / XLP 登记，等美术包（WP9–WP12）交付后由统筹者加。WP0 的 `Art.xml` 已清空全部 `relativeArtDefPaths` 与 `relativePackagePaths`。
+`UpdateIcons`（IG + FE）、`UpdateArt (Mod Art Dependency File)` 与 `TSODTyphonEmpire.Art.xml` 里的 artdef / XLP 登记，等美术包（WP9–WP12）交付后由统筹者加。WP0 的 `Art.xml` 已清空全部 `relativeArtDefPaths` 与 `relativePackagePaths`。
 
-## 6. 待登记
+### 5.5 跨包的表行归属（防止重复插入）
 
-### 6.1 城市英文名（WP1 拟，用户过目后登记）
+| 行 | 写在 | 包 |
+|---|---|---|
+| `Types`、`Traits` 的 `TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE`，`CivilizationTraits` 里它那一行 | `TsoDTE_Civilization.sql` | WP1 |
+| `Types`、`Traits` 的 `TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS`，`LeaderTraits` 里它那一行 | `TsoDTE_Leader.sql` | WP1 |
+| 特色单位 / 区域 / 建筑各自的特性：`Types`、`Traits`、`CivilizationTraits` 行，以及 `UnitReplaces` / `DistrictReplaces` / `BuildingReplaces` | 各自的数据文件 | WP4 / WP5 / WP6 |
+| 挂到文明能力、领袖能力上的 `TraitModifiers` 行 | 挂修正的那个包自己的文件 | WP2 / WP3 |
+| 战斗法师成长能力的授予修正 | 挂在 WP4 自己的 `TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE` 上（等价于文明能力，且不碰 WP1 的壳） | WP4 |
+| `Agendas`、`HistoricalAgendas`、议程特性、`AiListTypes` / `AiLists` / `AiFavoredItems` | `TsoDTE_Agenda_AI.sql` | WP7 |
+| 开局界面每个特色项一行（`Players` / `PlayerItems` 等配置表） | `TsoDTE_Config.sql` | WP1（只引用别包的 ID 与 LOC tag） |
 
-_（空，等 WP1 回报）_
+## 6. 专名英文对照（暂定，WP20 英文校对时可改）
 
-### 6.2 各包回报的新增跨包 ID
+各包写英文文本时一律用下表；表外新造的专名英文写进回报，由统筹者补登。
 
-_（空）_
+| 中文 | 英文 |
+|---|---|
+| 提丰帝国 / 提丰 | Typhon Empire / Typhon |
+| 罗塞塔·奥古斯都 | Rosetta Augustus |
+| 奥古斯都家族 | House of Augustus |
+| 奥尔德南 | Ordenan |
+| 冬堡 | Winterhold |
+| 冬狼堡 | Winterwolf Keep |
+| 奥兰戴尔 / 奥兰戴尔之喉 | Orandel / Throat of Orandel |
+| 黄昏宫殿 | Twilight Palace |
+| 黑曜石宫 / 黑铁王座 | Obsidian Palace / Black Iron Throne |
+| 战斗法师 | Battle Mage |
+| 法师塔 | Mage Tower |
+| 燃石 / 燃石酸化工厂 | Burnstone / Burnstone Acidification Works |
+| 湮灭之创 | Annihilation Scar |
+| 战神 / 战神教 | God of War / War God Faith |
+| 裴迪南 | Ferdinand |
+| 安德莎 | Andesha |
+| 温莎 | Windsor |
+| 帕林 | Palin |
+| 戴安娜 | Diana |
+| 玛蒂尔达 | Matilda |
+| 马尔姆 | Malm |
+| 哈迪伦 | Hadiren |
+| 巴德 | Bard |
+| 塞西尔帝国 / 高文·塞西尔 | Cecil Empire / Gawain Cecil |
+| 超凡者的帝国（文明能力） | Empire of the Extraordinary |
+| 学院出身（能力） | Campus-Trained |
+| 凡人的韧性（领袖能力） | Resilience of Mortals |
+| 弹道学成长 / 高级弹道学成长 | Ballistics Growth / Advanced Ballistics Growth |
+| 军团级法术 | Legion-Class Spell |
+| 同类（议程） | Kindred |
+| 超凡者 | Transcendents |
+| 温德尔 / 玛佩尔 / 杜尼特 | Wendell / Marpel / Dunite |
+| 狼将军 | Wolf General |
+| 冬狼 / 铁河 / 黑钢骑士团 | Winterwolf / Iron River / Black Steel Knights |
+| 黑旗魔法师团 / 黑曜石禁军 | Black Flag Mage Corps / Obsidian Guard |
+| 皇家法师协会 / 帝国工造协会 | Royal Mage Association / Imperial Artificers' Guild |
+| 战神教会 / 教皇 | Church of the God of War / Pope |
+| 游荡者 / 永眠者 | Wanderers / Eternal Sleepers |
+| 神之眼 / 梦境之神 | Eye of God / God of Dreams |
+| 大崩塌 / 冬日猎神 | Great Collapse / Winter God-Hunt |
+| 莫比乌斯港 / 安苏 / 刚铎 / 帝国大道 | Port Mobius / Kingdom of Ansu / Gondor Empire / Imperial Avenue |
+| 丰饶之尘 / 灰晶 / 铁人 | Dust of Plenty / grey crystal / Iron Soldier |
+| 神权理事会 / 去神圣化 | Theocratic Council / Desanctification |
+| 市民名（WP1 新拟） | 博迈尔 Bomel、赫米尔 Hemil、莫里 Morey、克雷蒙特 Clermont、摩格洛克 Morglock、欧文 Owen、丹尼尔 Daniel、乔治 George、贝托蒙德 Bertomund、金娜 Gina、玛丽 Mary、塔利亚 Talia |
+
+## 7. 待登记
+
+### 7.1 城市英文名（WP1 拟，**待用户过目**）
+
+顺序即 `CityNames` 插入顺序。拟名规则：§6 已定的照抄；常见西文名用原名；有字面义的意译（郡 Shire、镇 Town、岛 Isle）；「X堡」→ Xhold（冬狼堡 Winterwolf Keep 例外）。
+
+| # | 中文 | 英文 | LOC tag | 说明 |
+|---|---|---|---|---|
+| 1 | 奥尔德南 | Ordenan | `LOC_CITY_NAME_TSOD_ORDENAN` | ids.md §6 |
+| 2 | 冬堡 | Winterhold | `LOC_CITY_NAME_TSOD_WINTERHOLD` | ids.md §6 |
+| 3 | 莫比乌斯 | Mobius | `LOC_CITY_NAME_TSOD_MOBIUS` | 通行译名 |
+| 4 | 奥兰戴尔 | Orandel | `LOC_CITY_NAME_TSOD_ORANDEL` | ids.md §6 |
+| 5 | 冬狼堡 | Winterwolf Keep | `LOC_CITY_NAME_TSOD_WINTERWOLF_KEEP` | ids.md §6 |
+| 6 | 塔伦金斯 | Tarenkins | `LOC_CITY_NAME_TSOD_TARENKINS` | 伦→ren，照 Hadiren |
+| 7 | 苏提姆 | Sutim | `LOC_CITY_NAME_TSOD_SUTIM` | 音译 |
+| 8 | 赛文堡 | Sewenhold | `LOC_CITY_NAME_TSOD_SEWENHOLD` | 赛文→Sewen 照塞西尔 Sewen Terry；X堡→Xhold 照 Winterhold |
+| 9 | 杜勒 | Dulur | `LOC_CITY_NAME_TSOD_DULUR` | 照塞西尔 塔姆杜勒 Tamdulur |
+| 10 | 霍尔马克 | Hallmark | `LOC_CITY_NAME_TSOD_HALLMARK` | 通行译名；霍尔→Hall 照塞西尔 |
+| 11 | 达特 | Dart | `LOC_CITY_NAME_TSOD_DART` | 通行译名 |
+| 12 | 法布罗 | Fabro | `LOC_CITY_NAME_TSOD_FABRO` | 音译 |
+| 13 | 科尔曼罗尼 | Colmanroni | `LOC_CITY_NAME_TSOD_COLMANRONI` | Colman + roni |
+| 14 | 马利克 | Malik | `LOC_CITY_NAME_TSOD_MALIK` | 通行译名 |
+| 15 | 摩格洛克 | Morglock | `LOC_CITY_NAME_TSOD_MORGLOCK` | 音译 |
+| 16 | 赫米尔 | Hemil | `LOC_CITY_NAME_TSOD_HEMIL` | 词尾尔→l，照 Orandel / Hamel |
+| 17 | 铂金菲斯 | Platinphis | `LOC_CITY_NAME_TSOD_PLATINPHIS` | 铂金→Platin，菲斯→phis（Memphis） |
+| 18 | 缪斯 | Muse | `LOC_CITY_NAME_TSOD_MUSE` | 通行译名 |
+| 19 | 塔索斯岛 | Tassos Isle | `LOC_CITY_NAME_TSOD_TASSOS_ISLE` | 岛→Isle |
+| 20 | 萨里尔 | Sariel | `LOC_CITY_NAME_TSOD_SARIEL` | 通行译名 |
+| 21 | 杜沃松郡 | Duvosson Shire | `LOC_CITY_NAME_TSOD_DUVOSSON_SHIRE` | 郡→Shire 照塞西尔 |
+| 22 | 哈玛尔郡 | Hamar Shire | `LOC_CITY_NAME_TSOD_HAMAR_SHIRE` | 通行译名 |
+| 23 | 杜松郡 | Dusson Shire | `LOC_CITY_NAME_TSOD_DUSSON_SHIRE` | 与杜沃松同源，音译不意译 |
+| 24 | 恩奇霍克郡 | Enkihawk Shire | `LOC_CITY_NAME_TSOD_ENKIHAWK_SHIRE` | 恩奇→Enki，霍克→hawk |
+| 25 | 图兰郡 | Turan Shire | `LOC_CITY_NAME_TSOD_TURAN_SHIRE` | 通行译名 |
+| 26 | 于勒堡 | Juleshold | `LOC_CITY_NAME_TSOD_JULESHOLD` | 于勒→Jules；X堡→Xhold |
+| 27 | 苏提尼 | Sutini | `LOC_CITY_NAME_TSOD_SUTINI` | 与苏提姆同源 |
+| 28 | 卢西亚 | Lucia | `LOC_CITY_NAME_TSOD_LUCIA` | 通行译名 |
+| 29 | 尼米亚斯 | Nimias | `LOC_CITY_NAME_TSOD_NIMIAS` | 音译 |
+| 30 | 金沙郡 | Goldsand Shire | `LOC_CITY_NAME_TSOD_GOLDSAND_SHIRE` | 意译，照塞西尔意译有义地名 |
+| 31 | 巴特菲尔德郡 | Butterfield Shire | `LOC_CITY_NAME_TSOD_BUTTERFIELD_SHIRE` | 通行译名 |
+| 32 | 松林镇 | Pinewood Town | `LOC_CITY_NAME_TSOD_PINEWOOD_TOWN` | 意译；镇→Town 照塞西尔 |
+| 33 | 瑞文堡 | Ravenhold | `LOC_CITY_NAME_TSOD_RAVENHOLD` | 瑞文→Raven；X堡→Xhold |
+| 34 | 康奈利安 | Cornelian | `LOC_CITY_NAME_TSOD_CORNELIAN` | 通行译名 |
+| 35 | 卡兹 | Kaz | `LOC_CITY_NAME_TSOD_KAZ` | 卡→K |
+| 36 | 黑山郡 | Blackmountain Shire | `LOC_CITY_NAME_TSOD_BLACKMOUNTAIN_SHIRE` | 意译，照塞西尔 Whitemountain |
+| 37 | 卡普维 | Kapvi | `LOC_CITY_NAME_TSOD_KAPVI` | 卡→K |
+| 38 | 科林 | Colin | `LOC_CITY_NAME_TSOD_COLIN` | 通行译名 |
+| 39 | 亚斯兰特 | Aslante | `LOC_CITY_NAME_TSOD_ASLANTE` | 亚→A（亚瑟 Arthur） |
+| 40 | 奥索尔 | Osol | `LOC_CITY_NAME_TSOD_OSOL` | 词尾尔→l |
+| 41 | 多利亚 | Doria | `LOC_CITY_NAME_TSOD_DORIA` | 通行译名 |
+| 42 | 西斯郡 | Seiss Shire | `LOC_CITY_NAME_TSOD_SEISS_SHIRE` | 音译，避开 Sith |
+| 43 | 卡特罗尔 | Katrol | `LOC_CITY_NAME_TSOD_KATROL` | 卡→K，词尾尔→l |
+| 44 | 赫米特 | Hemit | `LOC_CITY_NAME_TSOD_HEMIT` | 与赫米尔同源 |
+| 45 | 瑞克堡 | Rickhold | `LOC_CITY_NAME_TSOD_RICKHOLD` | 瑞克→Rick；X堡→Xhold |
+| 46 | 沙夫伦德郡 | Shafrend Shire | `LOC_CITY_NAME_TSOD_SHAFREND_SHIRE` | 伦→ren |
+| 47 | 维托郡 | Vito Shire | `LOC_CITY_NAME_TSOD_VITO_SHIRE` | 通行译名 |
+| 48 | 凯尔曼 | Kelman | `LOC_CITY_NAME_TSOD_KELMAN` | 词中尔→l，照 Malm |
+| 49 | 安格雷郡 | Angray Shire | `LOC_CITY_NAME_TSOD_ANGRAY_SHIRE` | 雷→ray |
+| 50 | 莫戈雷 | Mogoray | `LOC_CITY_NAME_TSOD_MOGORAY` | 雷→ray |
+| 51 | 诺特兰 | Nottland | `LOC_CITY_NAME_TSOD_NOTTLAND` | 地名词尾兰→land |
+| 52 | 滨海郡 | Seaside Shire | `LOC_CITY_NAME_TSOD_SEASIDE_SHIRE` | 意译 |
+| 53 | 巴尔塔 | Balta | `LOC_CITY_NAME_TSOD_BALTA` | 通行译名 |
+| 54 | 卡塔尼 | Katani | `LOC_CITY_NAME_TSOD_KATANI` | 卡→K |
+| 55 | 亚德林 | Adelin | `LOC_CITY_NAME_TSOD_ADELIN` | 亚→A |
+| 56 | 南海郡 | Southsea Shire | `LOC_CITY_NAME_TSOD_SOUTHSEA_SHIRE` | 意译 |
+| 57 | 兰尼亚郡 | Lania Shire | `LOC_CITY_NAME_TSOD_LANIA_SHIRE` | 音译 |
+
+### 7.2 各包回报的新增跨包 ID
+
+| 类 | ID | 来源 | 谁会用 |
+|---|---|---|---|
+| 图标 | `ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE`、`ICON_LEADER_TSOD_ROSETTA_AUGUSTUS`（**名字不可改**，LoadScreen.lua 按类型拼名） | WP1 | WP9 |
+| 图标 | `ICON_UNIT_TSOD_BATTLE_MAGE`、`ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT`（可选 `_WHITE`）、`ICON_DISTRICT_TSOD_MAGE_TOWER`（+ `_FOW`）、`ICON_BUILDING_TSOD_BURNSTONE_WORKS` | WP1/4/5/6 | WP9 |
+| 立绘与背景 | `LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL` / `_BACKGROUND` / `_LOADING_FOREGROUND` / `_LOADING_BACKGROUND` / `_DIPLOMACY_BACKGROUND`，`FALLBACK_NEUTRAL_LEADER_TSOD_ROSETTA_AUGUSTUS` | WP1 | WP11 |
+| 颜色 | `COLOR_PLAYER_TSOD_TYPHON_EMPIRE_PRIMARY` / `_SECONDARY` / `_ALT1_PRIMARY` / `_ALT1_SECONDARY` / `_ALT2_PRIMARY` / `_ALT2_SECONDARY`（主：底 22,20,22、徽 196,26,32；备 1 红底黑徽；备 2 红底金徽 228,182,78） | WP1 | WP14（宗教色另起） |
+| 相邻加成 | `TSOD_TYPHON_MAGE_TOWER_ENCAMPMENT_SCIENCE` | WP5 | — |
+| AI 清单 | `TSOD_TYPHON_ROSETTA_VICTORIES` / `_DISTRICTS` / `_BUILDINGS` / `_UNITS`（挂领袖特性），`TSOD_TYPHON_KINDRED_PSEUDOYIELDS`（挂议程特性） | WP7 | WP13、WP17 加偏好时追加到这些清单 |
+| 百科分组 | `TSOD_TYPHON_PEOPLE`、`TSOD_TYPHON_PLACES`（CONCEPTS 分区） | WP8 | WP14（战神教页可并入） |
+| 百科页面 | `TSOD_TYPHON_` + FERDINAND / ANDESHA / WINDSOR / PALIN / DIANA / MATILDA / MALM / ORDENAN / WINTERHOLD / WINTERWOLF_KEEP / THROAT_OF_ORANDEL / TWILIGHT_PALACE | WP8 | — |
+| 玩家属性 | `TSOD_TYPHON_KILL_BOOST_<TechnologyType>`（何不用之，存档用） | WP3 | — |
+
+**跨包约束**：领袖不得加 `RELIGIOUS` / `NONRELIGIOUS` / `LOW_RELIGIOUS_PREFERENCE` 类 LeaderTraits（WP7 的「宗教倾向中等」靠不挂实现）。
