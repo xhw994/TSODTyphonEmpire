@@ -1,0 +1,6 @@
+cooker.log
+/imgs
+/Cooked
+/refs
+# 构建产物与本机文件
+*.civ6suo
