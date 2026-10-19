@@ -39,7 +39,7 @@
 | 特色单位 | `UNIT_TSOD_BATTLE_MAGE`，特性 `TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE`，标签 `CLASS_TSOD_BATTLE_MAGE` | WP4 |
 | 特色区域 | `DISTRICT_TSOD_MAGE_TOWER`，特性 `TRAIT_CIVILIZATION_DISTRICT_TSOD_MAGE_TOWER` | WP5 |
 | 特色建筑 | `BUILDING_TSOD_BURNSTONE_WORKS`，特性 `TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS` | WP6 |
-| 能力：学院训练免费升级 | `ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION` | WP2 |
+| 能力：学院训练免费升级 | `ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION`（Name / Description 留空，不在单位提示里显示；I1 反馈） | WP2 |
 | 能力：弹道学成长 | `ABILITY_TSOD_BATTLE_MAGE_BALLISTICS` | WP4 |
 | 能力：高级弹道学成长 | `ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS` | WP4 |
 | 能力：军团级法术 | `ABILITY_TSOD_BATTLE_MAGE_CONCERT` | WP4 |
@@ -72,7 +72,6 @@
 | `LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_AGENDA_TSOD_KINDRED_NAME` / `_DESCRIPTION`，及议程态度说明 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 |
 | `LOC_DIPLO_MODIFIER_TSOD_KINDRED_STRONG_MILITARY` / `_RELIGION_RECEIVED`，`LOC_DIPLO_KUDO_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED`，`LOC_DIPLO_WARNING_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED` | 同上 | WP7（不归 WP8） |
-| `LOC_ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_CivTrait.sql` | WP2 |
 | `LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE`（相邻加成说明） | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
 | `LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_ABILITY_TSOD_BATTLE_MAGE_*_PREVIEW`（战斗预览说明） | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
@@ -129,7 +128,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 | 所有普通 InGame / FrontEnd 动作 | 100 |
 | 阶段 2：战神教（WP14） | 110 |
 | 阶段 2：系列联动（WP18） | 200 |
-| 阶段 2：UI 替换 + 同 LoadOrder 的 ImportFiles（WP13） | 100000 |
+| 阶段 2：UI 替换 + 同 LoadOrder 的 ImportFiles（WP13） | 200000（高于 BuilderLagFix 的 160520，见 impl plan WP13 修订） |
 
 ### 5.4 美术动作（阶段 1 暂缺）
 
@@ -215,7 +214,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 | 7 | 苏提姆 | Sutim | `LOC_CITY_NAME_TSOD_SUTIM` | 音译 |
 | 8 | 赛文堡 | Sewenhold | `LOC_CITY_NAME_TSOD_SEWENHOLD` | 赛文→Sewen 照塞西尔 Sewen Terry；X堡→Xhold 照 Winterhold |
 | 9 | 杜勒 | Dulur | `LOC_CITY_NAME_TSOD_DULUR` | 照塞西尔 塔姆杜勒 Tamdulur |
-| 10 | 霍尔马克 | Hallmark | `LOC_CITY_NAME_TSOD_HALLMARK` | 通行译名；霍尔→Hall 照塞西尔 |
+| 10 | 霍尔马克 | Holmark | `LOC_CITY_NAME_TSOD_HOLMARK` | 通行译名；霍尔→Hall 照塞西尔 |
 | 11 | 达特 | Dart | `LOC_CITY_NAME_TSOD_DART` | 通行译名 |
 | 12 | 法布罗 | Fabro | `LOC_CITY_NAME_TSOD_FABRO` | 音译 |
 | 13 | 科尔曼罗尼 | Colmanroni | `LOC_CITY_NAME_TSOD_COLMANRONI` | Colman + roni |

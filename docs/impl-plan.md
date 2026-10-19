@@ -75,7 +75,7 @@ TSODTyphonEmpire/
 | InGame 图标 | UpdateIcons | `Icons/*.xml` | 默认 | — |
 | InGame 美术 | UpdateArt | `(Mod Art Dependency File)` | 默认 | — |
 | Gameplay 脚本 | AddGameplayScripts | `Scripts/*.lua` | 默认 | — |
-| UI 替换 | ReplaceUIScript + 同 LoadOrder 的 ImportFiles | `UI/UnitPanel_TsoDTE.lua` | 100000 | — |
+| UI 替换 | ReplaceUIScript + 同 LoadOrder 的 ImportFiles | `UI/UnitPanel_TsoDTE.lua` | 200000（高于 BuilderLagFix 的 160520） | — |
 | FrontEnd | UpdateDatabase / UpdateText / UpdateIcons / UpdateArt | 开局设置、配色、文本、图标 | 默认 | — |
 
 ReplaceUIScript 配同 LoadOrder 的 ImportFiles，是梦境之城 README 里写过的社区约定，后来的 mod 才能接力。
@@ -345,6 +345,22 @@ master plan §4 的三条：
   - 发射后原单位消失、收到阵亡通知、弹数 −1；
   - 组成军队后移动加攻击，下回合仍回血；
   - 轰炸机看不到这种武器。
+
+#### I1 实机反馈后的修订（2026-10-19，用户已批准，F5 除外）
+
+- **阶段 1 临时处理**：战斗法师的 `WMDCapable` 先设 0（单位面板会给 WMDs 表里每一行出一个按钮，用户看到官方核弹、热核和可莉 mod 武器三个灰按钮）。WP13 连同下面的 UI 过滤一起改回 1。
+- **UI 过滤只动法师相关的按钮**（取代上文「覆盖发射按钮判断」）：
+  - 不覆盖 `IsActionLimited`。包一层全局的 `GetUnitActionsTable(pUnit)`：先调原函数，再过滤结果表里 `userTag` 为 `WMD_STRIKE` 的条目。
+  - 战斗法师：只留湮灭之创，且只在军团、军队状态；其他单位：去掉湮灭之创；其余按钮一概不碰。
+  - 认武器：`AddActionToTable` 的 helpString 末尾拼了 `Locale.Lookup(entry.Name)`（基础版 UnitPanel.lua 645–647），按我们武器的本地化名匹配。能发射与不能发射的按钮都在这张表里，所以两种都管。
+- **兼容写法照梦境之城**：ReplaceUIScript 配同 LoadOrder 的 ImportFiles（参考 `TSODDreamCity\DreamCity.modinfo` 111–126 与 `UI\CityStates_TSODDreamCity.lua` 文件头）。
+  - LoadOrder 定为 **200000**，要高于 BuilderLagFix 的 160520（ids.md §5.3 同步）。
+  - 用户装的另外两个替换 UnitPanel 的 mod：可莉（工坊 2882489805，`UnitPanel_Klee.lua` 自己 include 基础版，只重定义 `IsActionLimited`）；BuilderLagFix（工坊 2024939221，LoadOrder 160520，它的 `UnitPanel_XP2.lua` 只 include `UnitPanel_Expansion2` 和 `BuilderLagFix`，后者在 ImportFiles 里，并整体重写了 `GetUnitActionsTable`）。
+  - 接力顺序（避免基础版被 include 两次）：a. `include("UnitPanel_Klee")`；b. 若之后 `Initialize` 仍未定义，按可莉的循环依次 include `UnitPanel_Expansion2`、`UnitPanel_Expansion1`、`UnitPanel`；c. `include("BuilderLagFix")`；d. 最后包我们这一层。文件不存在时 include 不报错。文件头照梦境之城写明这些。
+  - **限度**写进注释，也要告诉用户：同一个面板脚本只能有一个替换生效，做不到对所有 mod 兼容。以后若有不认识的 mod 替换单位面板且比我们后加载，损失的只是这层过滤（三个按钮重新出现），游戏逻辑不受影响。
+- **别的单位发射湮灭之创（F6，默认做法，用户可改）**：弹药是玩家级库存，轰炸机、核潜艇也能发射；按对账「多退少补」会下回合补回，等于无限弹；UI 过滤也拦不住 AI。处理：在 `UnitOperationStarted` 里，若发射者不是军团 / 军队状态的战斗法师，就让离目标最近的一支战斗法师军团（或军队）代为阵亡，保持「弹数 = 军团数」；找不到可阵亡的军团时只记日志。
+- **作弊菜单组军团不专门处理**（F4 撤销，用户原话：「这个我用正常途径就行，没必要改实现效果」）。§6.1 的对账照原计划做（回合开始 + 编队变化）；测试只走游戏正常合并。
+- **外交惩罚的去留**仍待用户定（F5）。
 
 ### WP14 战神教（阶段 2，可选内容）
 
