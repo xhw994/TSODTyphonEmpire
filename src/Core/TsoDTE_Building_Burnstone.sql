@@ -146,3 +146,43 @@ INSERT INTO
 VALUES
     ('TSOD_TYPHON_BURNSTONE_WORKS_FARM_FOOD', 'YieldType', 'YIELD_FOOD'),
     ('TSOD_TYPHON_BURNSTONE_WORKS_FARM_FOOD', 'Amount', '5');
+
+-- ----------------------------------------------------------------------------
+-- 8. 本城所有矿山、采石场 +2 生产力（I1 实机反馈新增）
+--    原作依据：第 747 章「燃石的开采矿场」。
+--    先例：鲁尔河谷 RUHR_VALLEY_PRODUCTION_MODIFIER（Base/Buildings.xml）：
+--    MODIFIER_CITY_PLOT_YIELDS_ADJUST_PLOT_YIELD + REQUIREMENTSET_TEST_ANY
+--    （官方需求 REQUIRES_PLOT_HAS_MINE / REQUIRES_PLOT_HAS_QUARRY，定义在 Base/Beliefs.xml）。
+--    数值：鲁尔河谷是奇观，给 +1；特色建筑取 +2，实测后再调。
+--    挂在 BuildingModifiers 上，只作用于本城地块，不随 RegionalRange 辐射。
+-- ----------------------------------------------------------------------------
+INSERT INTO
+    BuildingModifiers (BuildingType, ModifierId)
+VALUES
+    ('BUILDING_TSOD_BURNSTONE_WORKS', 'TSOD_TYPHON_BURNSTONE_WORKS_MINE_QUARRY_PRODUCTION');
+
+INSERT INTO
+    Modifiers (ModifierId, ModifierType, SubjectRequirementSetId)
+VALUES
+    (
+        'TSOD_TYPHON_BURNSTONE_WORKS_MINE_QUARRY_PRODUCTION',
+        'MODIFIER_CITY_PLOT_YIELDS_ADJUST_PLOT_YIELD',
+        'REQSET_TSOD_TYPHON_PLOT_HAS_MINE_OR_QUARRY'
+    );
+
+INSERT INTO
+    ModifierArguments (ModifierId, Name, Value)
+VALUES
+    ('TSOD_TYPHON_BURNSTONE_WORKS_MINE_QUARRY_PRODUCTION', 'YieldType', 'YIELD_PRODUCTION'),
+    ('TSOD_TYPHON_BURNSTONE_WORKS_MINE_QUARRY_PRODUCTION', 'Amount', '2');
+
+INSERT INTO
+    RequirementSets (RequirementSetId, RequirementSetType)
+VALUES
+    ('REQSET_TSOD_TYPHON_PLOT_HAS_MINE_OR_QUARRY', 'REQUIREMENTSET_TEST_ANY');
+
+INSERT INTO
+    RequirementSetRequirements (RequirementSetId, RequirementId)
+VALUES
+    ('REQSET_TSOD_TYPHON_PLOT_HAS_MINE_OR_QUARRY', 'REQUIRES_PLOT_HAS_MINE'),
+    ('REQSET_TSOD_TYPHON_PLOT_HAS_MINE_OR_QUARRY', 'REQUIRES_PLOT_HAS_QUARRY');
