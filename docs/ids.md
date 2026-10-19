@@ -12,7 +12,7 @@
 | 工程名 / 部署目录 | `TSODTyphonEmpire` | 部署到 `Mods\TSODTyphonEmpire\` |
 | Mod 名 LOC | `LOC_TSOD_TYPHON_EMPIRE_MOD_TITLE` / `_TEASER` / `_DESCRIPTION` | 写在 `.civ6proj` 的 `LocalizedTextData` 里，**不进** `Texts/` |
 | 依赖 | 风云变幻 `4873eb62-8ccc-4574-b784-dda455e74e68`、迭起兴衰 `1B28771A-C749-434B-9053-D1380C553DE9` | |
-| 软依赖 | 埃塞俄比亚包 `1B394FE9-23DC-4868-8F0A-5220CB8FB427` | 只影响法师塔主体模型，不声明依赖 |
+| 依赖 | 埃塞俄比亚包 `1B394FE9-23DC-4868-8F0A-5220CB8FB427` | 法师塔用它的 `DIS_CMP_Alchemical` 模型；用户 2026-10-19 定：默认全 DLC，写对依赖即可，不做无 DLC 退路 |
 | 塞西尔 mod id | `4883e185-c2d7-4031-aae3-b67e4e885a24` | WP18 的 `ModInUse` 用 |
 | 梦境之城 mod id | `3b138c5a-bb00-42ce-9ae2-2186fbd5595b` | WP18 的 `ModInUse` 用 |
 | criteria | `TsoDTE_Expansion2` = `RuleSetInUse RULESET_EXPANSION_2` | |
@@ -130,9 +130,19 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 | 阶段 2：系列联动（WP18） | 200 |
 | 阶段 2：UI 替换 + 同 LoadOrder 的 ImportFiles（WP13） | 200000（高于 BuilderLagFix 的 160520，见 impl plan WP13 修订） |
 
-### 5.4 美术动作（阶段 1 暂缺）
+### 5.4 美术动作（阶段 1 只有法师塔）
 
-`UpdateIcons`（IG + FE）、`UpdateArt (Mod Art Dependency File)` 与 `TSODTyphonEmpire.Art.xml` 里的 artdef / XLP 登记，等美术包（WP9–WP12）交付后由统筹者加。WP0 的 `Art.xml` 已清空全部 `relativeArtDefPaths` 与 `relativePackagePaths`。
+**已登记（WP10 提前做的法师塔模型）**：
+
+| 文件 | 动作 | Art.xml 登记 |
+|---|---|---|
+| `ArtDefs/Landmarks.artdef`（`DISTRICT_TSOD_MAGE_TOWER`，学院整段复制，大学位换成埃塞俄比亚包的 `DIS_CMP_Alchemical`） | IG UpdateArt（`(Mod Art Dependency File)` → 烘焙出的 `.dep`） | consumer `Landmarks`、`Audio`、`StrategicView_Sprite`、`StrategicView_Translate`、`WorldView_Translate` |
+| `ArtDefs/Districts.artdef`（同名元素，Landmark 的 Xref 指向上面那个） | 同上 | 同上 5 个 consumer |
+
+Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登记在同一批 consumer 里（照官方 Ethiopia 的做法）。FrontEnd 的 UpdateArt 不需要（区域模型只在局内用）。`requiredGameArtIDs` 没加埃塞俄比亚（SDK 没有它的 pantry；塞西尔引用同一个包也没加），靠构建后的 `restore_cooked_entries.py` 还原；备用 art id `50320198-92ec-444f-805c-1b6f81dfb918`。
+**脚本限制**：`restore_cooked_entries.py` 在同一个文件里出现多处 `TB_ERROR` 时会全部跳过。现在只有 1 处所以没事；如果以后换成埃塞俄比亚配套的炼金底座（5 个 DLC entry），要先把脚本改成按文档顺序逐个还原。
+
+**仍缺**：`UpdateIcons`（IG + FE）等图标、立绘、XLP 的登记，等 WP9、WP11、WP12 交付后加。
 
 ### 5.5 跨包的表行归属（防止重复插入）
 
