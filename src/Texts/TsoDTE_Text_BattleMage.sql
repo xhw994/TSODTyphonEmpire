@@ -12,7 +12,7 @@ VALUES
     (
         'zh_Hans_CN',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        '中世纪提丰特色远程单位，替代弩手。不能升级，也不会过时：研究弹道学后+20 [ICON_Ranged] 远程攻击力、+20 [ICON_Strength] 战斗力；研究高级弹道学后再+25 [ICON_Ranged] 远程攻击力、+20 [ICON_Strength] 战斗力。与另一个战斗法师相邻时+5 [ICON_Ranged] 远程攻击力。'
+        '中世纪提丰特色远程单位，替代弩手。其 [ICON_Strength] 战斗力随时代成长。与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。'
     ),
 
     -- 能力：弹道学成长
@@ -38,16 +38,16 @@ VALUES
     (
         'zh_Hans_CN',
         'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION',
-        '与另一个战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力。'
+        '与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。'
     ),
-    ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '军团级法术：与另一个战斗法师相邻时+{1_Amount} [ICON_Ranged] 远程攻击力'),
+    ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '军团级法术：与至少一个其他战斗法师相邻时+{1_Amount} [ICON_Ranged] 远程攻击力'),
 
     -- ---------------------------------------------------------------- en_US
     ('en_US', 'LOC_UNIT_TSOD_BATTLE_MAGE_NAME', 'Battle Mage'),
     (
         'en_US',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        'Typhon unique Medieval era ranged unit that replaces the Crossbowman. Cannot be upgraded and never becomes obsolete: gains +20 [ICON_Ranged] Ranged Strength and +20 [ICON_Strength] Combat Strength after researching Ballistics, and a further +25 [ICON_Ranged] Ranged Strength and +20 [ICON_Strength] Combat Strength after researching Advanced Ballistics. +5 [ICON_Ranged] Ranged Strength when adjacent to another Battle Mage.'
+        'Typhon unique Medieval era ranged unit that replaces the Crossbowman. Its [ICON_Strength] Combat Strength grows with the eras. +5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack).'
     ),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', 'Ballistics Growth'),
@@ -70,6 +70,6 @@ VALUES
     (
         'en_US',
         'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION',
-        '+5 [ICON_Ranged] Ranged Strength when adjacent to another Battle Mage.'
+        '+5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack).'
     ),
-    ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} [ICON_Ranged] Ranged Strength from Legion-Class Spell (adjacent Battle Mage)');
+    ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} [ICON_Ranged] Ranged Strength from Legion-Class Spell (adjacent to at least one other Battle Mage)');

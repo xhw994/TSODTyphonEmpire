@@ -43,7 +43,10 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE');
 
 -- ---------------------------------------------------------------------------
--- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech；WMDCapable 为阶段 2 预留）
+-- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech）
+--    WMDCapable 阶段 1 临时为 0：设 1 时单位面板会给每种 WMD（官方核弹、热核、
+--    其他 mod 的武器）各出一个灰按钮。WP13 做湮灭之创时，连同 UnitPanel 的武器过滤
+--    一起改回 1。UnitAiInfos 里的 UNITTYPE_NUCLEAR 保持不动。
 -- ---------------------------------------------------------------------------
 INSERT INTO
     Units (
@@ -87,7 +90,7 @@ VALUES
         'ADVISOR_CONQUEST',
         'YIELD_GOLD',
         'TECH_MACHINERY',
-        1
+        0 -- WMDCapable：阶段 1 临时为 0，WP13 连同 UnitPanel 过滤改回 1
     );
 
 INSERT INTO
