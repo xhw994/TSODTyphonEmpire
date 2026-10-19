@@ -32,11 +32,10 @@ INSERT INTO Types (Type, Kind) VALUES
     ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 'KIND_ABILITY');
 
 -- Inactive=1：只有被授予的单位才有，不会自动套到所有同类单位上（与兵营能力一致）
-INSERT INTO UnitAbilities (UnitAbilityType, Name, Description, Inactive, ShowFloatTextWhenEarned, Permanent) VALUES
-    ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION',
-     'LOC_ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION_NAME',
-     'LOC_ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION_DESCRIPTION',
-     1, 0, 1);
+-- 不给 Name / Description（两列可空）：隐藏能力，不进单位提示。
+-- 先例：ABILITY_OLIGARCHY_LEGACY_MELEE_BUFF 等官方无说明能力，只写 Inactive。
+INSERT INTO UnitAbilities (UnitAbilityType, Inactive, ShowFloatTextWhenEarned, Permanent) VALUES
+    ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 1, 0, 1);
 
 -- 陆地军事单位的类别：照抄 ABILITY_TOQUI_XP_FROM_GOVERNOR 的陆地部分
 INSERT INTO TypeTags (Type, Tag) VALUES
