@@ -48,7 +48,7 @@ VALUES
 --    （COLLECTION_MAJOR_PLAYERS + EFFECT_DIPLOMACY_SIMPLE_EFFECT），
 --    主体条件决定「对哪个文明」生效。
 --
---    a) 喜欢：陆军实力不弱于她的文明
+--    a) 喜欢：陆军实力不弱于他的文明
 --       照官方隐藏议程「常备军」AGENDA_HIGH_STANDING_ARMY：
 --       REQUIREMENT_PLAYER_MILITARY_STRENGTH_LEAD，MinimumDelta 5、DomainType DOMAIN_LAND
 --       照抄；StrengthRatio 由官方的 1.2（明显更强）降到 1.0（不弱于），
@@ -56,7 +56,7 @@ VALUES
 --       官方常备军是隐藏议程，带 HiddenAgenda=true；本议程公开，不带。
 --       态度 +8：官方公开议程的正向值多在 7～12（如 AGENDA_MODIFIER_SAME_RELIGION 8）。
 --
---    b) 厌恶：向她的城市传播宗教的文明
+--    b) 厌恶：向他的城市传播宗教的文明
 --       照刚果姆本巴 AGENDA_MODIFIER_RELIGION_RECEIVED（+12）把方向反过来，取 -12；
 --       官方萨拉丁（苏丹）AGENDA_SULTAN_RELIGION_RECEIVED 正是同一条件、-12 的先例。
 -- -----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ VALUES
     --   工坊 Sukritact 对特色单位用 Favored=1, Value=1）。
     ('TSOD_TYPHON_ROSETTA_UNITS', 'UNIT_TSOD_BATTLE_MAGE', 1, 1),
 
-    -- 议程自身：照官方 StandingArmyPseudoYields 原值，让她自己也维持大规模常备军，
+    -- 议程自身：照官方 StandingArmyPseudoYields 原值，让他自己也维持大规模常备军，
     --   与「同类」议程看重军力一致（已与 AGENDA_STANDING_ARMY 互斥，不会叠加）。
     ('TSOD_TYPHON_KINDRED_PSEUDOYIELDS', 'PSEUDOYIELD_STANDING_ARMY_NUMBER', 1, 33),
     ('TSOD_TYPHON_KINDRED_PSEUDOYIELDS', 'PSEUDOYIELD_STANDING_ARMY_VALUE', 1, 50);

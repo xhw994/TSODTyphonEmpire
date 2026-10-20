@@ -151,7 +151,7 @@ ReplaceUIScript 配同 LoadOrder 的 ImportFiles，是梦境之城 README 里写
 | WP0 | 骨架与契约 | — | `.civ6proj`、`docs/*`、`tools/*` | 全部（只看结构） | 小 |
 | WP1 | 文明与领袖数据 | WP0 | `Core/TsoDTE_Civilization.sql`、`TsoDTE_Leader.sql`、`TsoDTE_Colors.sql`、`TsoDTE_Config.sql`、`Texts/TsoDTE_Text_CivLeader.sql` | §0、§9.1-9.2、§11 | 中 |
 | WP2 | 文明能力 | WP0 | `Core/TsoDTE_CivTrait.sql`、`Texts/TsoDTE_Text_CivTrait.sql` | §4 | 小 |
-| WP3 | 领袖能力 | WP0 | `Core/TsoDTE_LeaderTrait.sql`、`Scripts/TsoDTE_LeaderTrait.lua`、`Texts/TsoDTE_Text_LeaderTrait.sql` | §5 | 小 |
+| WP3 | 领袖能力 | WP0 | `Scripts/TsoDTE_LeaderTrait.lua`（原 `Core/TsoDTE_LeaderTrait.sql` 已删，见 ids.md §5.2）、`Texts/TsoDTE_Text_LeaderTrait.sql` | §5 | 小 |
 | WP4 | 战斗法师基础 | WP0 | `Core/TsoDTE_Unit_BattleMage.sql`、`Texts/TsoDTE_Text_BattleMage.sql` | §6.1 的 1、2 部分 | 中 |
 | WP5 | 法师塔 | WP0 | `Core/TsoDTE_District_MageTower.sql`、`Texts/TsoDTE_Text_MageTower.sql` | §6.2 | 小 |
 | WP6 | 燃石酸化工厂 | WP0 | `Core/TsoDTE_Building_Burnstone.sql`、`Texts/TsoDTE_Text_Burnstone.sql` | §6.3 | 小 |

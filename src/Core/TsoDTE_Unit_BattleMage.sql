@@ -10,6 +10,9 @@
 --   相邻加成照希腊重装步兵 ABILITY_HOPLITE（MODIFIER_SINGLE_UNIT_ATTACH_MODIFIER 套
 --     MODIFIER_UNIT_ADJUST_COMBAT_STRENGTH）；
 --   只加远程攻击照晋升 VOLLEY / TORTOISE（REQUIREMENT_PLAYER_IS_ATTACKING + REQUIREMENT_COMBAT_TYPE_MATCHES）。
+-- I1 实测：MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH 只改近战（面板 70），不改远程（仍 40）；
+--   「远程攻击时 +N」那条路走通了（预览里有高级弹道学的 +5、军团级法术的 +5）。
+--   所以成长拆成两半：近战用基础战斗力修正（面板直接显示），远程用远程攻击时的普通战斗力修正（战斗预览显示）。
 -- 不升级：不写 UnitUpgrades，也不设 MandatoryObsoleteTech（弩手是 TECH_ADVANCED_BALLISTICS）。
 -- ============================================================================
 
@@ -156,6 +159,7 @@ INSERT INTO
     UnitAbilityModifiers (UnitAbilityType, ModifierId)
 VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_STRENGTH'),
+    ('ABILITY_TSOD_BATTLE_MAGE_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_RANGED'),
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_STRENGTH'),
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT');
@@ -170,8 +174,9 @@ VALUES
 -- ---------------------------------------------------------------------------
 -- 6. 修正
 --    成长（累加）：机械 40/30 → 弹道学 60/50 → 高级弹道学 85/70（远程/近战）
---      弹道学       ：基础战斗力 +20
---      高级弹道学   ：基础战斗力 +20，另加只在远程攻击时生效的 +5
+--      弹道学       ：基础战斗力 +20（近战，面板显示）；远程攻击时 +20（战斗预览显示）
+--      高级弹道学   ：基础战斗力 +20（近战，面板显示）；远程攻击时 +25（战斗预览显示）
+--    远程单位防守时用近战战斗力，只有发起远程攻击时才用远程攻击力，所以「远程攻击时」覆盖了远程攻击力的全部用途。
 --    军团级法术：相邻有另一个战斗法师时，远程攻击 +5
 -- ---------------------------------------------------------------------------
 INSERT INTO
@@ -194,6 +199,12 @@ VALUES
         'MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH',
         NULL,
         NULL
+    ),
+    (
+        'TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_RANGED',
+        'MODIFIER_UNIT_ADJUST_COMBAT_STRENGTH',
+        NULL,
+        'REQSET_TSOD_TYPHON_BATTLE_MAGE_RANGED_ATTACK'
     ),
     (
         'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_STRENGTH',
@@ -226,20 +237,11 @@ VALUES
     ('TSOD_TYPHON_BATTLE_MAGE_GRANT_BALLISTICS', 'AbilityType', 'ABILITY_TSOD_BATTLE_MAGE_BALLISTICS'),
     ('TSOD_TYPHON_BATTLE_MAGE_GRANT_ADV_BALLISTICS', 'AbilityType', 'ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS'),
     ('TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_STRENGTH', 'Amount', '20'),
+    ('TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_RANGED', 'Amount', '20'),
     ('TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_STRENGTH', 'Amount', '20'),
-    ('TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED', 'Amount', '5'),
+    ('TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED', 'Amount', '25'),
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT', 'ModifierId', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH'),
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH', 'Amount', '5');
-
--- 需实证（impl plan §6.2 WP4）：MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH 对远程攻击力是否生效，
--- 官方只有尼杭（近战单位）一个先例。验证方法见 WP4 回报。若远程不变，启用下面的退路：
--- 两条 +20 改为普通战斗力修正（同样作用于远程攻击，只是面板显示为加成而不是基础值）。
--- UPDATE Modifiers
--- SET ModifierType = 'MODIFIER_UNIT_ADJUST_COMBAT_STRENGTH'
--- WHERE ModifierId IN (
---     'TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_STRENGTH',
---     'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_STRENGTH'
--- );
 
 -- ---------------------------------------------------------------------------
 -- 7. 需求
@@ -281,13 +283,12 @@ VALUES
 -- ---------------------------------------------------------------------------
 -- 8. 战斗预览说明（Preview）
 --    串联用的外层 TSOD_TYPHON_BATTLE_MAGE_CONCERT 不写（同重装步兵，只给内层写）。
---    两条基础战斗力修正也写上：若它计入基础值而不进预览，这两行只是用不上；
---    若改走退路，预览里正好需要它们。
+--    两条基础战斗力修正计入面板基础值、不进预览，不写。
+--    文本只写能力名（同官方「+5 齐射（升级）」），效果说明在能力描述里。
 -- ---------------------------------------------------------------------------
 INSERT INTO
     ModifierStrings (ModifierId, Context, Text)
 VALUES
-    ('TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_STRENGTH', 'Preview', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW'),
-    ('TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_STRENGTH', 'Preview', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_PREVIEW'),
+    ('TSOD_TYPHON_BATTLE_MAGE_BALLISTICS_RANGED', 'Preview', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW'),
     ('TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED', 'Preview', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_PREVIEW'),
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH', 'Preview', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW');

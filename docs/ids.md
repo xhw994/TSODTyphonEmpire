@@ -96,7 +96,6 @@
 | `Texts/TsoDTE_Text_CivLeader.sql` | WP1 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_CivTrait.sql` | WP2 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_CivTrait.sql` | WP2 | IG UpdateText + FE UpdateText |
-| `Core/TsoDTE_LeaderTrait.sql` | WP3 | IG UpdateDatabase |
 | `Scripts/TsoDTE_LeaderTrait.lua` | WP3 | IG AddGameplayScripts |
 | `Texts/TsoDTE_Text_LeaderTrait.sql` | WP3 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_Unit_BattleMage.sql` | WP4 | IG UpdateDatabase |
@@ -118,8 +117,10 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
 3. `TsoDTE_Unit_BattleMage.sql` → 4. `TsoDTE_District_MageTower.sql` → 5. `TsoDTE_Building_Burnstone.sql`
-6. `TsoDTE_CivTrait.sql` → 7. `TsoDTE_LeaderTrait.sql`
-8. `TsoDTE_Agenda_AI.sql` → 9. `TsoDTE_Pedia.sql`
+6. `TsoDTE_CivTrait.sql`
+7. `TsoDTE_Agenda_AI.sql` → 8. `TsoDTE_Pedia.sql`
+
+（原第 7 个 `TsoDTE_LeaderTrait.sql` 已删：它的「新时代给尤里卡 / 鼓舞」在风云变幻里不生效，I1 实测后整体改走 `Scripts/TsoDTE_LeaderTrait.lua`。）
 
 ### 5.3 LoadOrder
 
