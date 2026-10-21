@@ -16,30 +16,20 @@ VALUES
     ),
 
     -- 能力：弹道学成长
+-- （三个能力的 DESCRIPTION 只写名字：单位面板悬停提示会把能力的 Description 整句列出来，
+--  I1 反馈要求只显示技能名；效果说明在单位描述和百科里。）
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', '弹道学成长'),
-    (
-        'zh_Hans_CN',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION',
-        '已研究弹道学：+20 [ICON_Ranged] 远程攻击力，+20 [ICON_Strength] 战斗力。'
-    ),
+    ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION', '弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW', '+{1_Amount} 弹道学成长'),
 
     -- 能力：高级弹道学成长
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_NAME', '高级弹道学成长'),
-    (
-        'zh_Hans_CN',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_DESCRIPTION',
-        '已研究高级弹道学：再+25 [ICON_Ranged] 远程攻击力，+20 [ICON_Strength] 战斗力。'
-    ),
+    ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_DESCRIPTION', '高级弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_PREVIEW', '+{1_Amount} 高级弹道学成长'),
 
     -- 能力：军团级法术
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_NAME', '军团级法术'),
-    (
-        'zh_Hans_CN',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION',
-        '与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。'
-    ),
+    ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION', '军团级法术'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} 军团级法术'),
 
     -- ---------------------------------------------------------------- en_US
@@ -51,25 +41,13 @@ VALUES
     ),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', 'Ballistics Growth'),
-    (
-        'en_US',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION',
-        'Ballistics researched: +20 [ICON_Ranged] Ranged Strength and +20 [ICON_Strength] Combat Strength.'
-    ),
+    ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION', 'Ballistics Growth'),
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW', '+{1_Amount} Ballistics Growth'),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_NAME', 'Advanced Ballistics Growth'),
-    (
-        'en_US',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_DESCRIPTION',
-        'Advanced Ballistics researched: a further +25 [ICON_Ranged] Ranged Strength and +20 [ICON_Strength] Combat Strength.'
-    ),
+    ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_DESCRIPTION', 'Advanced Ballistics Growth'),
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_PREVIEW', '+{1_Amount} Advanced Ballistics Growth'),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_NAME', 'Legion-Class Spell'),
-    (
-        'en_US',
-        'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION',
-        '+5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack).'
-    ),
+    ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION', 'Legion-Class Spell'),
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} Legion-Class Spell');
