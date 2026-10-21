@@ -292,16 +292,25 @@ local function GrantOneBoost(iPlayer, eraIndex, tByEra, fnAvailable, fnTrigger, 
     return nil
 end
 
+-- 返回 (是否黑暗时代, 来源说明)。
+-- 注意：官方文档与官方用法里 GameEras:HasDarkAge / HasGoldenAge / HasHeroicGoldenAge 都只在 UI 环境
+-- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。本脚本跑在 Gameplay，调不调得通要实测。
+-- 所以这里用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
+-- 不让它悄悄失败：Lua.log 里会写明原因。英雄时代 / 黄金时代一律按「非黑暗」。
 local function PlayerHasDarkAge(iPlayer)
     local pEras = Game.GetEras()
     if pEras == nil or pEras.HasDarkAge == nil then
-        return false
+        return false, 'HasDarkAge is not available in Gameplay'
     end
-    return pEras:HasDarkAge(iPlayer) == true
+    local bOk, vResult = pcall(pEras.HasDarkAge, pEras, iPlayer)
+    if not bOk then
+        return false, 'HasDarkAge raised an error: ' .. tostring(vResult)
+    end
+    return vResult == true, 'HasDarkAge'
 end
 
 local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
-    local bDark = PlayerHasDarkAge(iPlayer)
+    local bDark, sDarkSource = PlayerHasDarkAge(iPlayer)
     local iCount = bDark and 2 or 1
 
     local pTechs = pPlayer:GetTechs()
@@ -330,7 +339,8 @@ local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
 
     local tEra = GameInfo.Eras[eraIndex]
     print('[TsoDTE] Twilight Palace: player ' .. iPlayer .. ' entered ' .. (tEra and tEra.EraType or tostring(eraIndex))
-        .. (bDark and ' (dark age)' or '') .. ', boosted ' .. (#tGranted > 0 and table.concat(tGranted, ', ') or 'nothing'))
+        .. (bDark and ' (dark age)' or '') .. ' [dark age check: ' .. sDarkSource .. ']'
+        .. ', boosted ' .. (#tGranted > 0 and table.concat(tGranted, ', ') or 'nothing'))
 end
 
 function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
@@ -379,6 +389,9 @@ function InitTsoDTELeaderTrait()
     Events.UnitUpgraded.Add(OnTsoDTEUnitUpgraded)
     Events.UnitKilledInCombat.Add(OnTsoDTEUnitKilledInCombat)
     Events.PlayerTurnActivated.Add(OnTsoDTEPlayerTurnActivated)
+    -- 加载时报告一次：Gameplay 环境里到底能不能调 HasDarkAge（官方只在 UI 环境用它）
+    local pEras = Game.GetEras()
+    print('[TsoDTE] Game.GetEras().HasDarkAge callable in Gameplay: ' .. tostring(pEras ~= nil and pEras.HasDarkAge ~= nil))
     print('[TsoDTE] Leader trait initialized for ' .. TyphonPlayerCount .. ' player(s)')
 end
 
