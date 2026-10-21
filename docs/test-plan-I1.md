@@ -385,6 +385,18 @@ x、y 换成目标格子；单位类型按需要换。
 
 前提：`EnableTuner 1` 已开；`Mods\TSODTyphonEmpire\` 是最新部署（构建后的版本）；开局用提丰、风云变幻规则集。需要高文的联动测试，另开一局，塞西尔与提丰同时启用。
 
+### 12.0 必须新开局（读旧存档会缺挂载）
+
+阶段 2 的两个挂载都挂在**领袖特性**上（`TraitModifiers`），游戏只在创建玩家时挂一次。读取 WP16 / WP18 之前存的旧存档，**不会补挂**：去神圣化项目的解锁，以及塞西尔的态度修正，都会缺。这不是 bug，也不是实现没生效。
+
+- 测试一律**新开局**。用户报告的「满足条件后没看到去神圣化项目」「高文对罗塞塔的态度修正没看到」，都是旧存档的情况。
+- 只有在不想重开的情况下，才用下面的命令在当前存档里补挂（FireTuner，Gameplay 环境）：
+  - 提丰玩家（通常是 `Players[0]`）：`Players[0]:AttachModifierByID('TSOD_TYPHON_DESANCTIFICATION_ALLOW')`；
+  - 罗塞塔的玩家：`Players[0]:AttachModifierByID('TSOD_TYPHON_CECIL_ROSETTA_TO_GAWAIN')`；
+  - 高文的玩家（另一名文明）：`Players[1]:AttachModifierByID('TSOD_TYPHON_CECIL_GAWAIN_TO_ROSETTA')`，玩家编号按实际改。
+  - 补挂后用 FireTuner 的 Modifiers 面板确认 Active 为 true、Subjects 大于 0（需翻页）。补挂是否完全等同于开局挂载（尤其是存档里的 AI 状态）未验证，记作需实证。
+- 去神圣化项目的条件与凯瑟琳的宫廷庆典结构一致，只多了 `PrereqCivic = CIVIC_MASS_MEDIA`（大众传媒）。如果补挂后仍不出现，先确认大众传媒已研究，并且城市里有法师塔。
+
 ### 12.1 战斗法师编队：军团回血，军队湮灭之创（WP13）
 
 规则（用户 2026-10-21 亲口确认）：2 个合成的军团只有战场再生，每回合回血，不能放湮灭之创；3 个合成的军队才有湮灭之创，库存 = 军队数，军队也回血；用完即死的是整支军队。升级后编队只剩一个单位对象，回血只作用于这个单位。
