@@ -119,7 +119,7 @@ x、y 换成目标格子；单位类型按需要换。
 
 ## 7. 同开
 
-- [ ] 同时启用塞西尔、梦境之城开一局，三者都能正常加载，Database.log 无冲突。
+- [ ] 同时启用塞西尔开一局，两边都能正常加载，Database.log 无冲突。（梦境之城联动已在阶段 2 实机反馈第 5 项删除。）
 - [x] 顺带：高文的部分台词像是通用台词。**已查明，是塞西尔 mod 的问题，不在本 mod 里修**（见下）。
 
 ### 7.1 高文台词缺失（塞西尔 mod，`xhw994/TSODCecilEmpire`）
@@ -350,18 +350,18 @@ x、y 换成目标格子；单位类型按需要换。
 ## 11. 阶段 2 待测（WP18 系列联动）
 
 > 这是**待测清单**，不是测试结果。下面没有一条在游戏里验证过。改动只完成了静态检查（loc_audit 225 个 tag 中英齐全；modifier_lint 0 错，多出的 1 条提示是官方的 `PLAYER_IS_SUZERAIN`，不是本包的问题；lua_lint 0 错 0 提示），还没有在游戏里加载。
-> 两个联动文件各自独立，criteria 都是 `ModInUse`（加 `RuleSetInUse RULESET_EXPANSION_2`，见下面 L1）。只装提丰时两个都不加载；同开时对应的那个加载。
+> 联动只剩塞西尔一项（criteria 是 `ModInUse`，加 `RuleSetInUse RULESET_EXPANSION_2`，见下面 L1）。只装提丰时不加载；同开塞西尔时加载。梦境之城的宜居度已按阶段 2 实机反馈第 5 项删除（原 11.3 节）。
 > 下面每条都写了退路。需实证项的数值与结构都来自官方同类写法，不是本包自拟的。
 
 ### 11.1 加载与隔离
 
 | 编号 | 问题 | 测什么 | 退路 |
 |---|---|---|---|
-| L1 | `ModInUse` 检测本地工坊安装的 mod 是否成立 | 塞西尔、梦境之城都是工坊 mod。只装提丰时 `Logs/Modding.log` 里没有 `TsoDTE_Compat_Cecil` / `TsoDTE_Compat_DreamCity` 的加载记录；装上对应的 mod 后，才出现该 action 的加载记录（criteria 没满足时日志里不会出现该 action，这是判断依据） | 检测不到（装了 mod 却不加载）：先确认 mod id 与 `.civ6proj` 的 `Guid` 一致（塞西尔 `4883e185-…`，梦境之城 `3b138c5a-…`）；仍不成立，就把两个 criteria 改成 `ConfigurationValueMatches` 之类的替代，或把两个联动并入主动作、用 `Scripts` 内判断，由统筹者决定 |
-| L2 | 只装提丰时两个联动文件都不加载 | 只启用风云变幻、迭起兴衰、埃塞俄比亚包与提丰。`Database.log` 没有 `TSOD_TYPHON_CECIL_*`、`TSOD_TYPHON_DREAM_*`、`TraitModifiers` 的外键报错；FireTuner 的 Modifiers 面板里看不到这些 ID | 加载了：检查 `ActionCriteriaData` 里的 `TsoDTE_ModCecil` / `TsoDTE_ModDreamCity` 是否写成 `ModInUse`，GUID 是否抄错 |
-| L3 | 原版规则集下两个联动都不加载 | 装上塞西尔或梦境之城，但选原版（或迭起兴衰）规则集开局。`Database.log` 没有 `no such table`、`FOREIGN KEY` 报错 | 加载了却报外键：说明 `RuleSetInUse` 没有生效，检查两个 Criteria 里的 `RuleSetInUse RULESET_EXPANSION_2` |
-| L4 | 两个联动同开 | 塞西尔与梦境之城同时启用。A1、D1–D3 都要出现，两边互不干扰 | 某一边缺失：分别只装一个对照，定位是哪个 criteria 或哪个文件出问题 |
-| L5 | 联动数据晚于对方 mod 的数据加载 | 联动文件引用的 `MINOR_CIV_TSOD_DREAM_CITY_TRAIT`、`TRAIT_LEADER_TSOD_GAWAIN_CECIL` 是对方 mod 的 LoadOrder 100 数据（梦境之城 `DreamCity_IG_Civilization`、塞西尔 `TsoDCE_IG_UpdateDatabase` 都是 100）；本包的联动是 200。`Database.log` 没有这两个 trait 的外键报错。LoadOrder 跨 mod 是否按数值全局排序，这是推断，未实证 | 外键报错：把两个联动 action 的 LoadOrder 再调大（如 300），或让本包的 `TraitModifiers` 行改挂在本包自己的 trait 上（不再引用对方 trait，失去宗主国与对方领袖的挂载点，需要重新设计） |
+| L1 | `ModInUse` 检测本地工坊安装的 mod 是否成立 | 塞西尔是工坊 mod。只装提丰时 `Logs/Modding.log` 里没有 `TsoDTE_Compat_Cecil` 的加载记录；装上塞西尔后，才出现该 action 的加载记录（criteria 没满足时日志里不会出现该 action，这是判断依据） | 检测不到（装了 mod 却不加载）：先确认 mod id 与 `.civ6proj` 的 `Guid` 一致（塞西尔 `4883e185-…`，梦境之城 `3b138c5a-…`）；仍不成立，就把两个 criteria 改成 `ConfigurationValueMatches` 之类的替代，或把两个联动并入主动作、用 `Scripts` 内判断，由统筹者决定 |
+| L2 | 只装提丰时两个联动文件都不加载 | 只启用风云变幻、迭起兴衰、埃塞俄比亚包与提丰。`Database.log` 没有 `TSOD_TYPHON_CECIL_*`、`TraitModifiers` 的外键报错；FireTuner 的 Modifiers 面板里看不到这些 ID | 加载了：检查 `ActionCriteriaData` 里的 `TsoDTE_ModCecil` 是否写成 `ModInUse`，GUID 是否抄错 |
+| L3 | 原版规则集下两个联动都不加载 | 装上塞西尔，但选原版（或迭起兴衰）规则集开局。`Database.log` 没有 `no such table`、`FOREIGN KEY` 报错 | 加载了却报外键：说明 `RuleSetInUse` 没有生效，检查两个 Criteria 里的 `RuleSetInUse RULESET_EXPANSION_2` |
+| L4 | 两个联动同开 | 塞西尔与提丰同时启用。A1 要出现，两边互不干扰 | 某一边缺失：只装提丰与塞西尔对照，定位是哪个 criteria 或哪个文件出问题 |
+| L5 | 联动数据晚于对方 mod 的数据加载 | 联动文件引用的 `TRAIT_LEADER_TSOD_GAWAIN_CECIL` 是对方 mod 的 LoadOrder 100 数据（塞西尔 `TsoDCE_IG_UpdateDatabase` 是 100）；本包的联动是 200。`Database.log` 没有这两个 trait 的外键报错。LoadOrder 跨 mod 是否按数值全局排序，这是推断，未实证 | 外键报错：把两个联动 action 的 LoadOrder 再调大（如 300），或让本包的 `TraitModifiers` 行改挂在本包自己的 trait 上（不再引用对方 trait，失去宗主国与对方领袖的挂载点，需要重新设计） |
 
 ### 11.2 塞西尔联动：外交态度
 
@@ -372,26 +372,18 @@ x、y 换成目标格子；单位类型按需要换。
 | A3 | 说明文本显示正确 | 态度条目的文字是「罗塞塔·奥古斯都视高文·塞西尔为宿敌，宿敌亦是同类」（高文那条对称）；不显示 `LOC_` 原文 | 显示 `LOC_`：检查 `TsoDTE_Text_Compat.sql` 是否登记在 `.civ6proj` 的 `UpdateText`（独立 action `TsoDTE_IG_UpdateText_Compat`） |
 | A4 | 没有台词 | 罗塞塔遇到高文时的问候仍是原来的（WP8 的通用台词）。这不是 bug：官方外交台词的结构没有对方领袖维度（`DiplomacyStatements` 的占位符只有 `$(LEADER)`、`$(MOOD)`、`$(REASON)`），所以按 impl plan §6.2 不加台词，只做态度说明 | 若将来找到能按对方领袖区分的写法，再补，不在本轮 |
 
-### 11.3 梦境之城联动：宗主国下的法师塔宜居度
-
-| 编号 | 问题 | 测什么 | 退路 |
-|---|---|---|---|
-| D1 | 「每座法师塔 +1 宜居度」是否生效；同一城市的法师塔只能有一座 | 提丰是梦境之城的宗主国时，有法师塔的城市宜居度比没有时多 1（城市的宜居度产出明细里应有「提丰为梦境之城的宗主国时，每座法师塔 +1 宜居度」一行）。游戏规则假设同一城市同类区域只能建一座，需在游戏里确认（建第二座会失败，或者根本不能建） | 如果同类区域能建多座：`Amount` 会按座数叠加，但语义仍是「每座法师塔」，文本要改成「每座法师塔」而不是「有法师塔的城市」（现在就是这个写法）。效果不生效：FireTuner 查 `TSOD_TYPHON_DREAM_MAGE_TOWER_AMENITY` 是否 Active，`# Subjects` 是否为 0 |
-| D2 | 宗主国条件与提丰条件在联动下是否生效 | 三种情况对照：(a) 提丰是梦境之城的宗主国，有法师塔，宜居度 +1；(b) 提丰不是宗主国，宜居度不变；(c) 别的文明是宗主国，提丰的城市宜居度不变。FireTuner 里 `TSOD_TYPHON_DREAM_SUZERAIN_AMENITY` 是挂在梦境之城特性上的，宗主国变了，`TSOD_TYPHON_DREAM_ROSETTA_MAGE_CITIES` 应只挂在当前宗主国玩家身上 | (b)(c) 也加了：`OwnerRequirementSetId` 没生效，检查 `REQSET_TSOD_TYPHON_DREAM_OWNER_IS_ROSETTA`；(a) 不加：检查 `TraitModifiers` 是否挂在 `MINOR_CIV_TSOD_DREAM_CITY_TRAIT` 上，以及 `PLAYER_IS_SUZERAIN` 是否满足（这是梦境之城自己用的同一个需求组） |
-| D3 | 宜居度是否与梦境之城自己的宗主国宜居度叠加 | 梦境之城自己的 `MINOR_CIV_TSOD_DREAM_CITY_SUZERAIN_AMENITY`（每区域 +1）与本包的修正同时生效，两者都计入。城市的宜居度产出明细里两条都有 | 只有一条：检查两个外层是否都挂在同一个 trait 上（`TraitModifiers` 的两行互不覆盖）；不叠加是 Civ6 的限制，则在回报里说明 |
-
 ### 11.4 静态与登记
 
 | 编号 | 问题 | 测什么 | 退路 |
 |---|---|---|---|
-| S1 | 两个联动文件 SQL 的外键与唯一约束 | `Database.log` 没有 `TraitModifiers`、`Modifiers`、`RequirementSets`、`RequirementArguments` 的 `FOREIGN KEY` 或 `UNIQUE constraint failed` 报错（塞西尔与梦境之城都装上时测） | 外键报错：通常是引用的 trait 或 leader 在对方 mod 里 ID 不同，核对塞西尔 `TsoDCE_Leaders.sql` 与梦境之城 `DreamCity_Civilizations.sql` 的 ID |
-| S2 | 没做的（本轮不测） | 外交惩罚（核武相关，用户定：以可莉 mod 为准，不加）；罗塞塔遇到高文的专属问候（见 A4）；梦境之城的其他宗主国效果（已由梦境之城自己做） | — |
+| S1 | 联动文件 SQL 的外键与唯一约束 | `Database.log` 没有 `TraitModifiers`、`Modifiers`、`RequirementSets`、`RequirementArguments` 的 `FOREIGN KEY` 或 `UNIQUE constraint failed` 报错（装上塞西尔时测） | 外键报错：通常是引用的 trait 或 leader 在对方 mod 里 ID 不同，核对塞西尔 `TsoDCE_Leaders.sql` 与梦境之城 `DreamCity_Civilizations.sql` 的 ID |
+| S2 | 没做的（本轮不测） | 外交惩罚（核武相关，用户定：以可莉 mod 为准，不加）；罗塞塔遇到高文的专属问候（见 A4）；梦境之城的宜居度（阶段 2 实机反馈第 5 项，已删除） | — |
 
 ## 12. 阶段 2 测试流程（作弊菜单快速流程）
 
 写法同 §2。按顺序做，每一步写出看到的结果；通过的打勾，不通过的把 Lua.log、Database.log 的对应行和截图交给统筹者。**全部未进游戏验证**，每条的退路见 §8–§11。
 
-前提：`EnableTuner 1` 已开；`Mods\TSODTyphonEmpire\` 是最新部署（构建后的版本）；开局用提丰、风云变幻规则集。需要高文或梦境之城的联动测试，另开一局，两个 mod 与提丰同时启用。
+前提：`EnableTuner 1` 已开；`Mods\TSODTyphonEmpire\` 是最新部署（构建后的版本）；开局用提丰、风云变幻规则集。需要高文的联动测试，另开一局，塞西尔与提丰同时启用。
 
 ### 12.1 战斗法师编队：军团回血，军队湮灭之创（WP13）
 
@@ -421,7 +413,7 @@ x、y 换成目标格子；单位类型按需要换。
    - 看到：外交支持 +25（外交界面的支持度）；信仰值减半（向下取整）；研究进度增加；收到通知。
    - Lua.log 应有转换记录。
    - 需实证 P1：完成事件能否到达 Gameplay；如果没有任何反应，退路见 §9。
-4. 只有提丰能看到这个项目：用高文或梦境之城的玩家开局，不应看到。
+4. 只有提丰能看到这个项目：用高文或其他文明的玩家开局，不应看到。
 
 ### 12.3 神权理事会决议（WP17）
 
@@ -432,10 +424,9 @@ x、y 换成目标格子；单位类型按需要换。
 
 ### 12.4 系列联动（WP18）
 
-1. 只装提丰（关掉塞西尔和梦境之城）：两个联动文件都不加载，外交界面没有额外态度条目，没有宜居度加成。
-2. 同开塞西尔：高文与罗塞塔之间有一条态度修正（说明文本可见）。需实证 L1、A1，退路见 §11。
-3. 同开梦境之城：有法师塔的城市宜居度 +1（每座法师塔区域一次）。需实证 D1、D2、D3，退路见 §11。
-4. 注意：外交台词不按对方领袖区分（设计如此，见 S2）。
+1. 只装提丰（关掉塞西尔）：联动文件不加载，外交界面没有额外态度条目。
+2. 同开塞西尔：高文与罗塞塔之间各有一条态度修正（说明文本可见）。需实证 L1、A1，退路见 §11。
+3. 注意：外交台词不按对方领袖区分（设计如此，见 S2）。
 
 ### 12.5 收尾
 
