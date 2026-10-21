@@ -9,6 +9,12 @@
 --     武器库存 = 场上军队的数量。组成时发 READY 通知。
 --   军团与军队都每回合回血。
 --
+-- 【按编队计，不按单位计】
+--   一个编队里的每个战斗法师都是引擎里的单位对象，编队成员之间靠编队 ID 相连（N6）。
+--   本模块按编队 ID 分组，每组选一个主体（ID 与编队 ID 相同者，否则 ID 最小者）：
+--     - 库存、湮灭之创、战场再生只算在主体上，成员不计数、不持有能力、不回血；
+--     - 每个编队每回合只回一次血（主体回 REGEN_HEAL 点）。
+--
 -- 【湮灭之创】
 -- 施放的是武器 WMD_TSOD_ANNIHILATION_SCAR（UNITOPERATION_WMD_STRIKE）。
 -- 施放的那支军队随之阵亡，库存 −1。
@@ -21,7 +27,7 @@
 -- 军团被打死、被俘之类的边角情况都由回合开始的对账兜底，不逐个处理。
 --
 -- 【回血】
--- 军团与军队每回合开始回复 REGEN_HEAL 点生命（需 ABILITY_TSOD_ARMY_REGENERATION）。
+-- 每个编队每回合开始，主体回复 REGEN_HEAL 点生命（需 ABILITY_TSOD_ARMY_REGENERATION）。
 --
 -- 【通知】
 -- 只发给人类玩家。AI 的阵亡与回血都不发通知。
@@ -33,6 +39,7 @@
 --   strike: ...          施放开始时的单位、武器、编队状态（Started）
 --   strike: victim ...   阵亡前后是否还在单位列表里（Kill 前后）
 --   strike end: ...      施放结束时施放者是否还在（Deactivated）
+--   formation mismatch   编队 ID 分组的人数与引擎的编队人数不符（N6）
 --   Battle mage reconcile: 库存变化（只在变化时打印）
 --
 -- 【需实证】每条的退路见代码对应位置的注释
@@ -42,8 +49,8 @@
 --   N4  PlayerWMDs:ChangeWeaponCount 是否接受负数。
 --   N5  UnitFormCorps / UnitFormArmy 在 Gameplay 环境是否派发（UI 环境已确认在用）。
 --       不派发时，回合开始的对账仍会补上能力，只是缺组成通知。
---   N6  一支军团或军队只对应一个单位对象（库存计数的依据）。
---       未确认：目前按单位计数，见修复提交的去重说明。
+--   N6  同一编队的成员是否报告相同的 GetFormationID。分组依据，见上文「按编队计」。
+--       不同时日志会出现 formation mismatch 行。
 --   N7  AI 会不会滥用（WMDCapable=1 之后 AI 可能选这个武器）。
 --   N8  军队回血与原版静止回血是否叠加。
 --   N9  Game.AddWorldViewText 的第一个参数：这里传施放者 / 阵亡者的玩家 ID。
@@ -79,7 +86,7 @@ local NotifyHash = {}          -- [通知类型名] = 哈希
 
 -- -----------------------------------------------------------------------------
 -- 基础查询
--- -----------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 local function FindUnit(iPlayer, iUnit)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
@@ -147,37 +154,129 @@ local function NotifyHuman(iPlayer, sNotif, sMsg, sSum, iX, iY)
 end
 
 -- -----------------------------------------------------------------------------
--- 对账
+-- 编队分组（按编队计，见文件头）
 -- -----------------------------------------------------------------------------
--- 按场上状态重算库存与能力。
---   库存目标 = 军队数（R1）。军团不计入库存。
---   能力：军队有湮灭之创与战场再生；军团只有战场再生；普通状态的都收回。
-local function ReconcilePlayer(iPlayer)
+-- 编队键：同一编队的成员报告相同的 GetFormationID（N6，需实证）。
+-- 读不到或为负数时，该单位自成一组（退化为按单位计数，日志里会有 formation mismatch）。
+local function FormationKey(pUnit)
+    local bOk, iId = pcall(function() return pUnit:GetFormationID() end)
+    if bOk and type(iId) == 'number' and iId >= 0 then
+        return 'f' .. tostring(iId)
+    end
+    return 'u' .. tostring(pUnit:GetID())
+end
+
+-- 主体：ID 与编队 ID 相同者（若存在），否则 ID 最小者。确定性，各端一致。
+local function ChooseLead(sKey, aMembers)
+    local iFormationId = tonumber(string.match(sKey, '^f(%d+)$'))
+    local pLead, pMin = nil, nil
+    for _, pUnit in ipairs(aMembers) do
+        local iId = pUnit:GetID()
+        if iFormationId ~= nil and iId == iFormationId then
+            pLead = pUnit
+        end
+        if pMin == nil or iId < pMin:GetID() then
+            pMin = pUnit
+        end
+    end
+    return pLead or pMin
+end
+
+-- 收集本玩家的战斗法师，分成编队与普通状态两类。
+-- 返回：
+--   tGroups[key] = { state = 'army'|'corps', lead = 主体单位, members = { 单位… } }
+--   aKeys        = 编队键的列表（顺序不影响结果）
+--   aStandard    = 普通状态的战斗法师单位列表
+local function CollectFormations(iPlayer)
+    local tGroups = {}
+    local aKeys = {}
+    local aStandard = {}
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
-        return
+        return tGroups, aKeys, aStandard
     end
 
-    local iArmy = 0
     for _, pUnit in pPlayer:GetUnits():Members() do
         if IsBattleMage(pUnit) then
             local sState = FormationState(pUnit)
-            local pAbility = pUnit:GetAbility()
-            if sState == 'army' then
-                iArmy = iArmy + 1
+            if sState == 'standard' then
+                table.insert(aStandard, pUnit)
+            else
+                local sKey = FormationKey(pUnit)
+                local tGroup = tGroups[sKey]
+                if tGroup == nil then
+                    tGroup = { state = sState, members = {} }
+                    tGroups[sKey] = tGroup
+                    table.insert(aKeys, sKey)
+                end
+                if sState == 'army' then
+                    tGroup.state = 'army'
+                end
+                table.insert(tGroup.members, pUnit)
             end
-            SetAbilityPresence(pAbility, ABILITY_SCAR, sState == 'army')
-            SetAbilityPresence(pAbility, ABILITY_REGEN, sState ~= 'standard')
         end
     end
 
-    local pWMDs = pPlayer:GetWMDs()
-    local iHave = pWMDs:GetWeaponCount(WeaponIndex)
-    if iHave ~= iArmy then
-        -- 设成目标值，用差额调库存（N3、N4）。不是「扣一」，所以引擎是否也扣过都不影响结果。
-        pWMDs:ChangeWeaponCount(WeaponIndex, iArmy - iHave)
-        print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iArmy)
+    for _, sKey in ipairs(aKeys) do
+        local tGroup = tGroups[sKey]
+        tGroup.lead = ChooseLead(sKey, tGroup.members)
+        -- 人数核对（N6）：分组人数与引擎报告的编队人数不符时记一行，供实测对照
+        local bOk, iCount = pcall(function() return tGroup.lead:GetFormationUnitCount() end)
+        if bOk and type(iCount) == 'number' and iCount ~= #tGroup.members then
+            print('[TsoDTE] formation mismatch (N6): key ' .. sKey .. ' members ' .. #tGroup.members
+                .. ' GetFormationUnitCount ' .. tostring(iCount))
+        end
     end
+    return tGroups, aKeys, aStandard
+end
+
+-- -----------------------------------------------------------------------------
+-- 对账
+-- -----------------------------------------------------------------------------
+-- 按场上状态重算库存与能力。
+--   库存目标 = 军队数（每个军队算一次，不按人数）。军团不计入库存。
+--   能力只给主体：军队主体有湮灭之创与战场再生；军团主体只有战场再生。
+--   成员（被并入的单位）与普通状态的单位两种能力都收回。
+-- 返回 tGroups, aKeys，供回血使用。
+local function ReconcilePlayer(iPlayer)
+    local tGroups, aKeys, aStandard = CollectFormations(iPlayer)
+
+    for _, pUnit in ipairs(aStandard) do
+        local pAbility = pUnit:GetAbility()
+        SetAbilityPresence(pAbility, ABILITY_SCAR, false)
+        SetAbilityPresence(pAbility, ABILITY_REGEN, false)
+    end
+
+    local iArmy = 0
+    for _, sKey in ipairs(aKeys) do
+        local tGroup = tGroups[sKey]
+        local iLeadID = tGroup.lead:GetID()
+        for _, pUnit in ipairs(tGroup.members) do
+            local pAbility = pUnit:GetAbility()
+            if pUnit:GetID() == iLeadID then
+                SetAbilityPresence(pAbility, ABILITY_SCAR, tGroup.state == 'army')
+                SetAbilityPresence(pAbility, ABILITY_REGEN, true)
+            else
+                SetAbilityPresence(pAbility, ABILITY_SCAR, false)
+                SetAbilityPresence(pAbility, ABILITY_REGEN, false)
+            end
+        end
+        if tGroup.state == 'army' then
+            iArmy = iArmy + 1
+        end
+    end
+
+    local pPlayer = Players[iPlayer]
+    if pPlayer ~= nil then
+        local pWMDs = pPlayer:GetWMDs()
+        local iHave = pWMDs:GetWeaponCount(WeaponIndex)
+        if iHave ~= iArmy then
+            -- 设成目标值，用差额调库存（N3、N4）。不是「扣一」，所以引擎是否也扣过都不影响结果。
+            pWMDs:ChangeWeaponCount(WeaponIndex, iArmy - iHave)
+            print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iArmy)
+        end
+    end
+    return tGroups, aKeys
 end
 
 -- -----------------------------------------------------------------------------
@@ -313,21 +412,17 @@ local function OnUnitOperationDeactivated(iOwner, iUnit, iOperation, iData1)
 end
 
 -- -----------------------------------------------------------------------------
--- 回血（军团与军队都回）
+-- 回血（每个编队每回合只回一次，回主体）
 -- -----------------------------------------------------------------------------
-local function HealFormations(iPlayer)
-    local pPlayer = Players[iPlayer]
-    if pPlayer == nil then
-        return
-    end
-    for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) ~= 'standard'
-            and pUnit:GetAbility():GetAbilityCount(ABILITY_REGEN) > 0 then
-            local iDamage = pUnit:GetDamage()
+local function HealFormations(iPlayer, tGroups, aKeys)
+    for _, sKey in ipairs(aKeys) do
+        local pLead = tGroups[sKey].lead
+        if pLead:GetAbility():GetAbilityCount(ABILITY_REGEN) > 0 then
+            local iDamage = pLead:GetDamage()
             if iDamage > 0 then
                 local iNew = math.max(0, iDamage - REGEN_HEAL)
-                pUnit:SetDamage(iNew)
-                print('[TsoDTE] Army regen: player ' .. iPlayer .. ' unit ' .. pUnit:GetID()
+                pLead:SetDamage(iNew)
+                print('[TsoDTE] Army regen: player ' .. iPlayer .. ' unit ' .. pLead:GetID()
                     .. ' damage ' .. iDamage .. ' -> ' .. iNew)
             end
         end
@@ -336,10 +431,10 @@ end
 
 -- -----------------------------------------------------------------------------
 -- 回合开始：对账 + 回血
--- -----------------------------------------------------------------------------
+-- -----------------------------------------------------------------------
 local function OnTsoDTEBattleMageTurnActivated(iPlayer, bIsFirstTime)
-    ReconcilePlayer(iPlayer)
-    HealFormations(iPlayer)
+    local tGroups, aKeys = ReconcilePlayer(iPlayer)
+    HealFormations(iPlayer, tGroups, aKeys)
 end
 
 -- -----------------------------------------------------------------------------
