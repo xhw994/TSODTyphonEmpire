@@ -47,7 +47,7 @@
 -- 【需实证】每条的退路见代码对应位置的注释
 --   N1  UnitOperationStarted 里 UnitManager.Kill 施放单位，引擎是否还会结算爆炸。
 --       Kill 无效时，Deactivated 补杀（见 OnUnitOperationDeactivated）。
---   N2  pUnit:GetOperationParameter 能否读到 PARAM_WMD_TYPE / PARAM_X / PARAM_Y。
+--   N2  pUnit:GetOperationParameter 能否读到 PARAM_WMD_TYPE（读不到时的后备规则见 Started）。
 --   N3  引擎施放时是否自己扣库存。对账同时挂在 Started 与 Deactivated，两种情况下结果都正确。
 --   N4  PlayerWMDs:ChangeWeaponCount 是否接受负数。
 --   N5  UnitFormCorps / UnitFormArmy 在 Gameplay 环境是否派发（UI 环境已确认在用）。
@@ -320,26 +320,6 @@ end
 -- -----------------------------------------------------------------------------
 -- 湮灭之创的施放
 -- -----------------------------------------------------------------------------
--- 离目标最近的一支战斗法师军队（F6，待删）。距离相同时取单位 ID 小的，保证各端一致。
-local function FindNearestScarUnit(iPlayer, iX, iY)
-    local pPlayer = Players[iPlayer]
-    if pPlayer == nil then
-        return nil
-    end
-    local pBest = nil
-    local iBestDist = nil
-    for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) == 'army' then
-            local iDist = Map.GetPlotDistance(pUnit:GetX(), pUnit:GetY(), iX, iY)
-            if pBest == nil or iDist < iBestDist or (iDist == iBestDist and pUnit:GetID() < pBest:GetID()) then
-                pBest = pUnit
-                iBestDist = iDist
-            end
-        end
-    end
-    return pBest
-end
-
 -- UnitOperationStarted(ownerID, unitID, operationID)
 -- 需实证 N1：在 Started 里 Kill，引擎是否还会结算爆炸。
 --   Kill 没生效时，Deactivated 会补杀（见下）。
@@ -373,33 +353,17 @@ local function OnUnitOperationStarted(iOwner, iUnit, iOperation)
     if iWeapon ~= WeaponIndex then
         return
     end
-
-    local iTargetX = ReadOperationParam(pStriker, UnitOperationTypes.PARAM_X)
-    local iTargetY = ReadOperationParam(pStriker, UnitOperationTypes.PARAM_Y)
-    if iTargetX == nil or iTargetY == nil then
-        iTargetX, iTargetY = pStriker:GetX(), pStriker:GetY()
-        print('[TsoDTE] Battle mage: target unreadable (N2), using striker position')
+    -- 只有军队状态的战斗法师施放才处理。其他施放者（轰炸机、军团等）不处理，库存只由对账维护。
+    if not bArmyBattleMage then
+        return
     end
 
     -- 阵亡名单：施放的军队整支（施放者所在编队的全部成员）。
-    -- F6（待删）：施放者不是军队状态的战斗法师时，由离目标最近的一支军队代为阵亡。
-    local aVictims = nil
-    if bArmyBattleMage then
-        local tGroups = CollectFormations(iOwner)
-        local tGroup = tGroups[FormationKey(pStriker)]
-        if tGroup ~= nil then
-            aVictims = tGroup.members
-        else
-            aVictims = { pStriker }
-        end
-    else
-        local pNearest = FindNearestScarUnit(iOwner, iTargetX, iTargetY)
-        if pNearest == nil then
-            print('[TsoDTE] Battle mage: strike by non-army unit, no army to sacrifice (F6), logged only')
-            return
-        end
-        print('[TsoDTE] Battle mage: strike by non-army unit, unit ' .. pNearest:GetID() .. ' sacrificed instead (F6)')
-        aVictims = { pNearest }
+    local aVictims = { pStriker }
+    local tGroups = CollectFormations(iOwner)
+    local tGroup = tGroups[FormationKey(pStriker)]
+    if tGroup ~= nil then
+        aVictims = tGroup.members
     end
 
     local iX, iY = aVictims[1]:GetX(), aVictims[1]:GetY()

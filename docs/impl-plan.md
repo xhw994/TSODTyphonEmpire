@@ -368,7 +368,7 @@ master plan §4 的三条：
   - 用户装的另外两个替换 UnitPanel 的 mod：可莉（工坊 2882489805，`UnitPanel_Klee.lua` 自己 include 基础版，只重定义 `IsActionLimited`）；BuilderLagFix（工坊 2024939221，LoadOrder 160520，它的 `UnitPanel_XP2.lua` 只 include `UnitPanel_Expansion2` 和 `BuilderLagFix`，后者在 ImportFiles 里，并整体重写了 `GetUnitActionsTable`）。
   - 接力顺序（避免基础版被 include 两次）：a. `include("UnitPanel_Klee")`；b. 若之后 `Initialize` 仍未定义，按可莉的循环依次 include `UnitPanel_Expansion2`、`UnitPanel_Expansion1`、`UnitPanel`；c. `include("BuilderLagFix")`；d. 最后包我们这一层。文件不存在时 include 不报错。文件头照梦境之城写明这些。
   - **限度**写进注释，也要告诉用户：同一个面板脚本只能有一个替换生效，做不到对所有 mod 兼容。以后若有不认识的 mod 替换单位面板且比我们后加载，损失的只是这层过滤（三个按钮重新出现），游戏逻辑不受影响。
-- **别的单位发射湮灭之创（F6，默认做法，用户可改）**：弹药是玩家级库存，轰炸机、核潜艇也能发射；按对账「多退少补」会下回合补回，等于无限弹；UI 过滤也拦不住 AI。处理：在 `UnitOperationStarted` 里，若发射者不是军团 / 军队状态的战斗法师，就让离目标最近的一支战斗法师军团（或军队）代为阵亡，保持「弹数 = 军团数」；找不到可阵亡的军团时只记日志。
+- **别的单位发射湮灭之创：F6 已删**（2026-10-21，用户定）。非军队状态的施放者发射任何武器都不处理；库存只由对账维护，不会有别的单位去消耗湮灭之创。
 - **作弊菜单组军团不专门处理**（F4 撤销，用户原话：「这个我用正常途径就行，没必要改实现效果」）。§6.1 的对账照原计划做（回合开始 + 编队变化）；测试只走游戏正常合并。
 - **外交惩罚的去留**仍待用户定（F5）。
 
