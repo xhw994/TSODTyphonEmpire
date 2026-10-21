@@ -17,6 +17,16 @@
 --
 -- 【黄昏宫殿】
 -- 每进入一个新时代：1 个随机尤里卡 + 1 个随机鼓舞；新时代是黑暗时代时各 2 个。
+-- 【黑暗时代的 2+2 在 Gameplay 环境未生效】（已证，不是待验证项）
+--   证据：① 实机 Lua.log 每次都是 `[dark age check: HasDarkAge is not available in Gameplay]`，
+--             即 Game.GetEras().HasDarkAge 在 Gameplay 为 nil；
+--         ② GameEras:HasDarkAge、GetPlayerCurrentScore 等在 kb 与官方脚本里都只在 UI 环境使用；
+--         ③ I1 实机：SQL 时代修正（首尔式 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA）两个时代都没给。
+--   现状：PlayerHasDarkAge 判不出时按非黑暗给 1+1，Lua.log 写明原因。
+--   没有找到已证实的 Gameplay 判定（GameEffects.GetModifierActive 在 kb 里标了 script=true，但官方 Gameplay
+--   脚本里没有用例，不算已证），所以不另行猜测。
+--   游戏内领袖能力描述与百科里的「黑暗时代改为各 2 个」仍保留（Texts/TsoDTE_Text_LeaderTrait.sql、
+--   Texts/TsoDTE_Text_Pedia.sql），是否改掉由用户决定。
 -- 原先用 SQL 的 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA（首尔）与市政版（维尔纽斯），
 -- I1 实测过了两个时代都没给，确认在风云变幻里不生效，改到这里。
 --   时机：不挂 GameEraChanged，而是在提丰玩家每回合开始（PlayerTurnActivated）时比较
@@ -362,8 +372,9 @@ end
 
 -- 返回 (是否黑暗时代, 来源说明)。
 -- 注意：官方文档与官方用法里 GameEras:HasDarkAge / HasGoldenAge / HasHeroicGoldenAge 都只在 UI 环境
--- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。本脚本跑在 Gameplay，调不调得通要实测。
--- 所以这里用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
+-- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。实机已证调不通（见文件头）：
+-- Lua.log 写的是 `HasDarkAge is not available in Gameplay`，所以黑暗时代的 2+2 未生效。
+-- 这里仍用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
 -- 不让它悄悄失败：Lua.log 里会写明原因。英雄时代 / 黄金时代一律按「非黑暗」。
 local function PlayerHasDarkAge(iPlayer)
     local pEras = Game.GetEras()

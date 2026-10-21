@@ -47,6 +47,7 @@
 | 能力：战场再生 | `ABILITY_TSOD_ARMY_REGENERATION` | WP13 |
 | 大规模杀伤性武器 | `WMD_TSOD_ANNIHILATION_SCAR` | WP13 |
 | 通知 | `NOTIFICATION_TSOD_ANNIHILATION_READY`、`NOTIFICATION_TSOD_ANNIHILATION_SACRIFICE`、`NOTIFICATION_TSOD_ARMY_REGENERATION` | WP13 |
+| 通知（黄昏宫殿、何不用之授予尤里卡 / 鼓舞） | `NOTIFICATION_TSOD_TWILIGHT_BOOST`、`NOTIFICATION_TSOD_KILL_BOOST` | 阶段 2 实机反馈第 6 项 |
 | 议程 | `AGENDA_TSOD_KINDRED`，特性 `TRAIT_AGENDA_TSOD_KINDRED` | WP7 |
 | 宗教 | `RELIGION_TSOD_WAR_GOD`，颜色 `COLOR_RELIGION_TSOD_WAR_GOD` | WP14 |
 | 城市项目 | `PROJECT_TSOD_DESANCTIFICATION` | WP16 |
@@ -70,6 +71,7 @@
 | `LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_LeaderTrait.sql` | WP3（WP1 的 Traits 行只引用） |
 | `LOC_UNIT_TSOD_BATTLE_MAGE_NAME` / `_DESCRIPTION`，及其能力的 tag | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
 | `LOC_WMD_TSOD_ANNIHILATION_SCAR_NAME`，`LOC_ABILITY_TSOD_ANNIHILATION_SCAR_*`，`LOC_ABILITY_TSOD_ARMY_REGENERATION_*`，`LOC_NOTIFICATION_TSOD_ANNIHILATION_*`、`LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_*`，`LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED`（地图浮字） | `Texts/TsoDTE_Text_WMD.sql` | WP13 |
+| `LOC_NOTIFICATION_TSOD_TWILIGHT_BOOST_MESSAGE` / `_SUMMARY`，`LOC_NOTIFICATION_TSOD_KILL_BOOST_MESSAGE` / `_SUMMARY`，`LOC_NOTIFICATION_TSOD_BOOST_EUREKA` / `_INSPIRATION` / `_SEPARATOR`（拼接用） | `Texts/TsoDTE_Text_Boost.sql` | 阶段 2 实机反馈第 6 项 |
 | `LOC_DISTRICT_TSOD_MAGE_TOWER_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
 | `LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_AGENDA_TSOD_KINDRED_NAME` / `_DESCRIPTION`，及议程态度说明 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 |
@@ -107,6 +109,8 @@
 | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_WMD.sql` | WP13 | IG UpdateDatabase（紧跟 Unit_BattleMage；武器、能力、通知类型） |
 | `Texts/TsoDTE_Text_WMD.sql` | WP13 | IG UpdateText（不进 FE） |
+| `Core/TsoDTE_Boost.sql` | 实机反馈第 6 项 | IG UpdateDatabase（紧跟 TsoDTE_WMD.sql；黄昏宫殿与何不用之的通知类型） |
+| `Texts/TsoDTE_Text_Boost.sql` | 实机反馈第 6 项 | IG UpdateText（不进 FE：通知只在局内出现） |
 | `Scripts/TsoDTE_BattleMage.lua` | WP13 | IG AddGameplayScripts（组军团 / 军队、湮灭之创、对账、军队回血、通知） |
 | `UI/UnitPanel_TsoDTE.lua` | WP13 | IG ReplaceUIScript（LuaContext `UnitPanel`）+ 同 LoadOrder 200000 的 ImportFiles |
 | `Core/TsoDTE_District_MageTower.sql` | WP5 | IG UpdateDatabase |
@@ -132,7 +136,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 同一个动作里按下列顺序登记，被引用的类型先建：
 
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
-3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → `TsoDTE_Project.sql`（WP16，引用法师塔区域，须在它之后）→ `TsoDTE_Congress.sql`（WP17，排在 Project 之后；它引用第 2 步的领袖特性，官方决议与修正早已存在） → 5. `TsoDTE_Building_Burnstone.sql`
+3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → `TsoDTE_Boost.sql`（实机反馈第 6 项，通知类型，紧跟 WMD） → 4. `TsoDTE_District_MageTower.sql` → `TsoDTE_Project.sql`（WP16，引用法师塔区域，须在它之后）→ `TsoDTE_Congress.sql`（WP17，排在 Project 之后；它引用第 2 步的领袖特性，官方决议与修正早已存在） → 5. `TsoDTE_Building_Burnstone.sql`
 6. `TsoDTE_CivTrait.sql`
 7. `TsoDTE_Agenda_AI.sql` → 8. `TsoDTE_Pedia.sql`
 
@@ -193,6 +197,7 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | 冬狼堡 | Winterwolf Keep |
 | 奥兰戴尔 / 奥兰戴尔之喉 | Orandel / Throat of Orandel |
 | 黄昏宫殿 | Twilight Palace |
+| 何不用之 | Why Not Use It |
 | 黑曜石宫 / 黑铁王座 | Obsidian Palace / Black Iron Throne |
 | 战斗法师 | Battle Mage |
 | 法师塔 | Mage Tower |
