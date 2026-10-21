@@ -16,6 +16,8 @@
 | 塞西尔 mod id | `4883e185-c2d7-4031-aae3-b67e4e885a24` | WP18 的 `ModInUse` 用 |
 | 梦境之城 mod id | `3b138c5a-bb00-42ce-9ae2-2186fbd5595b` | WP18 的 `ModInUse` 用 |
 | criteria | `TsoDTE_Expansion2` = `RuleSetInUse RULESET_EXPANSION_2` | |
+| criteria | `TsoDTE_ModCecil` = `ModInUse 4883e185-c2d7-4031-aae3-b67e4e885a24` + `RuleSetInUse RULESET_EXPANSION_2` | WP18 塞西尔联动。同一个 Criteria 里两条都要满足：联动引用的领袖特性与法师塔只在本 mod 的风云变幻数据里存在，原版规则集下不能加载 |
+| criteria | `TsoDTE_ModDreamCity` = `ModInUse 3b138c5a-bb00-42ce-9ae2-2186fbd5595b` + `RuleSetInUse RULESET_EXPANSION_2` | WP18 梦境之城联动，理由同上 |
 
 ## 2. 前缀约定
 
@@ -80,6 +82,7 @@
 | `LOC_PROJECT_TSOD_DESANCTIFICATION_NAME` / `_SHORT_NAME` / `_DESCRIPTION`，`LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE` / `_SUMMARY` | `Texts/TsoDTE_Text_Project.sql` | WP16 |
 | `LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME`，`LOC_WORLD_CONGRESS_TSOD_DESANCTIFY_RELIGION_DESC`（选项 1）、`LOC_WORLD_CONGRESS_TSOD_SECULAR_OVERSIGHT_DESC`（选项 2） | `Texts/TsoDTE_Text_Congress.sql` | WP17 |
 | 全部 `LOC_PEDIA_*`（文明、领袖、单位、区域、建筑、人物、地点） | `Texts/TsoDTE_Text_Pedia.sql` | WP8 |
+| `LOC_DIPLO_MODIFIER_TSOD_CECIL_ROSETTA_TO_GAWAIN`、`LOC_DIPLO_MODIFIER_TSOD_CECIL_GAWAIN_TO_ROSETTA`（塞西尔联动的态度说明），`LOC_MODIFIER_TSOD_DREAM_MAGE_TOWER_AMENITY_PREVIEW`（梦境之城联动的宜居度说明） | `Texts/TsoDTE_Text_Compat.sql` | WP18 |
 | 全部 `LOC_DIPLO_*_LEADER_TSOD_ROSETTA_AUGUSTUS_*` / `LOC_DIPLO_*_TSOD_ROSETTA_AUGUSTUS_*` 外交台词 | 同上 | WP8 |
 | `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、`LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE`（领袖引言） | 同上 | WP8（WP1 的 `LoadingInfo`、`LeaderQuotes` 行只引用） |
 
@@ -121,6 +124,9 @@
 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 | IG UpdateText |
 | `Texts/TsoDTE_Text_Pedia.sql` | WP8 | IG UpdateText |
 | `Core/TsoDTE_Pedia.sql` | WP8 | IG UpdateDatabase（百科自定义分组与页面） |
+| `Core/TsoDTE_Compat_Cecil.sql` | WP18 | IG UpdateDatabase（独立 action，criteria `TsoDTE_ModCecil`，LoadOrder 200；罗塞塔与高文的态度修正） |
+| `Core/TsoDTE_Compat_DreamCity.sql` | WP18 | IG UpdateDatabase（独立 action，criteria `TsoDTE_ModDreamCity`，LoadOrder 200；梦境之城宗主国下的法师塔宜居度） |
+| `Texts/TsoDTE_Text_Compat.sql` | WP18 | IG UpdateText（独立 action，无 criteria，LoadOrder 200；不进 FE） |
 
 FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界面（WP1 的 `Config`）要显示它们的名字和说明。
 
@@ -135,6 +141,8 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 
 （原第 7 个 `TsoDTE_LeaderTrait.sql` 已删：它的「新时代给尤里卡 / 鼓舞」在风云变幻里不生效，I1 实测后整体改走 `Scripts/TsoDTE_LeaderTrait.lua`。）
 
+WP18 的两个联动数据文件**不在上面的主动作里**：各自是独立 action（criteria 与主动作不同），LoadOrder 200，排在主动作之后；它们引用的领袖特性与法师塔都由主动作建立。
+
 ### 5.3 LoadOrder
 
 | 动作 | LoadOrder |
@@ -142,6 +150,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 | 所有普通 InGame / FrontEnd 动作 | 100 |
 | 阶段 2：战神教（WP14） | 110 |
 | 阶段 2：系列联动（WP18） | 200 |
+| 阶段 2：系列联动文本（WP18，`Texts/TsoDTE_Text_Compat.sql`，无 criteria 的独立 action） | 200 |
 | 阶段 2：UI 替换 + 同 LoadOrder 的 ImportFiles（WP13） | 200000（高于 BuilderLagFix 的 160520，见 impl plan WP13 修订） |
 
 ### 5.4 美术动作（阶段 1 只有法师塔）
@@ -171,6 +180,7 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | `Agendas`、`HistoricalAgendas`、议程特性、`AiListTypes` / `AiLists` / `AiFavoredItems` | `TsoDTE_Agenda_AI.sql` | WP7 |
 | 神权理事会的 `Types`、`Resolutions`、`ResolutionEffects` 行，本决议专用的 `Modifiers` / `ModifierArguments`（`TSOD_TYPHON_COUNCIL_RELIGIOUS_STRENGTH_DOWN`），以及 AI 偏好 `AiListTypes` / `AiLists` / `AiFavoredItems` 的 `TSOD_TYPHON_ROSETTA_RESOLUTIONS` 三行 | `TsoDTE_Congress.sql` | WP17（AI 三表原属 WP7 的文件，这里只新增一个 ListType，不与 WP7 的行重复；统筹者确认） |
 | 开局界面每个特色项一行（`Players` / `PlayerItems` 等配置表） | `TsoDTE_Config.sql` | WP1（只引用别包的 ID 与 LOC tag） |
+| 挂在塞西尔领袖特性 `TRAIT_LEADER_TSOD_GAWAIN_CECIL` 与本包领袖特性 `TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS` 上的态度修正 `TraitModifiers` 行；挂在梦境之城城邦特性 `MINOR_CIV_TSOD_DREAM_CITY_TRAIT` 上的宗主国宜居度外层行 | `TsoDTE_Compat_Cecil.sql`、`TsoDTE_Compat_DreamCity.sql` | WP18（只在对应 mod 启用时写入；这两个 `TraitModifiers` 行不挂在本包 WP2/WP3 的文件里，避免交叉改动） |
 
 ## 6. 专名英文对照（暂定，WP20 英文校对时可改）
 
