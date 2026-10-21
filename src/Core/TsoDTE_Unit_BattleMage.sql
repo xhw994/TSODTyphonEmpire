@@ -47,9 +47,10 @@ VALUES
 
 -- ---------------------------------------------------------------------------
 -- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech）
---    WMDCapable 阶段 1 临时为 0：设 1 时单位面板会给每种 WMD（官方核弹、热核、
---    其他 mod 的武器）各出一个灰按钮。WP13 做湮灭之创时，连同 UnitPanel 的武器过滤
---    一起改回 1。UnitAiInfos 里的 UNITTYPE_NUCLEAR 保持不动。
+--    WMDCapable 自 WP13 起为 1（阶段 1 曾临时设 0）。单位面板会给每种 WMD 各出一个按钮，
+--    由 src/UI/UnitPanel_TsoDTE.lua 过滤：战斗法师只留湮灭之创，且只在军团 / 军队状态下出现。
+--    依赖这层 UI 过滤；若 UI 替换未生效（测试清单 §8），官方核弹等按钮会重新出现。
+--    UnitAiInfos 里的 UNITTYPE_NUCLEAR 保持不动。
 -- ---------------------------------------------------------------------------
 INSERT INTO
     Units (
@@ -93,7 +94,7 @@ VALUES
         'ADVISOR_CONQUEST',
         'YIELD_GOLD',
         'TECH_MACHINERY',
-        0 -- WMDCapable：阶段 1 临时为 0，WP13 连同 UnitPanel 过滤改回 1
+        1 -- WMDCapable：WP13 起为 1，依赖 UnitPanel_TsoDTE.lua 的按钮过滤
     );
 
 INSERT INTO

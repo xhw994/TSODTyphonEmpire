@@ -135,3 +135,74 @@ x、y 换成目标格子；单位类型按需要换。
 修法：在塞西尔 mod 里把这 29 个 tag 的 `_TSOD_GAWAIN_CECIL_` 改成 `_LEADER_TSOD_GAWAIN_CECIL_`（议程理由句 `KUDO_ / WARNING_…_REASON_ANY` 同理），中文（`LocalizedText`）和英文（`BaseGameText`）两段都要改。之前怀疑塞西尔没有英文，复查后是有的，只是写在 `BaseGameText` 表里。
 
 自己验证某句台词在不在：FireTuner 里执行 `print(Locale.Lookup('LOC_DIPLO_GREETING_LEADER_TSOD_GAWAIN_CECIL_ANY'))`，打出来的是 tag 原文就说明没有这句。
+
+## 8. 阶段 2 · WP13 湮灭之创 / 战场再生 / 通知（未实测）
+
+> 这一节是**待测清单**，不是测试结果。下面没有一条在游戏里验证过，改动只完成了静态检查（loc_audit、lua_lint、modifier_lint 通过，没有已知的静态错误）。
+> 默认**没有额外外交惩罚**，只保留游戏原生核武的外交后果（用户定：以可莉 mod 为准）。测试时如果发现外交问题，记下来，不要当成 bug 直接修。
+
+### 8.1 进游戏前要确认的
+
+| 项 | 预期 |
+|---|---|
+| 构建后 `validate_mod.py` 对部署的 `.modinfo` | 0 错误。`InGameActions` 里有 `ReplaceUIScript`（LoadOrder 200000）和同 LoadOrder 的 `ImportFiles` |
+| `Lua.log` | 出现 `[TsoDTE] Battle mage module initialized`；没有 `unit or weapon row missing`、`MilitaryFormationTypes missing` |
+| `Logs/Modding.log` / `Database.log` | 没有 `WMD_TSOD_ANNIHILATION_SCAR`、`NOTIFICATION_TSOD_*`、`ABILITY_TSOD_*` 的外键或未知类型报错 |
+| 没装可莉、没装 BuilderLagFix 的存档 | 单位面板能正常打开，`Lua.log` 没有 `UnitPanel include failed` 的整段报错（个别 `include failed` 行可接受，要记下来） |
+| 装了可莉（工坊 2882489805）的存档 | 可莉的文件在 `UI/Replacements/` 下，`include("UnitPanel_Klee.lua")` 需按文件名找到它（**需实证**）。找不到时会退到 `UnitPanel.lua` 并记 `Initialize` 逻辑；两种情况下，单位面板的武器按钮都应只剩湮灭之创（军团 / 军队）与官方 / 可莉原有按钮 |
+
+### 8.2 湮灭之创
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 民族主义下，两个战斗法师编成军团 | 右侧通知栏出现「战斗法师军团已能施放湮灭之创。」，点击定位到该单位；弹数（作弊菜单 / FireTuner 的 PlayerWMDs）+1 | |
+| 单个未编组的战斗法师 | 单位面板没有「湮灭之创」按钮；弹数 0 | |
+| 军团状态的战斗法师 | 单位面板只出现「湮灭之创」一项，官方核弹、热核、可莉的武器都不出现；能力「湮灭之创」在单位提示里只显示名字和「可施放一次。施放后本单位阵亡。」 | |
+| 施放湮灭之创 | 该军团阵亡；原位置浮出「魔力枯竭」；通知「战斗法师军团施放湮灭之创，全员魔力枯竭阵亡。」；弹数 −1 | |
+| 施放后 | 同回合另一支军团仍能施放，弹数等于剩下的军团数（不会少扣） | |
+| 轰炸机 / 核潜艇 / 别的单位 | 面板里看不到湮灭之创；官方核弹照常显示 | |
+| 战斗法师军团与一个轰炸机都能施放（测 F6） | 轰炸机施放湮灭之创时，离目标最近的战斗法师军团阵亡；找不到就只有日志（`strike by non-corps unit`） | |
+| 战斗法师在普通状态 | 面板里看不到湮灭之创，也看不到官方核弹 | |
+| 只装提丰、未组军团时 `Lua.log` | 没有 `Battle mage reconcile` 行（库存已对） | |
+| 作弊菜单组军团（用户已撤销 F4，只测正常路径） | 正常合并军团后的对账按上面的规则走；不专门测作弊路径 | |
+
+### 8.3 军队回血
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 民族主义下组成军队（需要「动员」） | 通知「战斗法师军队获得了战场再生。」；能力「战场再生」出现在单位提示里，文字「每回合恢复 10 点生命。移动或战斗后同样恢复。」 | |
+| 受伤的军队，回合开始 | `Lua.log` 出现 `Army regen: ... damage A -> B`，生命确实增加（10 点） | |
+| 同一支军队，**下一回合**仍回血 | 再次出现 `Army regen` 行，生命继续增加（这是「下回合仍回血要能验证」） | |
+| 军队移动后 / 战斗后 | 同样回血（第二天也要看一次） | |
+| 解散为普通单位（或军队被消灭之前离开编队） | 回血停止；能力「战场再生」被收回（对账里 `reconcile` 行可见） | |
+| 静止的军队 | 生命增加量是否等于 10（**需实证 N8**：如果比 10 多，说明和原版静止回血叠加） | |
+
+### 8.4 通知
+
+| 通知 | 时机 | 预期 |
+|---|---|---|
+| 「湮灭之创就绪」 | 组成军团 | 进通知栏，不自动弹窗，点掉后消失 |
+| 「湮灭之创已施放」 | 施放后 | 同上，位置在阵亡的原地 |
+| 「战场再生」 | 组成军队 | 每回合结束消失（ExpiresEndOfTurn） |
+| AI 的施放、AI 的回血 | 任何时候 | **不发通知**（人类玩家才有） |
+
+### 8.5 需实证项（每条的退路见 `src/Scripts/TsoDTE_BattleMage.lua` 文件头与对应代码）
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| N1 | 在 `UnitOperationStarted` 里 `UnitManager.Kill` 施放单位，爆炸还会结算吗 | 施放后有没有地图上的爆炸；目标有没有受伤；Lua.log 有没有报错 | 阵亡挪到 `UnitOperationDeactivated` 里做 |
+| N2 | `pUnit:GetOperationParameter` 能否读到武器类型与目标坐标 | Lua.log 有没有 `GetOperationParameter failed` 或 `weapon type unreadable` | 读不到武器类型就整个不处理（只写日志），需要改用别的方式识别武器 |
+| N3 | 引擎施放时是否自己扣库存 | 施放后、回合结束前，弹数是否和军团数一致（不少扣、不多扣） | 对账在 Started 与 Deactivated 都做，两种情况都应正确；若弹数还是错，记下 Lua.log 里的 `stock` 行 |
+| N4 | `ChangeWeaponCount` 接受负数 | 弹数减少是否真的发生（施放后弹数 −1） | 未找到替代的减少方式。若不接受负数，库存只能增加，需要重新设计库存的维护方法 |
+| N5 | `UnitFormCorps` / `UnitFormArmy` 在 Gameplay 环境是否派发 | 组军团时是否有 READY 通知（没有就是这个问题；能力还是会在回合开始补上） | 回合开始的对账已能补能力，缺的只是通知 |
+| N6 | 一支军团或军队只对应一个单位对象 | 两个战斗法师组成军团后，弹数是 1 不是 2 | 按单位对象计数会出错；需要改为按 `GetFormationUnitCount` 去重 |
+| N7 | AI 会不会滥用 | AI 的战斗法师是否频繁施放、是否一回合内把军团打光 | 未找到只禁止 AI 使用的数据开关。若滥用，退路是在 Lua 里对 AI 发起的 `WMD_STRIKE` 取消（需实证能否取消该操作） |
+| N8 | 军队回血与原版静止回血是否叠加 | 静止的军队回血量是否为 10 | 若叠加，改成只在移动或攻击过的单位上补；或改回修正（`MODIFIER_PLAYER_UNIT_GRANT_HEAL_AFTER_ACTION`） |
+| N9 | `Game.AddWorldViewText` 的第一个参数 | AI 施放时人类能否看到「魔力枯竭」浮字 | 改传 `0`（BlackDeath 原版用的是 0） |
+
+### 8.6 没做的（本轮不测）
+
+- 外交惩罚：没有额外代码，只有原生核武语义（用户定）。
+- 作弊菜单组军团的专门路径（F4 已撤销）。
+- 图标：通知与能力目前没有专属图标（WP9 之后补）。
+- 战神教、WP14–WP18、测试工具、发布准备。

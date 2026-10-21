@@ -68,6 +68,7 @@
 | `LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_CivTrait.sql` | WP2（WP1 的 Traits 行只引用） |
 | `LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_LeaderTrait.sql` | WP3（WP1 的 Traits 行只引用） |
 | `LOC_UNIT_TSOD_BATTLE_MAGE_NAME` / `_DESCRIPTION`，及其能力的 tag | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
+| `LOC_WMD_TSOD_ANNIHILATION_SCAR_NAME`，`LOC_ABILITY_TSOD_ANNIHILATION_SCAR_*`，`LOC_ABILITY_TSOD_ARMY_REGENERATION_*`，`LOC_NOTIFICATION_TSOD_ANNIHILATION_*`、`LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_*`，`LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED`（地图浮字） | `Texts/TsoDTE_Text_WMD.sql` | WP13 |
 | `LOC_DISTRICT_TSOD_MAGE_TOWER_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
 | `LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME` / `_DESCRIPTION` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_AGENDA_TSOD_KINDRED_NAME` / `_DESCRIPTION`，及议程态度说明 | `Texts/TsoDTE_Text_Agenda.sql` | WP7 |
@@ -100,6 +101,10 @@
 | `Texts/TsoDTE_Text_LeaderTrait.sql` | WP3 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_Unit_BattleMage.sql` | WP4 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 | IG UpdateText + FE UpdateText |
+| `Core/TsoDTE_WMD.sql` | WP13 | IG UpdateDatabase（紧跟 Unit_BattleMage；武器、能力、通知类型） |
+| `Texts/TsoDTE_Text_WMD.sql` | WP13 | IG UpdateText（不进 FE） |
+| `Scripts/TsoDTE_BattleMage.lua` | WP13 | IG AddGameplayScripts（组军团 / 军队、湮灭之创、对账、军队回血、通知） |
+| `UI/UnitPanel_TsoDTE.lua` | WP13 | IG ReplaceUIScript（LuaContext `UnitPanel`）+ 同 LoadOrder 200000 的 ImportFiles |
 | `Core/TsoDTE_District_MageTower.sql` | WP5 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_MageTower.sql` | WP5 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_Building_Burnstone.sql` | WP6 | IG UpdateDatabase |
@@ -116,7 +121,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 同一个动作里按下列顺序登记，被引用的类型先建：
 
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
-3. `TsoDTE_Unit_BattleMage.sql` → 4. `TsoDTE_District_MageTower.sql` → 5. `TsoDTE_Building_Burnstone.sql`
+3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → 5. `TsoDTE_Building_Burnstone.sql`
 6. `TsoDTE_CivTrait.sql`
 7. `TsoDTE_Agenda_AI.sql` → 8. `TsoDTE_Pedia.sql`
 
