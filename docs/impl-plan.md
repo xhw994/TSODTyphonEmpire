@@ -327,11 +327,12 @@ master plan §4 的三条：
   - 两个能力；
   - 三种通知类型。
 - **Gameplay Lua**：
-  - `Events.UnitFormCorps`、`UnitFormArmy`：加能力、弹数 +1、发通知；组成军队时再加「战场再生」能力并发通知。
+  - `Events.UnitFormCorps`：军团。只给「战场再生」能力，发 REGEN 通知（只发人类玩家）；不给湮灭之创，库存不变。
+  - `Events.UnitFormArmy`：军队。给「湮灭之创」与「战场再生」能力，发 READY 通知（只发人类玩家）；库存按军队数计。
   - `Events.UnitOperationStarted` 捕捉 `UNITOPERATION_WMD_STRIKE` → `UnitManager.Kill` → 发阵亡通知，原位置浮字。
-  - **对账**：每回合开始和编队变化时，按场上战斗法师军团与军队数重算弹数，用 `PlayerWMDs:ChangeWeaponCount` 补差。
+  - **对账**：每回合开始和编队变化时，按场上战斗法师军队数重算库存，用 `PlayerWMDs:ChangeWeaponCount` 补差。
 - **UI Lua**：参照 Klee 的 `UnitPanel_Klee.lua` 覆盖发射按钮判断。
-  - 只有军团、军队状态的战斗法师显示湮灭之创；
+  - 只有军队状态的战斗法师显示湮灭之创；
   - 别的核武单位不显示它；
   - 战斗法师不显示普通核弹。
 - **参考源码**：已克隆在统筹会话的 scratchpad，或重新 `git clone https://github.com/dwughjsd/SunAndMoonOfTeyvat_civ6mod`，看 `MondstadtKleeRelease/` 下的 `Data/MondstadtKlee_WMDs.xml`、`UI/Replacements/UnitPanel_Klee.lua`、`UI/Addition/TopPanelJumpyDumpty.lua`。
@@ -341,17 +342,26 @@ master plan §4 的三条：
   - 联机下对账是否一致；
   - AI 会不会滥用。
 - **验收**：
-  - 组成军团时收到通知、弹数 +1；
-  - 发射后原单位消失、收到阵亡通知、弹数 −1；
-  - 组成军队后移动加攻击，下回合仍回血；
+  - 组成军队时收到 READY 通知、库存 +1；组成军团时收到 REGEN 通知、库存不变；
+  - 发射后整支军队阵亡、收到阵亡通知、库存 −1；
+  - 组成军团或军队后移动加攻击，下回合仍回血；
   - 轰炸机看不到这种武器。
+
+#### 编队规则对调（2026-10-21，用户已确认）
+
+- **军团**（2 人，需「民族主义」）：只有战场再生，每回合回血；不能施放湮灭之创，库存 0。
+- **军队**（3 人，需「动员」）：有湮灭之创与战场再生；库存 = 场上军队数。每回合回血。
+- **军团与军队都回血**。
+- **用完即死的是军队**：施放后，发射的那支军队被整体阵亡，库存 −1。
+- **通知**：READY 改为组成军队时发；REGEN 改为组成军团时发（只发人类玩家）。
+- 效果文本不用第二人称，不写介绍，不写数值（风格照须弥 UU 的写法）。
 
 #### I1 实机反馈后的修订（2026-10-19，用户已批准，F5 除外）
 
 - **阶段 1 临时处理**：战斗法师的 `WMDCapable` 先设 0（单位面板会给 WMDs 表里每一行出一个按钮，用户看到官方核弹、热核和可莉 mod 武器三个灰按钮）。WP13 连同下面的 UI 过滤一起改回 1。
 - **UI 过滤只动法师相关的按钮**（取代上文「覆盖发射按钮判断」）：
   - 不覆盖 `IsActionLimited`。包一层全局的 `GetUnitActionsTable(pUnit)`：先调原函数，再过滤结果表里 `userTag` 为 `WMD_STRIKE` 的条目。
-  - 战斗法师：只留湮灭之创，且只在军团、军队状态；其他单位：去掉湮灭之创；其余按钮一概不碰。
+  - 战斗法师：只留湮灭之创，且只在军队状态；其他单位：去掉湮灭之创；其余按钮一概不碰。
   - 认武器：`AddActionToTable` 的 helpString 末尾拼了 `Locale.Lookup(entry.Name)`（基础版 UnitPanel.lua 645–647），按我们武器的本地化名匹配。能发射与不能发射的按钮都在这张表里，所以两种都管。
 - **兼容写法照梦境之城**：ReplaceUIScript 配同 LoadOrder 的 ImportFiles（参考 `TSODDreamCity\DreamCity.modinfo` 111–126 与 `UI\CityStates_TSODDreamCity.lua` 文件头）。
   - LoadOrder 定为 **200000**，要高于 BuilderLagFix 的 160520（ids.md §5.3 同步）。

@@ -1,24 +1,27 @@
 -- =============================================================================
--- WP13 战斗法师：湮灭之创、军队回血、通知
+-- WP13 战斗法师：湮灭之创、战场再生、通知
 -- 环境：Gameplay（InGame AddGameplayScripts）
 --
--- 【湮灭之创】
--- 战斗法师组成军团（UnitFormCorps）或军队（UnitFormArmy）时拥有能力 ABILITY_TSOD_ANNIHILATION_SCAR。
--- 施放的是武器 WMD_TSOD_ANNIHILATION_SCAR（UNITOPERATION_WMD_STRIKE），施放的那支军团或军队随之阵亡。
--- 玩家的武器库存 = 场上战斗法师的军团数 + 军队数。库存只由 ReconcilePlayer 维护，且只动这一种武器，不碰官方核弹。
+-- 【编队规则】（用户已定，R1，2026-10-21）
+--   军团（CORPS，2 人）：只有战场再生（ABILITY_TSOD_ARMY_REGENERATION），每回合回血。
+--     不能施放湮灭之创，武器库存为 0。组成时发 REGEN 通知。
+--   军队（ARMY，3 人）：有湮灭之创（ABILITY_TSOD_ANNIHILATION_SCAR）与战场再生。
+--     武器库存 = 场上军队的数量。组成时发 READY 通知。
+--   军团与军队都每回合回血。
 --
--- F6（默认做法，用户可改）：施放者不是军团 / 军队状态的战斗法师（轰炸机、核潜艇、AI 的其他单位……）时，
--- 由离目标最近的一支战斗法师军团或军队代为阵亡，保持「库存 = 军团数」。找不到可阵亡的就只写日志。
--- 只有施放的是湮灭之创才会走这条路；施放官方核弹不管。
+-- 【湮灭之创】
+-- 施放的是武器 WMD_TSOD_ANNIHILATION_SCAR（UNITOPERATION_WMD_STRIKE）。
+-- 施放的那支军队随之阵亡，库存 −1。
+-- 库存只由 ReconcilePlayer 维护，只动这一种武器，不碰官方核弹。
+-- 非军队状态的施放者发射任何武器都不处理（F6 已删）。
 --
 -- 【对账】
 -- ReconcilePlayer 按场上状态重算库存和能力，是「设成目标值」而不是「加减一次」，
 -- 所以事件次序不影响结果，重复调用也安全。在回合开始、编队变化、施放开始 / 结束时调用。
 -- 军团被打死、被俘之类的边角情况都由回合开始的对账兜底，不逐个处理。
 --
--- 【军队回血】
--- 只给 ARMY 状态且拥有 ABILITY_TSOD_ARMY_REGENERATION 的战斗法师：每回合开始回复 REGEN_HEAL 点生命，
--- 移动或战斗后同样回。用 Lua 实现（已定，不用修正）。
+-- 【回血】
+-- 军团与军队的每个战斗法师每回合开始回复 REGEN_HEAL 点生命（需 ABILITY_TSOD_ARMY_REGENERATION）。
 --
 -- 【通知】
 -- 只发给人类玩家。AI 的阵亡与回血都不发通知。
@@ -32,8 +35,9 @@
 --   N3  引擎施放时是否自己扣库存。对账同时挂在 Started 与 Deactivated，两种情况下结果都正确。
 --   N4  PlayerWMDs:ChangeWeaponCount 是否接受负数。
 --   N5  UnitFormCorps / UnitFormArmy 在 Gameplay 环境是否派发（UI 环境已确认在用）。
---       不派发时，回合开始的对账仍会补上能力，只是缺 READY 通知。
+--       不派发时，回合开始的对账仍会补上能力，只是缺组成通知。
 --   N6  一支军团或军队只对应一个单位对象（库存计数的依据）。
+--       未确认：目前按单位计数，见修复提交的去重说明。
 --   N7  AI 会不会滥用（WMDCapable=1 之后 AI 可能选这个武器）。
 --   N8  军队回血与原版静止回血是否叠加。
 --   N9  Game.AddWorldViewText 的第一个参数：这里传施放者 / 阵亡者的玩家 ID。
@@ -132,49 +136,52 @@ end
 -- -----------------------------------------------------------------------------
 -- 对账
 -- -----------------------------------------------------------------------------
--- 按场上状态重算库存与能力。库存目标 = 军团数 + 军队数（N6）。
--- 能力也在这里按状态核对：军团与军队有湮灭之创，军队有战场再生；其他状态的都收回。
+-- 按场上状态重算库存与能力。
+--   库存目标 = 军队数（R1）。军团不计入库存。
+--   能力：军队有湮灭之创与战场再生；军团只有战场再生；普通状态的都收回。
 local function ReconcilePlayer(iPlayer)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
         return
     end
 
-    local iLive = 0
+    local iArmy = 0
     for _, pUnit in pPlayer:GetUnits():Members() do
         if IsBattleMage(pUnit) then
             local sState = FormationState(pUnit)
             local pAbility = pUnit:GetAbility()
-            if sState ~= 'standard' then
-                iLive = iLive + 1
+            if sState == 'army' then
+                iArmy = iArmy + 1
             end
-            SetAbilityPresence(pAbility, ABILITY_SCAR, sState ~= 'standard')
-            SetAbilityPresence(pAbility, ABILITY_REGEN, sState == 'army')
+            SetAbilityPresence(pAbility, ABILITY_SCAR, sState == 'army')
+            SetAbilityPresence(pAbility, ABILITY_REGEN, sState ~= 'standard')
         end
     end
 
     local pWMDs = pPlayer:GetWMDs()
     local iHave = pWMDs:GetWeaponCount(WeaponIndex)
-    if iHave ~= iLive then
+    if iHave ~= iArmy then
         -- 设成目标值，用差额调库存（N3、N4）。不是「扣一」，所以引擎是否也扣过都不影响结果。
-        pWMDs:ChangeWeaponCount(WeaponIndex, iLive - iHave)
-        print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iLive)
+        pWMDs:ChangeWeaponCount(WeaponIndex, iArmy - iHave)
+        print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iArmy)
     end
 end
 
 -- -----------------------------------------------------------------------------
 -- 编队变化
 -- -----------------------------------------------------------------------------
+-- 军团：只给战场再生，通知 REGEN（只发人类）
 local function OnUnitFormCorps(iPlayer, iUnit)
     local pUnit = FindUnit(iPlayer, iUnit)
     if not IsBattleMage(pUnit) then
         return
     end
-    SetAbilityPresence(pUnit:GetAbility(), ABILITY_SCAR, true)
-    NotifyHuman(iPlayer, NOTIF_READY, TXT_READY_MSG, TXT_READY_SUM, pUnit:GetX(), pUnit:GetY())
+    SetAbilityPresence(pUnit:GetAbility(), ABILITY_REGEN, true)
+    NotifyHuman(iPlayer, NOTIF_REGEN, TXT_REGEN_MSG, TXT_REGEN_SUM, pUnit:GetX(), pUnit:GetY())
     ReconcilePlayer(iPlayer)
 end
 
+-- 军队：湮灭之创与战场再生，通知 READY（只发人类）
 local function OnUnitFormArmy(iPlayer, iUnit)
     local pUnit = FindUnit(iPlayer, iUnit)
     if not IsBattleMage(pUnit) then
@@ -183,14 +190,14 @@ local function OnUnitFormArmy(iPlayer, iUnit)
     local pAbility = pUnit:GetAbility()
     SetAbilityPresence(pAbility, ABILITY_SCAR, true)
     SetAbilityPresence(pAbility, ABILITY_REGEN, true)
-    NotifyHuman(iPlayer, NOTIF_REGEN, TXT_REGEN_MSG, TXT_REGEN_SUM, pUnit:GetX(), pUnit:GetY())
+    NotifyHuman(iPlayer, NOTIF_READY, TXT_READY_MSG, TXT_READY_SUM, pUnit:GetX(), pUnit:GetY())
     ReconcilePlayer(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
 -- 湮灭之创的施放
 -- -----------------------------------------------------------------------------
--- 离目标最近的一支战斗法师军团或军队（F6）。距离相同时取单位 ID 小的，保证各端一致。
+-- 离目标最近的一支战斗法师军队（F6，待删）。距离相同时取单位 ID 小的，保证各端一致。
 local function FindNearestScarUnit(iPlayer, iX, iY)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
@@ -199,7 +206,7 @@ local function FindNearestScarUnit(iPlayer, iX, iY)
     local pBest = nil
     local iBestDist = nil
     for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) ~= 'standard' then
+        if IsBattleMage(pUnit) and FormationState(pUnit) == 'army' then
             local iDist = Map.GetPlotDistance(pUnit:GetX(), pUnit:GetY(), iX, iY)
             if pBest == nil or iDist < iBestDist or (iDist == iBestDist and pUnit:GetID() < pBest:GetID()) then
                 pBest = pUnit
@@ -240,16 +247,16 @@ local function OnUnitOperationStarted(iOwner, iUnit, iOperation)
     end
 
     local pVictim = nil
-    if IsBattleMage(pStriker) and FormationState(pStriker) ~= 'standard' then
+    if IsBattleMage(pStriker) and FormationState(pStriker) == 'army' then
         pVictim = pStriker
     else
-        -- F6：施放者不是军团 / 军队状态的战斗法师，由离目标最近的一支代为阵亡
+        -- F6：施放者不是军队状态的战斗法师，由离目标最近的一支军队代为阵亡（待删）
         pVictim = FindNearestScarUnit(iOwner, iTargetX, iTargetY)
         if pVictim == nil then
-            print('[TsoDTE] Battle mage: strike by non-corps unit, no corps or army to sacrifice (F6), logged only')
+            print('[TsoDTE] Battle mage: strike by non-army unit, no army to sacrifice (F6), logged only')
             return
         end
-        print('[TsoDTE] Battle mage: strike by non-corps unit, unit ' .. pVictim:GetID() .. ' sacrificed instead (F6)')
+        print('[TsoDTE] Battle mage: strike by non-army unit, unit ' .. pVictim:GetID() .. ' sacrificed instead (F6)')
     end
 
     local iX, iY = pVictim:GetX(), pVictim:GetY()
@@ -268,15 +275,15 @@ local function OnUnitOperationDeactivated(iOwner, iUnit, iOperation, iData1)
 end
 
 -- -----------------------------------------------------------------------------
--- 军队回血
+-- 回血（军团与军队都回）
 -- -----------------------------------------------------------------------------
-local function HealArmies(iPlayer)
+local function HealFormations(iPlayer)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
         return
     end
     for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) == 'army'
+        if IsBattleMage(pUnit) and FormationState(pUnit) ~= 'standard'
             and pUnit:GetAbility():GetAbilityCount(ABILITY_REGEN) > 0 then
             local iDamage = pUnit:GetDamage()
             if iDamage > 0 then
@@ -290,11 +297,11 @@ local function HealArmies(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
--- 回合开始：对账 + 军队回血
+-- 回合开始：对账 + 回血
 -- -----------------------------------------------------------------------------
 local function OnTsoDTEBattleMageTurnActivated(iPlayer, bIsFirstTime)
     ReconcilePlayer(iPlayer)
-    HealArmies(iPlayer)
+    HealFormations(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
