@@ -14,10 +14,11 @@
 --   本模块按编队 ID 分组，每组选一个主体（ID 与编队 ID 相同者，否则 ID 最小者）：
 --     - 库存、湮灭之创、战场再生只算在主体上，成员不计数、不持有能力、不回血；
 --     - 每个编队每回合只回一次血（主体回 REGEN_HEAL 点）。
+--   已死或已标记延迟死亡（IsDead / IsDelayedDeath）的单位不计入。
 --
 -- 【湮灭之创】
 -- 施放的是武器 WMD_TSOD_ANNIHILATION_SCAR（UNITOPERATION_WMD_STRIKE）。
--- 施放的那支军队随之阵亡，库存 −1。
+-- 施放的那支军队整支阵亡（施放者所在编队的全部成员），库存 −1。
 -- 库存只由 ReconcilePlayer 维护，只动这一种武器，不碰官方核弹。
 -- 非军队状态的施放者发射任何武器都不处理。
 --
@@ -33,17 +34,19 @@
 -- 只发给人类玩家。AI 的阵亡与回血都不发通知。
 --
 -- 【联机】只读写游戏状态。不用 math.random、不用 ExposedMembers，不做本地玩家判断。
--- 【存档】本脚本不存任何 Lua 状态：库存在 PlayerWMDs 里，能力在单位上，读档后由回合开始的对账核对。
+-- 【存档】库存在 PlayerWMDs 里，能力在单位上，读档后由回合开始的对账核对。
+--   唯一的 Lua 状态是 tPendingStrike：施放开始到结束之间记下的阵亡名单，结束时清空。
 --
 -- 【日志】施放相关的行都以 [TsoDTE] 开头：
 --   strike: ...          施放开始时的单位、武器、编队状态（Started）
 --   strike: victim ...   阵亡前后是否还在单位列表里（Kill 前后）
---   strike end: ...      施放结束时施放者是否还在（Deactivated）
+--   strike end: ...      施放结束时施放者是否还在、补杀了哪些（Deactivated）
 --   formation mismatch   编队 ID 分组的人数与引擎的编队人数不符（N6）
 --   Battle mage reconcile: 库存变化（只在变化时打印）
 --
 -- 【需实证】每条的退路见代码对应位置的注释
 --   N1  UnitOperationStarted 里 UnitManager.Kill 施放单位，引擎是否还会结算爆炸。
+--       Kill 无效时，Deactivated 补杀（见 OnUnitOperationDeactivated）。
 --   N2  pUnit:GetOperationParameter 能否读到 PARAM_WMD_TYPE / PARAM_X / PARAM_Y。
 --   N3  引擎施放时是否自己扣库存。对账同时挂在 Started 与 Deactivated，两种情况下结果都正确。
 --   N4  PlayerWMDs:ChangeWeaponCount 是否接受负数。
@@ -83,6 +86,9 @@ local WeaponIndex = -1
 local FormationCorps = nil
 local FormationArmy = nil
 local NotifyHash = {}          -- [通知类型名] = 哈希
+
+-- 施放开始时记下的阵亡名单：[玩家ID .. ':' .. 施放者ID] = { 单位ID, … }。Deactivated 时用完即清。
+local tPendingStrike = {}
 
 -- -----------------------------------------------------------------------------
 -- 基础查询
@@ -156,6 +162,11 @@ end
 -- -----------------------------------------------------------------------------
 -- 编队分组（按编队计，见文件头）
 -- -----------------------------------------------------------------------------
+-- 已死或已标记延迟死亡的单位不计入（引擎里它们可能仍在列表中，UnitFlagManager 也是这样跳过的）。
+local function IsGoingToDie(pUnit)
+    return pUnit:IsDead() or pUnit:IsDelayedDeath()
+end
+
 -- 编队键：同一编队的成员报告相同的 GetFormationID（N6，需实证）。
 -- 读不到或为负数时，该单位自成一组（退化为按单位计数，日志里会有 formation mismatch）。
 local function FormationKey(pUnit)
@@ -197,7 +208,7 @@ local function CollectFormations(iPlayer)
     end
 
     for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) then
+        if IsBattleMage(pUnit) and not IsGoingToDie(pUnit) then
             local sState = FormationState(pUnit)
             if sState == 'standard' then
                 table.insert(aStandard, pUnit)
@@ -331,7 +342,7 @@ end
 
 -- UnitOperationStarted(ownerID, unitID, operationID)
 -- 需实证 N1：在 Started 里 Kill，引擎是否还会结算爆炸。
---   退路：把阵亡挪到 UnitOperationDeactivated（同一个 hOperation == WMD_STRIKE）里做。
+--   Kill 没生效时，Deactivated 会补杀（见下）。
 local function OnUnitOperationStarted(iOwner, iUnit, iOperation)
     if iOperation ~= UnitOperationTypes.WMD_STRIKE then
         return
@@ -370,45 +381,74 @@ local function OnUnitOperationStarted(iOwner, iUnit, iOperation)
         print('[TsoDTE] Battle mage: target unreadable (N2), using striker position')
     end
 
-    local pVictim = nil
+    -- 阵亡名单：施放的军队整支（施放者所在编队的全部成员）。
+    -- F6（待删）：施放者不是军队状态的战斗法师时，由离目标最近的一支军队代为阵亡。
+    local aVictims = nil
     if bArmyBattleMage then
-        pVictim = pStriker
+        local tGroups = CollectFormations(iOwner)
+        local tGroup = tGroups[FormationKey(pStriker)]
+        if tGroup ~= nil then
+            aVictims = tGroup.members
+        else
+            aVictims = { pStriker }
+        end
     else
-        -- F6：施放者不是军队状态的战斗法师，由离目标最近的一支军队代为阵亡（待删）
-        pVictim = FindNearestScarUnit(iOwner, iTargetX, iTargetY)
-        if pVictim == nil then
+        local pNearest = FindNearestScarUnit(iOwner, iTargetX, iTargetY)
+        if pNearest == nil then
             print('[TsoDTE] Battle mage: strike by non-army unit, no army to sacrifice (F6), logged only')
             return
         end
-        print('[TsoDTE] Battle mage: strike by non-army unit, unit ' .. pVictim:GetID() .. ' sacrificed instead (F6)')
+        print('[TsoDTE] Battle mage: strike by non-army unit, unit ' .. pNearest:GetID() .. ' sacrificed instead (F6)')
+        aVictims = { pNearest }
     end
 
-    local iVictimID = pVictim:GetID()
-    local iX, iY = pVictim:GetX(), pVictim:GetY()
-    print('[TsoDTE] strike: victim ' .. iVictimID .. ' before Kill')
-    UnitManager.Kill(pVictim)
-    -- Kill 之后不再使用 pVictim（引擎可能已释放），只按 ID 重新查
-    local pAfter = FindUnit(iOwner, iVictimID)
-    if pAfter ~= nil then
-        print('[TsoDTE] strike: victim ' .. iVictimID .. ' after Kill, still in list, delayed='
-            .. tostring(pAfter:IsDelayedDeath()))
-    else
-        print('[TsoDTE] strike: victim ' .. iVictimID .. ' after Kill, removed from list')
+    local iX, iY = aVictims[1]:GetX(), aVictims[1]:GetY()
+    local aVictimIDs = {}
+    for _, pVictim in ipairs(aVictims) do
+        local iVictimID = pVictim:GetID()
+        table.insert(aVictimIDs, iVictimID)
+        print('[TsoDTE] strike: victim ' .. iVictimID .. ' before Kill')
+        UnitManager.Kill(pVictim)
+        -- Kill 之后不再使用 pVictim（引擎可能已释放），只按 ID 重新查
+        local pAfter = FindUnit(iOwner, iVictimID)
+        if pAfter ~= nil then
+            print('[TsoDTE] strike: victim ' .. iVictimID .. ' after Kill, still in list, delayed='
+                .. tostring(pAfter:IsDelayedDeath()))
+        else
+            print('[TsoDTE] strike: victim ' .. iVictimID .. ' after Kill, removed from list')
+        end
     end
+    -- Deactivated 时据此补杀
+    tPendingStrike[iOwner .. ':' .. iUnit] = aVictimIDs
+
     NotifyHuman(iOwner, NOTIF_SACRIFICE, TXT_SACRIFICE_MSG, TXT_SACRIFICE_SUM, iX, iY)
     Game.AddWorldViewText(iOwner, Locale.Lookup(TXT_EXHAUSTED), iX, iY)   -- N9
     ReconcilePlayer(iOwner)
 end
 
 -- UnitOperationDeactivated(playerID, unitID, hOperation, iData1)
--- 施放结束后再对账一次。若引擎在 Started 之后才扣库存（N3），这里把库存纠正回来。
+-- 施放结束后：1) 名单里还在、又没标记延迟死亡的，补杀（N1 退路：Started 里的 Kill 没生效）；
+--             2) 再对账一次，纠正库存（N3）。
 local function OnUnitOperationDeactivated(iOwner, iUnit, iOperation, iData1)
-    if iOperation == UnitOperationTypes.WMD_STRIKE then
-        local pAfter = FindUnit(iOwner, iUnit)
-        print('[TsoDTE] strike end: player ' .. iOwner .. ' unit ' .. iUnit
-            .. ' still in list=' .. tostring(pAfter ~= nil))
-        ReconcilePlayer(iOwner)
+    if iOperation ~= UnitOperationTypes.WMD_STRIKE then
+        return
     end
+    local sKey = iOwner .. ':' .. iUnit
+    local aVictimIDs = tPendingStrike[sKey]
+    tPendingStrike[sKey] = nil
+    local iKilledAgain = 0
+    for _, iVictimID in ipairs(aVictimIDs or {}) do
+        local pLeft = FindUnit(iOwner, iVictimID)
+        if pLeft ~= nil and not IsGoingToDie(pLeft) then
+            print('[TsoDTE] strike end: victim ' .. iVictimID .. ' still alive after Started, killing again')
+            UnitManager.Kill(pLeft)
+            iKilledAgain = iKilledAgain + 1
+        end
+    end
+    local pAfter = FindUnit(iOwner, iUnit)
+    print('[TsoDTE] strike end: player ' .. iOwner .. ' unit ' .. iUnit
+        .. ' still in list=' .. tostring(pAfter ~= nil) .. ' killed again=' .. iKilledAgain)
+    ReconcilePlayer(iOwner)
 end
 
 -- -----------------------------------------------------------------------------
@@ -431,7 +471,7 @@ end
 
 -- -----------------------------------------------------------------------------
 -- 回合开始：对账 + 回血
--- -----------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 local function OnTsoDTEBattleMageTurnActivated(iPlayer, bIsFirstTime)
     local tGroups, aKeys = ReconcilePlayer(iPlayer)
     HealFormations(iPlayer, tGroups, aKeys)
