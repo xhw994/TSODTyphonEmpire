@@ -206,3 +206,67 @@ x、y 换成目标格子；单位类型按需要换。
 - 作弊菜单组军团的专门路径（F4 已撤销）。
 - 图标：通知与能力目前没有专属图标（WP9 之后补）。
 - 战神教、WP14–WP18、测试工具、发布准备。
+
+## 9. 阶段 2 待测（WP16）
+
+> 文件里原本没有 §9，这一节新开。这是**待测清单**，不是测试结果。下面没有一条在游戏里验证过，改动只完成了静态检查（loc_audit、lua_lint、modifier_lint 没有已知的静态错误）。
+> 解锁依赖法师塔与「大众传媒」市政；只有提丰（文明能力）能看到这个项目。外交惩罚不做，本节不测外交惩罚。
+
+### 9.1 进游戏前要确认的
+
+| 项 | 预期 |
+|---|---|
+| 构建后 `validate_mod.py` 对部署的 `.modinfo` | 0 错误。`InGameActions` 的 `UpdateDatabase` 里 `TsoDTE_Project.sql` 排在 `TsoDTE_District_MageTower.sql` 之后；`AddGameplayScripts` 里有 `TsoDTE_Project.lua` |
+| `Lua.log` | 出现 `[TsoDTE] Desanctification module initialized`；没有 `project row missing` |
+| `Logs/Database.log` | 没有 `PROJECT_TSOD_DESANCTIFICATION`、`MODIFIER_PLAYER_ALLOW_PROJECT_TSOD`、`NOTIFICATION_TSOD_DESANCTIFICATION` 的外键或未知类型报错 |
+| 生产面板（提丰，有法师塔的城市，已研究「大众传媒」） | 出现「去神圣化」项目，说明文字为两行，效果句与文本一致 |
+
+### 9.2 可见性与解锁
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 其他文明（非提丰）、有法师塔、已研究大众传媒 | 生产面板里没有「去神圣化」 | |
+| 提丰、无法师塔的城市 | 没有该项目 | |
+| 提丰、有法师塔、未研究大众传媒 | 没有该项目（`PrereqCivic` 生效） | |
+| 提丰、有法师塔、已研究大众传媒 | 有该项目；可以生产；完成后再次出现（可重复） | |
+
+### 9.3 完成效果
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 完成时，信仰值 100 | 信仰值变为 50（减半），研究进度增加 50（`Lua.log` 里 `expected +50` 且 progress 读回为 before + 50） | |
+| 完成时，信仰值为奇数，如 101 | 转换 50（向下取整），信仰剩 51 | |
+| 完成时，外交支持 | 增加 25（`MODIFIER_PLAYER_ADD_FAVOR`，只一次，RunOnce） | |
+| 完成时，其他文明的外交支持 | 不变（修正只挂在提丰身上） | |
+| 完成后下一回合 | 外交支持不再每回合增加；信仰值没有被再次结算（见 9.5 P4） | |
+| 提丰完成时，人类玩家的右侧通知栏 | 出现「去神圣化完成」，点掉为止；通知文字含「信仰值的一半已转化为科技值」 | |
+| AI 提丰（若有）完成 | 照样转换，不发通知 | |
+| 非提丰玩家完成（若能完成） | `Lua.log` 没有 `Desanctification: player` 行，信仰与研究都不变 | |
+| 当前没有研究（用作弊或 FireTuner 清空） | 信仰不变，`Lua.log` 出现 `has no current research`（P5） | |
+
+### 9.4 联机
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 联机中提丰完成 | 双方信仰与研究进度一致（无不同步报错） | |
+
+### 9.5 需实证项（每条的退路在 `src/Scripts/TsoDTE_Project.lua` 对应注释处）
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| P1 | `Events.CityProjectCompleted` 在 Gameplay 环境是否派发，且 `playerID`、`cityID`、`projectID` 有效 | 完成后 `Lua.log` 出现转换行（说明事件派发到了）；没有 `city ... not found under player ... (P1)` 行 | 若不派发：在 UI 环境订阅同一事件，再用 `UI.RequestPlayerOperation(PlayerOperations.EXECUTE_SCRIPT)` 调本文件里的转换函数（kb 的第 3 种通信办法）。若派发了但 `cityID` 取不到，转换仍照常做（只依赖玩家），只记日志 |
+| P2 | `bCancelled` 的含义 | 每次跳过时 `Lua.log` 都会出现 `bCancelled=true`；正常完成时不应出现。若正常完成也出现，说明它不是「取消」的意思 | 若完成时它也为真，去掉这个判断，改为只看 `projectID` |
+| P3 | 转换公式（信仰减半、向下取整、研究加等量） | 9.3 的两条数值；`Lua.log` 里 `faith A -> B` 与 `expected +N` | 若数值不对，检查 `GetFaithBalance` 在事件时刻的值（是否已被别的逻辑改过） |
+| P4 | 完成后信仰是否被再次结算 | 完成当回合结束、下一回合开始，信仰值的变化是否与转换后一致（不再扣或加转换前的量） | 若被再次结算，改为用玩家属性记「已转换」标记，并在回合开始时对账（同 WP13 的 `ReconcilePlayer` 思路） |
+| P5 | `GetResearchingTech` 无当前研究时返回 `-1` | 清空当前研究后完成，信仰不变，日志出现 `has no current research` | 若这时也应转换，改为把数量记在玩家属性里（`SetProperty`），选定研究时补入 |
+| P6 | `SetResearchProgress` 第二个参数是绝对值 | `Lua.log` 里 `progress before -> after` 的 after 等于 before + 转换量 | 若 after 不变，检查该科技是否已研究完、进度是否被截断；若是参数含义不同，改用 `ChangeCurrentResearchProgress`（其参数未文档化，需先实测） |
+| P7 | 研究进度加到超过研究造价时的行为 | 研究造价较低时（如刚开始的科技）完成，科技是否立即完成、进度是否截断 | 若截断，改为转换量上限为「造价 − 当前进度」，超出部分保留在信仰里 |
+| P8 | `PrereqCivic` 与 `UnlocksFromEffect` 并存时，两个条件是否都生效 | 9.2 的四行 | 若未研究大众传媒时项目仍可见，改为在 `MODIFIER_PLAYER_ALLOW_PROJECT_TSOD` 的 OwnerRequirementSet 里加 `REQUIREMENT_PLAYER_HAS_CIVIC` |
+| P9 | 通知在 Gameplay 环境发送是否显示 | 9.3 的通知行 | 若不显示，改为在 UI 环境发送（同 P1 的桥） |
+
+### 9.6 没做的（本轮不测）
+
+- 外交惩罚：没有额外代码（用户定：以可莉 mod 为准）。
+- 图标与项目的专属图片（WP9 之后补）。
+- 百科条目（WP8 之后补）。
+- 数值（一半、25、造价 65）进游戏再调。

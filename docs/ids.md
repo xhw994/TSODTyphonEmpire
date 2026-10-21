@@ -50,6 +50,7 @@
 | 议程 | `AGENDA_TSOD_KINDRED`，特性 `TRAIT_AGENDA_TSOD_KINDRED` | WP7 |
 | 宗教 | `RELIGION_TSOD_WAR_GOD`，颜色 `COLOR_RELIGION_TSOD_WAR_GOD` | WP14 |
 | 城市项目 | `PROJECT_TSOD_DESANCTIFICATION` | WP16 |
+| 通知（去神圣化完成） | `NOTIFICATION_TSOD_DESANCTIFICATION` | WP16 |
 | 世界议会决议 | `WC_RES_TSOD_THEOCRATIC_COUNCIL` | WP17 |
 | 配色 | 照塞西尔 `TsoDCE_Colors.sql` 的命名 | WP1 |
 | 城市名 | `LOC_CITY_NAME_TSOD_<英文名>`，57 个，见 §7.1 | WP1 |
@@ -76,6 +77,7 @@
 | `LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE`（相邻加成说明） | `Texts/TsoDTE_Text_MageTower.sql` | WP5 |
 | `LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_ABILITY_TSOD_BATTLE_MAGE_*_PREVIEW`（战斗预览说明） | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
+| `LOC_PROJECT_TSOD_DESANCTIFICATION_NAME` / `_SHORT_NAME` / `_DESCRIPTION`，`LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE` / `_SUMMARY` | `Texts/TsoDTE_Text_Project.sql` | WP16 |
 | 全部 `LOC_PEDIA_*`（文明、领袖、单位、区域、建筑、人物、地点） | `Texts/TsoDTE_Text_Pedia.sql` | WP8 |
 | 全部 `LOC_DIPLO_*_LEADER_TSOD_ROSETTA_AUGUSTUS_*` / `LOC_DIPLO_*_TSOD_ROSETTA_AUGUSTUS_*` 外交台词 | 同上 | WP8 |
 | `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、`LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE`（领袖引言） | 同上 | WP8（WP1 的 `LoadingInfo`、`LeaderQuotes` 行只引用） |
@@ -107,6 +109,9 @@
 | `UI/UnitPanel_TsoDTE.lua` | WP13 | IG ReplaceUIScript（LuaContext `UnitPanel`）+ 同 LoadOrder 200000 的 ImportFiles |
 | `Core/TsoDTE_District_MageTower.sql` | WP5 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_MageTower.sql` | WP5 | IG UpdateText + FE UpdateText |
+| `Core/TsoDTE_Project.sql` | WP16 | IG UpdateDatabase（紧跟 District_MageTower，要引用法师塔；含去神圣化的解锁、完成修正、通知类型，以及文明能力上的 TraitModifiers 行） |
+| `Scripts/TsoDTE_Project.lua` | WP16 | IG AddGameplayScripts（完成去神圣化：信仰一半转研究进度，只对提丰，发通知） |
+| `Texts/TsoDTE_Text_Project.sql` | WP16 | IG UpdateText（不进 FE：项目只在局内出现） |
 | `Core/TsoDTE_Building_Burnstone.sql` | WP6 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_Agenda_AI.sql` | WP7 | IG UpdateDatabase |
@@ -121,7 +126,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 同一个动作里按下列顺序登记，被引用的类型先建：
 
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
-3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → 5. `TsoDTE_Building_Burnstone.sql`
+3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → `TsoDTE_Project.sql`（WP16，引用法师塔区域，须在它之后） → 5. `TsoDTE_Building_Burnstone.sql`
 6. `TsoDTE_CivTrait.sql`
 7. `TsoDTE_Agenda_AI.sql` → 8. `TsoDTE_Pedia.sql`
 
@@ -158,6 +163,7 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | `Types`、`Traits` 的 `TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS`，`LeaderTraits` 里它那一行 | `TsoDTE_Leader.sql` | WP1 |
 | 特色单位 / 区域 / 建筑各自的特性：`Types`、`Traits`、`CivilizationTraits` 行，以及 `UnitReplaces` / `DistrictReplaces` / `BuildingReplaces` | 各自的数据文件 | WP4 / WP5 / WP6 |
 | 挂到文明能力、领袖能力上的 `TraitModifiers` 行 | 挂修正的那个包自己的文件 | WP2 / WP3 |
+| 挂到文明能力上的去神圣化解锁（`TraitModifiers` 一行，指向 `MODIFIER_PLAYER_ALLOW_PROJECT_TSOD`） | `TsoDTE_Project.sql` | WP16 |
 | 战斗法师成长能力的授予修正 | 挂在 WP4 自己的 `TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE` 上（等价于文明能力，且不碰 WP1 的壳） | WP4 |
 | `Agendas`、`HistoricalAgendas`、议程特性、`AiListTypes` / `AiLists` / `AiFavoredItems` | `TsoDTE_Agenda_AI.sql` | WP7 |
 | 开局界面每个特色项一行（`Players` / `PlayerItems` 等配置表） | `TsoDTE_Config.sql` | WP1（只引用别包的 ID 与 LOC tag） |
