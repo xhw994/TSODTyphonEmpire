@@ -270,3 +270,63 @@ x、y 换成目标格子；单位类型按需要换。
 - 图标与项目的专属图片（WP9 之后补）。
 - 百科条目（WP8 之后补）。
 - 数值（一半、25、造价 65）进游戏再调。
+
+## 10. 阶段 2 待测（WP17 神权理事会）
+
+> 这是**待测清单**，不是测试结果。下面没有一条在游戏里验证过。改动只完成了静态检查（loc_audit、modifier_lint、lua_lint 没有已知的静态错误），还没有在游戏里加载。
+> 决议只在风云变幻规则集下加载（criteria `TsoDTE_Expansion2`）。要进入现代时代的对局才能测到它；怎么推进到现代时代，实测时再定。
+> 没有工坊先例：下面 C1–C5 都是需实证项，不成立时的退路按 impl plan §6.2 的「换成正面效果，或不做这个决议」，具体写在每条里。
+
+### 10.1 进游戏前要确认的
+
+| 项 | 预期 |
+|---|---|
+| 静态检查（src） | loc_audit 222 个 tag 中英齐全；modifier_lint 0 错、5 提示（与改动前相同，都不是本包的）；lua_lint 0 错 0 提示 |
+| `Logs/Database.log` | 没有 `WC_RES_TSOD_THEOCRATIC_COUNCIL`、`TSOD_TYPHON_COUNCIL_RELIGIOUS_STRENGTH_DOWN`、`TSOD_TYPHON_ROSETTA_RESOLUTIONS`、`ResolutionEffectId` 210 / 215 的外键、唯一约束、未知类型或 `no such table` 报错 |
+| `Modding.log` | `TsoDTE_Congress.sql`、`TsoDTE_Text_Congress.sql` 有加载记录，且只在风云变幻的对局里出现 |
+| 议会界面 | 决议名显示「神权理事会」，两个选项显示中文效果句；没有 `LOC_` 原文 |
+
+### 10.2 可见性
+
+| 项 | 预期 | 结果 |
+|---|---|---|
+| 原版规则集（非风云变幻）对局 | 没有本决议；`Database.log` 没有因本文件产生的 `no such table` | |
+| 风云变幻、未到现代时代 | 议会不抽本决议（`EarliestEra = ERA_MODERN`） | |
+| 风云变幻、现代时代后的议会 | 能抽到本决议（见 C1、C4） | |
+| 风云变幻、现代时代后，没有提丰的对局 | 也能抽到（master plan §8.5：只要 mod 启用就进决议池，是设计如此）；AI 偏好只对提丰的 AI 生效 | |
+
+### 10.3 议程池与目标
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| C1 | 新决议能否进入议程池 | 进入现代时代后，连续几届议会的议题候选里是否出现「神权理事会」。静态上 `Scripts/WorldCongress.lua` 的 `CanUseResolutions` 对未列出的决议直接放行（`else` 分支），没有过滤；池子怎么抽由引擎决定 | 不进池：按 impl plan §6.2，换成正面效果，或不做这个决议（删 `Resolutions`、`ResolutionEffects`、本决议的 `Modifiers` / `ModifierArguments`、AI 三行与 `TsoDTE_Text_Congress.sql` 的登记） |
+| C4 | 现代时代后世界议会能否抽到 | 与 C1 同一组对局。对照：`WC_RES_HERITAGE_ORG` 同为 `EarliestEra = ERA_MODERN` 且没有 `LatestEra`。若它能抽到而本决议抽不到，是本决议的问题；若两者都抽不到，是测试条件问题，不算本决议失败 | 同 C1 |
+| V1 | 校验函数 `WC_Validate_RegliousBan` 与选目标 `ReligiousTarget` 在 Lua 里没有定义（安装目录的 .lua 搜索为 0 条；官方「世界宗教」也用这两个名字，它们应由引擎处理）。目标列表由谁给出，未知 | 选中本决议时，目标列表是否只列出已建立的宗教（至少一个宗教）；没有宗教时是否不进入议题 | 目标为空或列出非宗教：改用新名字（如 `WC_Validate_TSOD_Theocracy`），在新 Lua 文件里用 `GameEvents.<名字>.Add` 填 `options.ResolutionOptions`，并把该文件登记到 `AddGameplayScripts`。**不要**去改官方名字的注册，那会同时影响世界宗教 |
+
+### 10.4 效果
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| C2 | `Amount = -10` 是否生效，方向与数值是否正确 | 选项 1 通过后，目标宗教的单位战斗力与宗教战斗力各减 10（对比决议前的单位面板与战斗预览）。FireTuner 的 Modifiers 面板里 `TSOD_TYPHON_COUNCIL_RELIGIOUS_STRENGTH_DOWN` 为 Active，`# Subjects` > 0 | 不生效或当作 0：按 impl plan §6.2，换成正面效果，或不做这个决议（同 C1） |
+| C3 | 选项 1 的目标宗教是否由投票结果传入 | 只有被选中的宗教的单位减 10；其他宗教的单位不变（用两个宗教各造一个单位对比）。官方同类修正（`WC_RES_RELIGIOUS_UNITS_STRENGTH`）的参数只有 `Amount`，宗教是引擎注入的，这是推断，未实证 | 作用到所有宗教：删 `ResolutionEffects` 中 `WhichEffect = 1` 那行，只留选项 2。一个都不作用：同 C2 |
+| B1 | 选项 2 复用的 `ANYONE_CONDEMNS_FOR_FAVOR` 对本决议的宗教生效 | 选项 2 通过后，审判（谴责）该宗教的单位获得 25 点外交支持；其他宗教的单位不给 | 与官方同名决议相同，没有单独退路。不生效时先查 `ResolutionEffects` 中 `WhichEffect = 2` 那行是否登记到本决议 |
+
+### 10.5 AI 偏好
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| C5 | 提丰 AI 是否投选项 1 | 提丰 AI 参与的多次议会中，它投的是选项 1。`AiFavoredItems` 只能表达「支持该决议」，选哪一边是引擎的事。文件里的对应关系是按官方 `WC_RES_WORLD_RELIGION` 的 Favored 推断的，未实证。能核对时用 AI 决策日志（`civ6-modding-ai` 列出的 AI_*.csv）；核对不了就看议会结果 | 投选项 2、或与选项无关：删 `TsoDTE_Congress.sql` 里 `TSOD_TYPHON_ROSETTA_RESOLUTIONS` 的三行（`AiFavoredItems`、`AiLists`、`AiListTypes`），决议本身不受影响，AI 回到官方默认 |
+
+### 10.6 ID 与登记
+
+| 编号 | 问题 | 测什么 | 退路 |
+|---|---|---|---|
+| R1 | `ResolutionEffectId` 210、215 与别的内容冲突 | 官方 `ResolutionEffectId` 最大为 205；工坊 mod 里查无 `ResolutionEffects` 行（静态查过）。测 `Database.log` 无 `UNIQUE constraint failed` | 冲突：在 `ResolutionEffects` 里换成未用的整数，两行一起改 |
+| T1 | 文本登记 | 议会界面的决议名与两个选项是中文（不是 `LOC_` 原文） | 显示 `LOC_`：检查 `TsoDTE_Text_Congress.sql` 是否在 `UpdateText` 里（`.civ6proj`），loc_audit 静态已通过 |
+
+### 10.7 没做的（本轮不测）
+
+- 外交惩罚：不加（用户定：以可莉 mod 为准）。
+- 决议的专属图标：WP9 之后补。
+- 数值（-10、25）进游戏再调。
+- 选项的标签（「去神圣化」「世俗监督」）：只写在文件注释里，游戏里只显示效果句，与官方决议的显示一致。

@@ -78,6 +78,7 @@
 | `LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME` | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 |
 | `LOC_ABILITY_TSOD_BATTLE_MAGE_*_PREVIEW`（战斗预览说明） | `Texts/TsoDTE_Text_BattleMage.sql` | WP4 |
 | `LOC_PROJECT_TSOD_DESANCTIFICATION_NAME` / `_SHORT_NAME` / `_DESCRIPTION`，`LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE` / `_SUMMARY` | `Texts/TsoDTE_Text_Project.sql` | WP16 |
+| `LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME`，`LOC_WORLD_CONGRESS_TSOD_DESANCTIFY_RELIGION_DESC`（选项 1）、`LOC_WORLD_CONGRESS_TSOD_SECULAR_OVERSIGHT_DESC`（选项 2） | `Texts/TsoDTE_Text_Congress.sql` | WP17 |
 | 全部 `LOC_PEDIA_*`（文明、领袖、单位、区域、建筑、人物、地点） | `Texts/TsoDTE_Text_Pedia.sql` | WP8 |
 | 全部 `LOC_DIPLO_*_LEADER_TSOD_ROSETTA_AUGUSTUS_*` / `LOC_DIPLO_*_TSOD_ROSETTA_AUGUSTUS_*` 外交台词 | 同上 | WP8 |
 | `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、`LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE`（领袖引言） | 同上 | WP8（WP1 的 `LoadingInfo`、`LeaderQuotes` 行只引用） |
@@ -112,6 +113,8 @@
 | `Core/TsoDTE_Project.sql` | WP16 | IG UpdateDatabase（紧跟 District_MageTower，要引用法师塔；含去神圣化的解锁、完成修正、通知类型，以及文明能力上的 TraitModifiers 行） |
 | `Scripts/TsoDTE_Project.lua` | WP16 | IG AddGameplayScripts（完成去神圣化：信仰一半转研究进度，只对提丰，发通知） |
 | `Texts/TsoDTE_Text_Project.sql` | WP16 | IG UpdateText（不进 FE：项目只在局内出现） |
+| `Core/TsoDTE_Congress.sql` | WP17 | IG UpdateDatabase（紧跟 TsoDTE_Project.sql；决议、两个选项的修正、AI 偏好行） |
+| `Texts/TsoDTE_Text_Congress.sql` | WP17 | IG UpdateText（不进 FE：世界议会只在局内出现） |
 | `Core/TsoDTE_Building_Burnstone.sql` | WP6 | IG UpdateDatabase |
 | `Texts/TsoDTE_Text_Burnstone.sql` | WP6 | IG UpdateText + FE UpdateText |
 | `Core/TsoDTE_Agenda_AI.sql` | WP7 | IG UpdateDatabase |
@@ -126,7 +129,7 @@ FrontEnd 也加载特性、单位、区域、建筑的文本，因为开局界�
 同一个动作里按下列顺序登记，被引用的类型先建：
 
 1. `TsoDTE_Civilization.sql` → 2. `TsoDTE_Leader.sql`（两个特性的壳）
-3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → `TsoDTE_Project.sql`（WP16，引用法师塔区域，须在它之后） → 5. `TsoDTE_Building_Burnstone.sql`
+3. `TsoDTE_Unit_BattleMage.sql` → `TsoDTE_WMD.sql`（WP13，同包的武器与能力要在单位之后） → 4. `TsoDTE_District_MageTower.sql` → `TsoDTE_Project.sql`（WP16，引用法师塔区域，须在它之后）→ `TsoDTE_Congress.sql`（WP17，排在 Project 之后；它引用第 2 步的领袖特性，官方决议与修正早已存在） → 5. `TsoDTE_Building_Burnstone.sql`
 6. `TsoDTE_CivTrait.sql`
 7. `TsoDTE_Agenda_AI.sql` → 8. `TsoDTE_Pedia.sql`
 
@@ -166,6 +169,7 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | 挂到文明能力上的去神圣化解锁（`TraitModifiers` 一行，指向 `MODIFIER_PLAYER_ALLOW_PROJECT_TSOD`） | `TsoDTE_Project.sql` | WP16 |
 | 战斗法师成长能力的授予修正 | 挂在 WP4 自己的 `TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE` 上（等价于文明能力，且不碰 WP1 的壳） | WP4 |
 | `Agendas`、`HistoricalAgendas`、议程特性、`AiListTypes` / `AiLists` / `AiFavoredItems` | `TsoDTE_Agenda_AI.sql` | WP7 |
+| 神权理事会的 `Types`、`Resolutions`、`ResolutionEffects` 行，本决议专用的 `Modifiers` / `ModifierArguments`（`TSOD_TYPHON_COUNCIL_RELIGIOUS_STRENGTH_DOWN`），以及 AI 偏好 `AiListTypes` / `AiLists` / `AiFavoredItems` 的 `TSOD_TYPHON_ROSETTA_RESOLUTIONS` 三行 | `TsoDTE_Congress.sql` | WP17（AI 三表原属 WP7 的文件，这里只新增一个 ListType，不与 WP7 的行重复；统筹者确认） |
 | 开局界面每个特色项一行（`Players` / `PlayerItems` 等配置表） | `TsoDTE_Config.sql` | WP1（只引用别包的 ID 与 LOC tag） |
 
 ## 6. 专名英文对照（暂定，WP20 英文校对时可改）
