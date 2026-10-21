@@ -206,12 +206,12 @@ x、y 换成目标格子；单位类型按需要换。
 
 | 编号 | 问题 | 测什么 | 退路 |
 |---|---|---|---|
-| N1 | 在 `UnitOperationStarted` 里 `UnitManager.Kill` 施放单位，爆炸还会结算吗 | 施放后有没有地图上的爆炸；目标有没有受伤；Lua.log 有没有报错 | 阵亡挪到 `UnitOperationDeactivated` 里做 |
-| N2 | `pUnit:GetOperationParameter` 能否读到武器类型与目标坐标 | Lua.log 有没有 `GetOperationParameter failed` 或 `weapon type unreadable` | 读不到武器类型就整个不处理（只写日志），需要改用别的方式识别武器 |
+| N1 | 在 `UnitOperationStarted` 里 `UnitManager.Kill` 整支军队，爆炸还会结算吗；Kill 会不会没生效 | 施放后有没有地图上的爆炸；Lua.log 的 `strike: victim … after Kill` 行 `removed from list`；`strike end` 行的 `killed again=0` | Kill 没生效时 Deactivated 会补杀（`killing again` 行）；若爆炸没结算，改成只在 Deactivated 里 Kill |
+| N2 | `pUnit:GetOperationParameter` 能否读到武器类型 | Lua.log 的 `strike:` 行里 `weapon` 的值是否等于 `WeaponIndex`；有没有 `GetOperationParameter failed` | 读不到武器类型时，军队状态的施放者按湮灭之创处理（日志写「按后备规则判定」），其他单位不处理；目标坐标已不再读取 |
 | N3 | 引擎施放时是否自己扣库存 | 施放后、回合结束前，弹数是否和军团数一致（不少扣、不多扣） | 对账在 Started 与 Deactivated 都做，两种情况都应正确；若弹数还是错，记下 Lua.log 里的 `stock` 行 |
 | N4 | `ChangeWeaponCount` 接受负数 | 弹数减少是否真的发生（施放后弹数 −1） | 未找到替代的减少方式。若不接受负数，库存只能增加，需要重新设计库存的维护方法 |
 | N5 | `UnitFormCorps` / `UnitFormArmy` 在 Gameplay 环境是否派发 | 组军团时是否有 READY 通知（没有就是这个问题；能力还是会在回合开始补上） | 回合开始的对账已能补能力，缺的只是通知 |
-| N6 | 一支军团或军队只对应一个单位对象 | 两个战斗法师组成军团后，弹数是 1 不是 2 | 按单位对象计数会出错；需要改为按 `GetFormationUnitCount` 去重 |
+| N6 | 同一编队的成员报告相同的 `GetFormationID`（按编队计数的依据） | 组成一支军队（三人）后，弹数是 1 不是 3；Lua.log 没有 `formation mismatch` 行；`strike:` 行的 `formation id=… count=3` | 若成员的编队 ID 不同，分组失效、弹数会按人数算；看 `formation mismatch` 行与 `strike:` 行里的 `id=` 与 `count=`，据此改分组方式 |
 | N7 | AI 会不会滥用 | AI 的战斗法师是否频繁施放、是否一回合内把军团打光 | 未找到只禁止 AI 使用的数据开关。若滥用，退路是在 Lua 里对 AI 发起的 `WMD_STRIKE` 取消（需实证能否取消该操作） |
 | N8 | 军队回血与原版静止回血是否叠加 | 静止的军队回血量是否为 10 | 若叠加，改成只在移动或攻击过的单位上补；或改回修正（`MODIFIER_PLAYER_UNIT_GRANT_HEAL_AFTER_ACTION`） |
 | N9 | `Game.AddWorldViewText` 的第一个参数 | AI 施放时人类能否看到「魔力枯竭」浮字 | 改传 `0`（BlackDeath 原版用的是 0） |
