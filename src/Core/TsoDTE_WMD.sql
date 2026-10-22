@@ -6,11 +6,10 @@
 --     FalloutDuration 0，只伤单位与建筑（AffectUnits、AffectBuildings 为 1，其余为 0）。
 --   ICBMStrikeRange 取可莉的 8（需实证，见测试清单）。
 --   Maintenance 取 0，依据 master plan §6.1 第 3 部分（可莉填 8，那是按库存每回合收的维护费，
---     与我们的「库存 = 军队数」不合；这一处与「照可莉」不同，统筹者可改）。
+--     与我们的「库存 = 军团数」不合；这一处与「照可莉」不同，统筹者可改）。
 --   通知：Types 登记为 KIND_NOTIFICATION，Notifications 表写全必填列（照 Base Notifications.xml）。
--- 能力：Inactive = 1，不自动给。由 TsoDTE_BattleMage.lua 按编队授予：
---   军队得湮灭之创与战场再生；军团只得战场再生。
---   没有 UnitAbilityModifiers：湮灭之创靠武器，战场再生在 Lua 里做，两者都不靠修正。
+-- 能力：Inactive = 1，不自动给。由 TsoDTE_BattleMage.lua 在组成军团 / 军队时授予。
+--   没有 UnitAbilityModifiers：湮灭之创靠武器，军队回血在 Lua 里做，两者都不靠修正。
 -- WMDCapable 在 TsoDTE_Unit_BattleMage.sql 里已改回 1，依赖 UnitPanel_TsoDTE.lua 的按钮过滤。
 -- ============================================================================
 

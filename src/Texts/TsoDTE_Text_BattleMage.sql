@@ -12,7 +12,7 @@ VALUES
     (
         'zh_Hans_CN',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        '中世纪提丰特色远程单位，替代弩手。[ICON_Strength] 战斗力随时代成长。与其他战斗法师相邻时，[ICON_Ranged] 远程攻击力提高（不叠加）。组成军团或军队时获得战场再生；组成军队时还可施放湮灭之创。'
+        '中世纪提丰特色远程单位，替代弩手。其 [ICON_Strength] 战斗力随时代成长。与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。'
     ),
 
     -- 能力：弹道学成长
@@ -37,7 +37,7 @@ VALUES
     (
         'en_US',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        'Typhon unique Medieval era ranged unit that replaces the Crossbowman. [ICON_Strength] Combat Strength grows with the eras. When adjacent to another Battle Mage, [ICON_Ranged] Ranged Strength increases (does not stack). Corps and armies gain Battlefield Regeneration. Armies can also cast Annihilation Scar.'
+        'Typhon unique Medieval era ranged unit that replaces the Crossbowman. Its [ICON_Strength] Combat Strength grows with the eras. +5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack).'
     ),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', 'Ballistics Growth'),

@@ -17,16 +17,6 @@
 --
 -- 【黄昏宫殿】
 -- 每进入一个新时代：1 个随机尤里卡 + 1 个随机鼓舞；新时代是黑暗时代时各 2 个。
--- 【黑暗时代的 2+2 在 Gameplay 环境未生效】（已证，不是待验证项）
---   证据：① 实机 Lua.log 每次都是 `[dark age check: HasDarkAge is not available in Gameplay]`，
---             即 Game.GetEras().HasDarkAge 在 Gameplay 为 nil；
---         ② GameEras:HasDarkAge、GetPlayerCurrentScore 等在 kb 与官方脚本里都只在 UI 环境使用；
---         ③ I1 实机：SQL 时代修正（首尔式 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA）两个时代都没给。
---   现状：PlayerHasDarkAge 判不出时按非黑暗给 1+1，Lua.log 写明原因。
---   没有找到已证实的 Gameplay 判定（GameEffects.GetModifierActive 在 kb 里标了 script=true，但官方 Gameplay
---   脚本里没有用例，不算已证），所以不另行猜测。
---   游戏内领袖能力描述与百科里的「黑暗时代改为各 2 个」仍保留（Texts/TsoDTE_Text_LeaderTrait.sql、
---   Texts/TsoDTE_Text_Pedia.sql），是否改掉由用户决定。
 -- 原先用 SQL 的 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA（首尔）与市政版（维尔纽斯），
 -- I1 实测过了两个时代都没给，确认在风云变幻里不生效，改到这里。
 --   时机：不挂 GameEraChanged，而是在提丰玩家每回合开始（PlayerTurnActivated）时比较
@@ -38,33 +28,12 @@
 --         顺延到之后的时代，再没有就往前找更早的时代。只抽在 Boosts 表里有尤里卡 / 鼓舞、
 --         尚未研究、尚未触发的项。
 --   随机数：联机要同步，不用 math.random；用回合数、玩家 ID、时代算一个确定的伪随机下标。
---
--- 【通知】
--- 授予后对人类玩家各发一条 NotificationManager 通知（类型与文本见 src/Core/TsoDTE_Boost.sql、
--- src/Texts/TsoDTE_Text_Boost.sql）：
---   黄昏宫殿：列出实际授予的尤里卡（科技名）与鼓舞（市政名），摘要「黄昏宫殿」，点击跳到首都。
---   何不用之：列出被杀单位名与授予的尤里卡，摘要「何不用之」，点击跳到凶手单位所在格。
--- 没有授予任何项时不发；AI 玩家不发；通知出错只写日志，不影响已完成的授予。
 -- =============================================================================
 
 local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
 local PROPERTY_PREFIX = 'TSOD_TYPHON_KILL_BOOST_'   -- + TechnologyType
 local PROPERTY_LAST_ERA = 'TSOD_TYPHON_TWILIGHT_PALACE_ERA'   -- 上次处理到的游戏时代（Eras 表的 Index）
-
--- 通知类型与文本的 tag（登记在 src/Core/TsoDTE_Boost.sql、src/Texts/TsoDTE_Text_Boost.sql）
-local NOTIF_TWILIGHT   = 'NOTIFICATION_TSOD_TWILIGHT_BOOST'
-local NOTIF_KILL       = 'NOTIFICATION_TSOD_KILL_BOOST'
-local TXT_TWILIGHT_MSG = 'LOC_NOTIFICATION_TSOD_TWILIGHT_BOOST_MESSAGE'
-local TXT_TWILIGHT_SUM = 'LOC_NOTIFICATION_TSOD_TWILIGHT_BOOST_SUMMARY'
-local TXT_KILL_MSG     = 'LOC_NOTIFICATION_TSOD_KILL_BOOST_MESSAGE'
-local TXT_KILL_SUM     = 'LOC_NOTIFICATION_TSOD_KILL_BOOST_SUMMARY'
-local TXT_EUREKA       = 'LOC_NOTIFICATION_TSOD_BOOST_EUREKA'
-local TXT_INSPIRATION  = 'LOC_NOTIFICATION_TSOD_BOOST_INSPIRATION'
-local TXT_SEPARATOR    = 'LOC_NOTIFICATION_TSOD_BOOST_SEPARATOR'
-
--- [通知类型名] = DB.MakeHash 的哈希，InitTsoDTELeaderTrait 里填
-local NotifyHash = {}
 
 -- [playerID] = pPlayer，拥有本能力的玩家
 local TyphonPlayers = {}
@@ -187,41 +156,6 @@ function OnTsoDTEUnitUpgraded(playerID, unitID, upgradeUnitType)
 end
 
 -- -----------------------------------------------------------------------------
--- 通知（只发给人类玩家，照 TsoDTE_BattleMage.lua 的 NotifyHuman）
--- 位置参数形式：SendNotification(玩家, 类型哈希, 消息, 摘要[, x, y])。
--- 文本由调用方用 Locale.Lookup 取好再传入；没有坐标时不传 x、y。
--- -----------------------------------------------------------------------------
-local function NotifyHuman(iPlayer, sNotif, sMessage, sSummary, iX, iY)
-    local pPlayer = Players[iPlayer]
-    if pPlayer == nil or not pPlayer:IsHuman() then
-        return
-    end
-    local hType = NotifyHash[sNotif]
-    if hType == nil then
-        print('[TsoDTE] Leader trait: notification type not registered: ' .. sNotif)
-        return
-    end
-    if iX ~= nil and iY ~= nil then
-        NotificationManager.SendNotification(iPlayer, hType, sMessage, sSummary, iX, iY)
-    else
-        NotificationManager.SendNotification(iPlayer, hType, sMessage, sSummary)
-    end
-end
-
--- 授予已经完成，通知出错只写日志，不回滚、不影响后续
-local function TrySendBoostNotice(fnSend)
-    local bOk, vErr = pcall(fnSend)
-    if not bOk then
-        print('[TsoDTE] Boost notification failed (the grant is kept): ' .. tostring(vErr))
-    end
-end
-
--- 多条文本用本地化分隔符拼接（中文顿号、英文逗号）
-local function JoinTexts(tTexts)
-    return table.concat(tTexts, Locale.Lookup(TXT_SEPARATOR))
-end
-
--- -----------------------------------------------------------------------------
 -- 何不用之
 -- -----------------------------------------------------------------------------
 function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unitID)
@@ -259,18 +193,6 @@ function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unit
     pTechs:TriggerBoost(tTech.Index)
     pPlayer:SetProperty(sProperty, 1)
     print('[TsoDTE] Kill boost: player ' .. playerID .. ' killed ' .. tUnit.UnitType .. ', boosted ' .. tTech.TechnologyType)
-
-    TrySendBoostNotice(function()
-        local sMsg = Locale.Lookup(TXT_KILL_MSG, Locale.Lookup(tUnit.Name), Locale.Lookup(TXT_EUREKA, Locale.Lookup(tTech.Name)))
-        local sSum = Locale.Lookup(TXT_KILL_SUM)
-        -- 位置：凶手单位所在格（点击通知跳到交战处）；取不到凶手单位时不传坐标
-        local pAttacker = FindUnit(playerID, unitID)
-        if pAttacker ~= nil then
-            NotifyHuman(playerID, NOTIF_KILL, sMsg, sSum, pAttacker:GetX(), pAttacker:GetY())
-        else
-            NotifyHuman(playerID, NOTIF_KILL, sMsg, sSum)
-        end
-    end)
 end
 
 -- -----------------------------------------------------------------------------
@@ -372,9 +294,8 @@ end
 
 -- 返回 (是否黑暗时代, 来源说明)。
 -- 注意：官方文档与官方用法里 GameEras:HasDarkAge / HasGoldenAge / HasHeroicGoldenAge 都只在 UI 环境
--- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。实机已证调不通（见文件头）：
--- Lua.log 写的是 `HasDarkAge is not available in Gameplay`，所以黑暗时代的 2+2 未生效。
--- 这里仍用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
+-- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。本脚本跑在 Gameplay，调不调得通要实测。
+-- 所以这里用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
 -- 不让它悄悄失败：Lua.log 里会写明原因。英雄时代 / 黄金时代一律按「非黑暗」。
 local function PlayerHasDarkAge(iPlayer)
     local pEras = Game.GetEras()
@@ -402,22 +323,17 @@ local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
         return not pCulture:HasCivic(idx) and not pCulture:HasBoostBeenTriggered(idx)
     end
 
-    local tGranted = {}   -- 日志用：类型名
-    local tItems = {}     -- 通知用：「X 的尤里卡」「Y 的鼓舞」的本地化文本
+    local tGranted = {}
     for i = 1, iCount do
         local iTech = GrantOneBoost(iPlayer, eraIndex, BoostTechsByEra, TechAvailable,
             function(idx) pTechs:TriggerBoost(idx) end, i)
         if iTech ~= nil then
-            local tTech = GameInfo.Technologies[iTech]
-            table.insert(tGranted, tTech.TechnologyType)
-            table.insert(tItems, Locale.Lookup(TXT_EUREKA, Locale.Lookup(tTech.Name)))
+            table.insert(tGranted, GameInfo.Technologies[iTech].TechnologyType)
         end
         local iCivic = GrantOneBoost(iPlayer, eraIndex, BoostCivicsByEra, CivicAvailable,
             function(idx) pCulture:TriggerBoost(idx) end, i + 100)
         if iCivic ~= nil then
-            local tCivic = GameInfo.Civics[iCivic]
-            table.insert(tGranted, tCivic.CivicType)
-            table.insert(tItems, Locale.Lookup(TXT_INSPIRATION, Locale.Lookup(tCivic.Name)))
+            table.insert(tGranted, GameInfo.Civics[iCivic].CivicType)
         end
     end
 
@@ -425,21 +341,6 @@ local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
     print('[TsoDTE] Twilight Palace: player ' .. iPlayer .. ' entered ' .. (tEra and tEra.EraType or tostring(eraIndex))
         .. (bDark and ' (dark age)' or '') .. ' [dark age check: ' .. sDarkSource .. ']'
         .. ', boosted ' .. (#tGranted > 0 and table.concat(tGranted, ', ') or 'nothing'))
-
-    -- 没有授予任何项就不发；通知只列实际授予的项（判定未生效时不写「黑暗时代 2+2」）
-    if #tItems > 0 then
-        TrySendBoostNotice(function()
-            local sMsg = Locale.Lookup(TXT_TWILIGHT_MSG, JoinTexts(tItems))
-            local sSum = Locale.Lookup(TXT_TWILIGHT_SUM)
-            -- 位置：首都（点击通知跳到首都）；没有首都时不传坐标
-            local pCapital = pPlayer:GetCities():GetCapitalCity()
-            if pCapital ~= nil then
-                NotifyHuman(iPlayer, NOTIF_TWILIGHT, sMsg, sSum, pCapital:GetX(), pCapital:GetY())
-            else
-                NotifyHuman(iPlayer, NOTIF_TWILIGHT, sMsg, sSum)
-            end
-        end)
-    end
 end
 
 function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
@@ -483,9 +384,6 @@ function InitTsoDTELeaderTrait()
     TechHasBoost = CollectBoostedTechs()
     CollectEraTables()
     SeedUnitTypeCache()
-    for _, sName in ipairs({ NOTIF_TWILIGHT, NOTIF_KILL }) do
-        NotifyHash[sName] = DB.MakeHash(sName)
-    end
 
     Events.UnitAddedToMap.Add(OnTsoDTEUnitAddedToMap)
     Events.UnitUpgraded.Add(OnTsoDTEUnitUpgraded)

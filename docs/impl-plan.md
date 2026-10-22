@@ -327,12 +327,11 @@ master plan §4 的三条：
   - 两个能力；
   - 三种通知类型。
 - **Gameplay Lua**：
-  - `Events.UnitFormCorps`：军团。只给「战场再生」能力，发 REGEN 通知（只发人类玩家）；不给湮灭之创，库存不变。
-  - `Events.UnitFormArmy`：军队。给「湮灭之创」与「战场再生」能力，发 READY 通知（只发人类玩家）；库存按军队数计。
+  - `Events.UnitFormCorps`、`UnitFormArmy`：加能力、弹数 +1、发通知；组成军队时再加「战场再生」能力并发通知。
   - `Events.UnitOperationStarted` 捕捉 `UNITOPERATION_WMD_STRIKE` → `UnitManager.Kill` → 发阵亡通知，原位置浮字。
-  - **对账**：每回合开始和编队变化时，按场上战斗法师军队数重算库存，用 `PlayerWMDs:ChangeWeaponCount` 补差。
+  - **对账**：每回合开始和编队变化时，按场上战斗法师军团与军队数重算弹数，用 `PlayerWMDs:ChangeWeaponCount` 补差。
 - **UI Lua**：参照 Klee 的 `UnitPanel_Klee.lua` 覆盖发射按钮判断。
-  - 只有军队状态的战斗法师显示湮灭之创；
+  - 只有军团、军队状态的战斗法师显示湮灭之创；
   - 别的核武单位不显示它；
   - 战斗法师不显示普通核弹。
 - **参考源码**：已克隆在统筹会话的 scratchpad，或重新 `git clone https://github.com/dwughjsd/SunAndMoonOfTeyvat_civ6mod`，看 `MondstadtKleeRelease/` 下的 `Data/MondstadtKlee_WMDs.xml`、`UI/Replacements/UnitPanel_Klee.lua`、`UI/Addition/TopPanelJumpyDumpty.lua`。
@@ -342,37 +341,26 @@ master plan §4 的三条：
   - 联机下对账是否一致；
   - AI 会不会滥用。
 - **验收**：
-  - 组成军队时收到 READY 通知、库存 +1；组成军团时收到 REGEN 通知、库存不变；
-  - 发射后整支军队阵亡、收到阵亡通知、库存 −1；
-  - 组成军团或军队后移动加攻击，下回合仍回血；
+  - 组成军团时收到通知、弹数 +1；
+  - 发射后原单位消失、收到阵亡通知、弹数 −1；
+  - 组成军队后移动加攻击，下回合仍回血；
   - 轰炸机看不到这种武器。
-
-#### 编队规则对调（2026-10-21，用户已确认）
-
-- **军团**（2 人，需「民族主义」）：只有战场再生，每回合回血；不能施放湮灭之创，库存 0。
-- **军队**（3 人，需「动员」）：有湮灭之创与战场再生；库存 = 场上军队数。每回合回血。
-- **军团与军队都回血**。
-- **用完即死的是军队**：施放后，发射的那支军队被整体阵亡，库存 −1。
-- **通知**：READY 改为组成军队时发；REGEN 改为组成军团时发（只发人类玩家）。
-- 效果文本不用第二人称，不写介绍，不写数值（风格照须弥 UU 的写法）。
 
 #### I1 实机反馈后的修订（2026-10-19，用户已批准，F5 除外）
 
 - **阶段 1 临时处理**：战斗法师的 `WMDCapable` 先设 0（单位面板会给 WMDs 表里每一行出一个按钮，用户看到官方核弹、热核和可莉 mod 武器三个灰按钮）。WP13 连同下面的 UI 过滤一起改回 1。
 - **UI 过滤只动法师相关的按钮**（取代上文「覆盖发射按钮判断」）：
   - 不覆盖 `IsActionLimited`。包一层全局的 `GetUnitActionsTable(pUnit)`：先调原函数，再过滤结果表里 `userTag` 为 `WMD_STRIKE` 的条目。
-  - 战斗法师：只留湮灭之创，且只在军队状态；其他单位：去掉湮灭之创；其余按钮一概不碰。
+  - 战斗法师：只留湮灭之创，且只在军团、军队状态；其他单位：去掉湮灭之创；其余按钮一概不碰。
   - 认武器：`AddActionToTable` 的 helpString 末尾拼了 `Locale.Lookup(entry.Name)`（基础版 UnitPanel.lua 645–647），按我们武器的本地化名匹配。能发射与不能发射的按钮都在这张表里，所以两种都管。
 - **兼容写法照梦境之城**：ReplaceUIScript 配同 LoadOrder 的 ImportFiles（参考 `TSODDreamCity\DreamCity.modinfo` 111–126 与 `UI\CityStates_TSODDreamCity.lua` 文件头）。
   - LoadOrder 定为 **200000**，要高于 BuilderLagFix 的 160520（ids.md §5.3 同步）。
   - 用户装的另外两个替换 UnitPanel 的 mod：可莉（工坊 2882489805，`UnitPanel_Klee.lua` 自己 include 基础版，只重定义 `IsActionLimited`）；BuilderLagFix（工坊 2024939221，LoadOrder 160520，它的 `UnitPanel_XP2.lua` 只 include `UnitPanel_Expansion2` 和 `BuilderLagFix`，后者在 ImportFiles 里，并整体重写了 `GetUnitActionsTable`）。
   - 接力顺序（避免基础版被 include 两次）：a. `include("UnitPanel_Klee")`；b. 若之后 `Initialize` 仍未定义，按可莉的循环依次 include `UnitPanel_Expansion2`、`UnitPanel_Expansion1`、`UnitPanel`；c. `include("BuilderLagFix")`；d. 最后包我们这一层。文件不存在时 include 不报错。文件头照梦境之城写明这些。
   - **限度**写进注释，也要告诉用户：同一个面板脚本只能有一个替换生效，做不到对所有 mod 兼容。以后若有不认识的 mod 替换单位面板且比我们后加载，损失的只是这层过滤（三个按钮重新出现），游戏逻辑不受影响。
-- **别的单位发射湮灭之创：F6 已删**（2026-10-21，用户定）。非军队状态的施放者发射任何武器都不处理；库存只由对账维护，不会有别的单位去消耗湮灭之创。
+- **别的单位发射湮灭之创（F6，默认做法，用户可改）**：弹药是玩家级库存，轰炸机、核潜艇也能发射；按对账「多退少补」会下回合补回，等于无限弹；UI 过滤也拦不住 AI。处理：在 `UnitOperationStarted` 里，若发射者不是军团 / 军队状态的战斗法师，就让离目标最近的一支战斗法师军团（或军队）代为阵亡，保持「弹数 = 军团数」；找不到可阵亡的军团时只记日志。
 - **作弊菜单组军团不专门处理**（F4 撤销，用户原话：「这个我用正常途径就行，没必要改实现效果」）。§6.1 的对账照原计划做（回合开始 + 编队变化）；测试只走游戏正常合并。
 - **外交惩罚的去留**仍待用户定（F5）。
-- **阶段 2 实机反馈第 5 项**：删除梦境之城联动的宜居度（`TsoDTE_Compat_DreamCity.sql` 已删，相关 criteria、动作、文本与清单条目一并清理）。塞西尔的态度修正保留。
-- **阶段 2 实机反馈第 6 项**（2026-10-21）：黄昏宫殿（新时代）与何不用之（击杀）授予后各发一条通知，列出实际授予的科技尤里卡与市政鼓舞；只发给人类玩家，没有授予任何项时不发。类型 `NOTIFICATION_TSOD_TWILIGHT_BOOST` / `NOTIFICATION_TSOD_KILL_BOOST` 自建，不复用官方 `NOTIFICATION_TECH_BOOST`（它的点击处理要读 Lua 传不了的通知值）。**黑暗时代的 2+2 在 Gameplay 环境未生效**：`GameEras:HasDarkAge` 在 Gameplay 为 nil（实机 Lua.log 已证），没有已证实的替代判定，所以不猜，现状按非黑暗给 1+1。领袖能力描述与百科里「黑暗时代改为各 2 个」的说法未改，**待用户决定去留**。
 
 ### WP14 战神教（阶段 2，可选内容）
 

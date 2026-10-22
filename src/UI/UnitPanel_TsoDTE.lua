@@ -1,5 +1,5 @@
 -- ===========================================================================
---  单位面板：湮灭之创只在战斗法师的军队状态下出现（军团不能施放）
+--  单位面板：湮灭之创只在战斗法师的军团 / 军队状态下出现
 --
 --  文件头写法照梦境之城（TSODDreamCity\UI\CityStates_TSODDreamCity.lua）：
 --  ReplaceUIScript（LuaContext UnitPanel）配同 LoadOrder（200000）的 ImportFiles，
@@ -13,7 +13,7 @@
 --  不覆盖 IsActionLimited（可莉 mod 在那里做它自己的过滤）。
 --
 --  过滤规则（只动核武类按钮，其余按钮一概不碰）：
---    战斗法师：只保留湮灭之创，且只在军队状态下保留；官方核弹、热核、其他 mod 的武器全部去掉。
+--    战斗法师：只保留湮灭之创，且只在军团 / 军队状态下保留；官方核弹、热核、其他 mod 的武器全部去掉。
 --    其他单位：去掉湮灭之创；其余武器按钮照常。
 --  认武器：按武器的本地化名做子串匹配（AddActionToTable 的 helpString 里拼了 Locale.Lookup(entry.Name)）。
 --    不用「末尾」匹配：不能发射时，失败原因会追加在名字后面。
@@ -63,8 +63,10 @@ local TSOD_BASE_GetUnitActionsTable = GetUnitActionsTable
 local TSOD_BATTLE_MAGE_TYPE = "UNIT_TSOD_BATTLE_MAGE"
 local TSOD_SCAR_NAME_LOC = "LOC_WMD_TSOD_ANNIHILATION_SCAR_NAME"
 
-local function TsoDTE_IsArmy(pUnit)
-    return pUnit:GetMilitaryFormation() == MilitaryFormationTypes.ARMY_FORMATION
+local function TsoDTE_IsCorpsOrArmy(pUnit)
+    local iFormation = pUnit:GetMilitaryFormation()
+    return iFormation == MilitaryFormationTypes.CORPS_FORMATION
+        or iFormation == MilitaryFormationTypes.ARMY_FORMATION
 end
 
 function GetUnitActionsTable(pUnit)
@@ -75,7 +77,7 @@ function GetUnitActionsTable(pUnit)
 
     local tInfo = GameInfo.Units[pUnit:GetUnitType()]
     local bBattleMage = tInfo ~= nil and tInfo.UnitType == TSOD_BATTLE_MAGE_TYPE
-    local bScarAllowed = bBattleMage and TsoDTE_IsArmy(pUnit)
+    local bScarAllowed = bBattleMage and TsoDTE_IsCorpsOrArmy(pUnit)
     local sScarName = Locale.Lookup(TSOD_SCAR_NAME_LOC)
 
     for sCategory, tEntries in pairs(tActions) do
