@@ -5,7 +5,7 @@
 -- 完成 PROJECT_TSOD_DESANCTIFICATION 时（只对提丰玩家，按领袖判断）：
 --   1. 当前信仰值的一半（向下取整）转为等量的当前研究进度；
 --   2. 从信仰值里扣掉同样的数量。
---   3. 只对人类玩家发一条通知（照 WP13）。AI 完成照样转换，不发通知。
+--   3. 只对人类玩家发一条通知（NotificationTypes.USER_DEFINED_5，同官方剧本的做法）。AI 完成照样转换，不发通知。
 -- 外交支持 +25 不在这里：由 Core/TsoDTE_Project.sql 的项目完成修正
 --   TSOD_TYPHON_DESANCTIFICATION_FAVOR（MODIFIER_PLAYER_ADD_FAVOR，RunOnce）给。
 -- 「对提丰可见」也不在这里：由文明能力挂的 MODIFIER_PLAYER_ALLOW_PROJECT_TSOD 决定。
@@ -31,13 +31,12 @@
 local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
 local PROJECT_DESANC = 'PROJECT_TSOD_DESANCTIFICATION'
-local NOTIF_DESANC   = 'NOTIFICATION_TSOD_DESANCTIFICATION'
 local TXT_DESANC_MSG = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE'
 local TXT_DESANC_SUM = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY'
 
 -- 启动时填入
 local ProjectIndex = -1
-local NotifyHash = nil
+local NotifyType = nil         -- NotificationTypes.USER_DEFINED_5
 local TyphonLeaders = {}      -- [LeaderType] = true
 
 -- -----------------------------------------------------------------------------
@@ -59,19 +58,24 @@ local function IsTyphonPlayer(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
--- 通知只发给人类玩家（照 TsoDTE_BattleMage.lua 的 NotifyHuman）
+-- 通知只发给人类玩家；出错只写日志
 -- -----------------------------------------------------------------------------
 local function NotifyHuman(iPlayer, iX, iY)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil or not pPlayer:IsHuman() then
         return
     end
-    if NotifyHash == nil then
-        print('[TsoDTE] Desanctification: notification type hash missing, message not sent')
+    if NotifyType == nil then
+        print('[TsoDTE] Desanctification: NotificationTypes unavailable, message not sent')
         return
     end
-    NotificationManager.SendNotification(iPlayer, NotifyHash,
-        Locale.Lookup(TXT_DESANC_MSG), Locale.Lookup(TXT_DESANC_SUM), iX, iY)
+    local bOk, sErr = pcall(function()
+        NotificationManager.SendNotification(iPlayer, NotifyType,
+            Locale.Lookup(TXT_DESANC_MSG), Locale.Lookup(TXT_DESANC_SUM), iX, iY)
+    end)
+    if not bOk then
+        print('[TsoDTE] Desanctification: notification failed: ' .. tostring(sErr))
+    end
 end
 
 -- -----------------------------------------------------------------------------
@@ -123,6 +127,8 @@ local function OnTsoDTECityProjectCompleted(iPlayer, iCity, iProject, iBuilding,
     if iProject ~= ProjectIndex then
         return
     end
+    print('[TsoDTE] Desanctification: completion event player ' .. tostring(iPlayer) .. ' city ' .. tostring(iCity)
+        .. ' cancelled ' .. tostring(bCancelled) .. ' (P1)')
 
     -- P2：bCancelled 为真时跳过。跳过时留日志，便于实测对照它到底在什么时候为真。
     if bCancelled then
@@ -161,7 +167,9 @@ local function InitTsoDTEProject()
     end
     ProjectIndex = tProject.Index
     TyphonLeaders = CollectTyphonLeaders()
-    NotifyHash = DB.MakeHash(NOTIF_DESANC)
+    if NotificationTypes ~= nil then
+        NotifyType = NotificationTypes.USER_DEFINED_5
+    end
 
     Events.CityProjectCompleted.Add(OnTsoDTECityProjectCompleted)
     print('[TsoDTE] Desanctification module initialized')

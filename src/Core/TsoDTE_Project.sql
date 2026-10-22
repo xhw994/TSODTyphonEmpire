@@ -26,8 +26,7 @@
 -- -----------------------------------------------------------------------------
 INSERT INTO Types (Type, Kind) VALUES
     ('PROJECT_TSOD_DESANCTIFICATION',      'KIND_PROJECT'),
-    ('MODIFIER_PLAYER_ALLOW_PROJECT_TSOD', 'KIND_MODIFIER'),
-    ('NOTIFICATION_TSOD_DESANCTIFICATION', 'KIND_NOTIFICATION');
+    ('MODIFIER_PLAYER_ALLOW_PROJECT_TSOD', 'KIND_MODIFIER');
 
 -- -----------------------------------------------------------------------------
 -- 2. 项目主表
@@ -80,17 +79,6 @@ INSERT INTO ProjectCompletionModifiers (ProjectType, ModifierId) VALUES
     ('PROJECT_TSOD_DESANCTIFICATION', 'TSOD_TYPHON_DESANCTIFICATION_FAVOR');
 
 -- -----------------------------------------------------------------------------
--- 5. 通知类型（Lua 完成时发送；文本在 Texts/TsoDTE_Text_Project.sql）
---    官方没有「项目完成」的通用通知类型（Base Gameplay/Data/Notifications.xml 里只有
---    NOTIFICATION_TECH_BOOST、NOTIFICATION_WONDER_COMPLETED 等特定类型），所以新登记一个。
---    照 WP13 的 NOTIFICATION_TSOD_ANNIHILATION_SACRIFICE：不自动弹窗，点掉为止。
+-- 5. 通知：不登记自定义通知类型（实机里自定义类型的通知不出现）。
+--    Scripts/TsoDTE_Project.lua 用 NotificationTypes.USER_DEFINED_5，消息与摘要文本在 Texts/TsoDTE_Text_Project.sql。
 -- -----------------------------------------------------------------------------
-INSERT INTO Notifications (
-    NotificationType, Message, Summary, SeverityType,
-    ExpiresEndOfTurn, ExpiresEndOfNextTurn, AutoNotify, AutoActivate, VisibleInUI, ShowIconSinglePlayer
-) VALUES (
-    'NOTIFICATION_TSOD_DESANCTIFICATION',
-    'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
-    'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY',
-    'MID', 0, 0, 0, 0, 1, 1
-);
