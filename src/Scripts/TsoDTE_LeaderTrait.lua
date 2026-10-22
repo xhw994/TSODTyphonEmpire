@@ -1,9 +1,10 @@
 -- =============================================================================
 -- WP3 领袖能力「凡人的韧性」
 -- 环境：Gameplay（InGame AddGameplayScripts）
--- 两部分都在这里：何不用之（击杀给尤里卡）、黄昏宫殿（新时代给尤里卡与鼓舞）。
+-- 两部分都在这里：击杀给尤里卡、新时代给尤里卡与鼓舞。领袖能力只有一个名字「凡人的韧性」，
+-- 通知与界面文字里不出现别的子名称（用户定）。
 --
--- 【何不用之】
+-- 【击杀尤里卡】
 -- 战斗中击杀敌方单位后，若尚未研究该单位的前置科技（Units.PrereqTech），
 -- 立即获得该科技的尤里卡。每项科技最多由本能力触发一次。
 -- 只对领袖为 LEADER_TSOD_ROSETTA_AUGUSTUS（或其 LeaderTraits 带本特性）的玩家生效。
@@ -15,13 +16,17 @@
 -- （官方 NotificationPanel 的 OnUnitKilledInCombat 也按「FindID 可能为 nil」处理）。
 -- 所以先 FindID，取不到再查本脚本维护的单位类型缓存。缓存不进存档，每次加载重建。
 --
--- 【黄昏宫殿】
+-- 【新时代加成】
 -- 每进入一个新时代：1 个随机尤里卡 + 1 个随机鼓舞；新时代是黑暗时代时各 2 个。
+--   黑暗时代判定：GameEras:HasDarkAge 在 Gameplay 环境是 nil（实机 Lua.log 证实），
+--   所以改读玩家属性 TSOD_TYPHON_DARK_AGE（由 Core/TsoDTE_Leader.sql 的 TSOD_TYPHON_DARK_AGE_PROBE
+--   修正在黑暗时代时写入）。需求的重新评估可能比回合开始晚，所以进入新时代时先给 1+1，
+--   之后本时代内任一回合读到黑暗时代、且本时代还没补过，就再补 1+1（PROPERTY_DARK_ERA 记录已补的时代）。
+--   属性读不到时再试 HasDarkAge（UI 专用，通常不可用），都不行按非黑暗处理，Lua.log 写明来源。
 -- 原先用 SQL 的 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA（首尔）与市政版（维尔纽斯），
 -- I1 实测过了两个时代都没给，确认在风云变幻里不生效，改到这里。
 --   时机：不挂 GameEraChanged，而是在提丰玩家每回合开始（PlayerTurnActivated）时比较
---         「当前游戏时代」和玩家属性里记的「上次处理到的时代」。时代切换发生在回合交替时，
---         到玩家回合开始时黑暗 / 黄金时代已经判定完，所以 HasDarkAge 读到的是新时代的结果。
+--         「当前游戏时代」和玩家属性里记的「上次处理到的时代」。时代切换发生在回合交替时。
 --         记录存在玩家属性里，读档不会重复给。开局（属性为空）只记录、不发放。
 --   英雄时代（黑暗时代之后进入的黄金时代）属于黄金时代，不算黑暗时代，给 1 + 1。
 --   抽取范围：优先新时代的科技 / 市政；新时代里已经没有可用的（都研究过或已触发），
@@ -33,7 +38,20 @@
 local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
 local PROPERTY_PREFIX = 'TSOD_TYPHON_KILL_BOOST_'   -- + TechnologyType
-local PROPERTY_LAST_ERA = 'TSOD_TYPHON_TWILIGHT_PALACE_ERA'   -- 上次处理到的游戏时代（Eras 表的 Index）
+local PROPERTY_LAST_ERA = 'TSOD_TYPHON_TWILIGHT_PALACE_ERA'   -- 上次处理到的游戏时代（Eras 表的 Index；键名保留，旧存档兼容）
+local PROPERTY_DARK_ERA = 'TSOD_TYPHON_DARK_AGE_BONUS_ERA'   -- 已补过黑暗时代额外 1+1 的时代
+local PROPERTY_DARK_AGE = 'TSOD_TYPHON_DARK_AGE'             -- 修正写入：黑暗时代时 > 0
+
+-- 通知：官方剧本用 NotificationTypes.USER_DEFINED_*（自定义类型实机不出现）。
+-- 战斗法师用 1..3，去神圣化用 5，这里用 4。摘要用领袖能力名。
+local NotifyBoost = nil
+local TXT_SUMMARY    = 'LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME'
+local TXT_ERA_MSG    = 'LOC_TSOD_TYPHON_BOOST_NOTIFY_ERA'
+local TXT_DARK_MSG   = 'LOC_TSOD_TYPHON_BOOST_NOTIFY_DARK_AGE'
+local TXT_KILL_MSG   = 'LOC_TSOD_TYPHON_BOOST_NOTIFY_KILL'
+local TXT_EUREKA     = 'LOC_TSOD_TYPHON_BOOST_ITEM_EUREKA'
+local TXT_INSPIRE    = 'LOC_TSOD_TYPHON_BOOST_ITEM_INSPIRATION'
+local TXT_SEPARATOR  = 'LOC_TSOD_TYPHON_BOOST_ITEM_SEPARATOR'
 
 -- [playerID] = pPlayer，拥有本能力的玩家
 local TyphonPlayers = {}
@@ -45,7 +63,7 @@ local TechHasBoost = {}
 -- [playerID] = { [unitID] = unitTypeIndex }
 local UnitTypeCache = {}
 
--- 黄昏宫殿用：按时代先后排好的时代列表，以及每个时代里有尤里卡 / 鼓舞的科技、市政
+-- 新时代加成用：按时代先后排好的时代列表，以及每个时代里有尤里卡 / 鼓舞的科技、市政
 local EraOrder = {}            -- [1..n] = eraIndex，按 ChronologyIndex 排序
 local EraPosition = {}         -- [eraIndex] = 在 EraOrder 里的位置
 local BoostTechsByEra = {}     -- [eraIndex] = { techIndex, ... }
@@ -156,7 +174,27 @@ function OnTsoDTEUnitUpgraded(playerID, unitID, upgradeUnitType)
 end
 
 -- -----------------------------------------------------------------------------
--- 何不用之
+-- 通知（只发给人类玩家；出错只写日志，已完成的授予不受影响）
+-- -----------------------------------------------------------------------------
+local function NotifyBoostHuman(iPlayer, sMessage, iX, iY)
+    local pPlayer = Players[iPlayer]
+    if pPlayer == nil or not pPlayer:IsHuman() or NotifyBoost == nil then
+        return
+    end
+    local bOk, sErr = pcall(function()
+        NotificationManager.SendNotification(iPlayer, NotifyBoost, sMessage, Locale.Lookup(TXT_SUMMARY), iX, iY)
+    end)
+    if not bOk then
+        print('[TsoDTE] Leader trait: notification failed: ' .. tostring(sErr))
+    end
+end
+
+local function JoinItems(tItems)
+    return table.concat(tItems, Locale.Lookup(TXT_SEPARATOR))
+end
+
+-- -----------------------------------------------------------------------------
+-- 击杀尤里卡
 -- -----------------------------------------------------------------------------
 function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unitID)
     -- 不论凶手是谁都先取出并清掉缓存项，避免缓存只增不减
@@ -193,10 +231,18 @@ function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unit
     pTechs:TriggerBoost(tTech.Index)
     pPlayer:SetProperty(sProperty, 1)
     print('[TsoDTE] Kill boost: player ' .. playerID .. ' killed ' .. tUnit.UnitType .. ', boosted ' .. tTech.TechnologyType)
+
+    local sMsg = Locale.Lookup(TXT_KILL_MSG, Locale.Lookup(tUnit.Name), Locale.Lookup(TXT_EUREKA, Locale.Lookup(tTech.Name)))
+    local pKiller = FindUnit(playerID, unitID)
+    if pKiller ~= nil then
+        NotifyBoostHuman(playerID, sMsg, pKiller:GetX(), pKiller:GetY())
+    else
+        NotifyBoostHuman(playerID, sMsg)
+    end
 end
 
 -- -----------------------------------------------------------------------------
--- 黄昏宫殿
+-- 新时代加成
 -- -----------------------------------------------------------------------------
 local function CollectEraTables()
     local tOrder = {}
@@ -292,27 +338,25 @@ local function GrantOneBoost(iPlayer, eraIndex, tByEra, fnAvailable, fnTrigger, 
     return nil
 end
 
--- 返回 (是否黑暗时代, 来源说明)。
--- 注意：官方文档与官方用法里 GameEras:HasDarkAge / HasGoldenAge / HasHeroicGoldenAge 都只在 UI 环境
--- （kb 里 script=false，官方脚本里也只有 UI 文件在用）。本脚本跑在 Gameplay，调不调得通要实测。
--- 所以这里用 pcall 包住，取不到或报错就记日志并按「非黑暗」处理（只给 1+1），
--- 不让它悄悄失败：Lua.log 里会写明原因。英雄时代 / 黄金时代一律按「非黑暗」。
-local function PlayerHasDarkAge(iPlayer)
+-- 返回 (是否黑暗时代, 来源说明)。先读修正写入的玩家属性，读不到再试 HasDarkAge。
+local function PlayerHasDarkAge(iPlayer, pPlayer)
+    local vProp = pPlayer:GetProperty(PROPERTY_DARK_AGE)
+    if vProp ~= nil then
+        return (tonumber(vProp) or 0) > 0, 'property ' .. tostring(vProp)
+    end
     local pEras = Game.GetEras()
-    if pEras == nil or pEras.HasDarkAge == nil then
-        return false, 'HasDarkAge is not available in Gameplay'
+    if pEras ~= nil and pEras.HasDarkAge ~= nil then
+        local bOk, vResult = pcall(pEras.HasDarkAge, pEras, iPlayer)
+        if bOk then
+            return vResult == true, 'HasDarkAge'
+        end
+        return false, 'property unset, HasDarkAge raised: ' .. tostring(vResult)
     end
-    local bOk, vResult = pcall(pEras.HasDarkAge, pEras, iPlayer)
-    if not bOk then
-        return false, 'HasDarkAge raised an error: ' .. tostring(vResult)
-    end
-    return vResult == true, 'HasDarkAge'
+    return false, 'property unset, HasDarkAge unavailable'
 end
 
-local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
-    local bDark, sDarkSource = PlayerHasDarkAge(iPlayer)
-    local iCount = bDark and 2 or 1
-
+-- 授予 iCount 组（1 尤里卡 + 1 鼓舞），返回通知用的项目文本列表与日志用的类型名列表
+local function GrantBoostPairs(iPlayer, pPlayer, eraIndex, iCount, iSaltBase)
     local pTechs = pPlayer:GetTechs()
     local pCulture = pPlayer:GetCulture()
 
@@ -323,24 +367,67 @@ local function GrantTwilightPalace(iPlayer, pPlayer, eraIndex)
         return not pCulture:HasCivic(idx) and not pCulture:HasBoostBeenTriggered(idx)
     end
 
-    local tGranted = {}
+    local tItems = {}
+    local tTypes = {}
     for i = 1, iCount do
         local iTech = GrantOneBoost(iPlayer, eraIndex, BoostTechsByEra, TechAvailable,
-            function(idx) pTechs:TriggerBoost(idx) end, i)
+            function(idx) pTechs:TriggerBoost(idx) end, iSaltBase + i)
         if iTech ~= nil then
-            table.insert(tGranted, GameInfo.Technologies[iTech].TechnologyType)
+            local tTech = GameInfo.Technologies[iTech]
+            table.insert(tTypes, tTech.TechnologyType)
+            table.insert(tItems, Locale.Lookup(TXT_EUREKA, Locale.Lookup(tTech.Name)))
         end
         local iCivic = GrantOneBoost(iPlayer, eraIndex, BoostCivicsByEra, CivicAvailable,
-            function(idx) pCulture:TriggerBoost(idx) end, i + 100)
+            function(idx) pCulture:TriggerBoost(idx) end, iSaltBase + i + 100)
         if iCivic ~= nil then
-            table.insert(tGranted, GameInfo.Civics[iCivic].CivicType)
+            local tCivic = GameInfo.Civics[iCivic]
+            table.insert(tTypes, tCivic.CivicType)
+            table.insert(tItems, Locale.Lookup(TXT_INSPIRE, Locale.Lookup(tCivic.Name)))
         end
     end
+    return tItems, tTypes
+end
 
+local function NotifyAtCapital(iPlayer, pPlayer, sMsg)
+    local pCapital = pPlayer:GetCities():GetCapitalCity()
+    if pCapital ~= nil then
+        NotifyBoostHuman(iPlayer, sMsg, pCapital:GetX(), pCapital:GetY())
+    else
+        NotifyBoostHuman(iPlayer, sMsg)
+    end
+end
+
+local function EraName(eraIndex)
     local tEra = GameInfo.Eras[eraIndex]
-    print('[TsoDTE] Twilight Palace: player ' .. iPlayer .. ' entered ' .. (tEra and tEra.EraType or tostring(eraIndex))
-        .. (bDark and ' (dark age)' or '') .. ' [dark age check: ' .. sDarkSource .. ']'
-        .. ', boosted ' .. (#tGranted > 0 and table.concat(tGranted, ', ') or 'nothing'))
+    return tEra and tEra.EraType or tostring(eraIndex)
+end
+
+-- 进入新时代：给 1+1（黑暗时代的额外 1+1 由 CheckDarkAgeBonus 补）
+local function GrantNewEra(iPlayer, pPlayer, eraIndex)
+    local tItems, tTypes = GrantBoostPairs(iPlayer, pPlayer, eraIndex, 1, 0)
+    print('[TsoDTE] New era boost: player ' .. iPlayer .. ' entered ' .. EraName(eraIndex)
+        .. ', boosted ' .. (#tTypes > 0 and table.concat(tTypes, ', ') or 'nothing'))
+    if #tItems > 0 then
+        NotifyAtCapital(iPlayer, pPlayer, Locale.Lookup(TXT_ERA_MSG, JoinItems(tItems)))
+    end
+end
+
+-- 本时代内读到黑暗时代且还没补过：补 1+1（每个时代只补一次）
+local function CheckDarkAgeBonus(iPlayer, pPlayer, eraIndex)
+    if pPlayer:GetProperty(PROPERTY_DARK_ERA) == eraIndex then
+        return
+    end
+    local bDark, sSource = PlayerHasDarkAge(iPlayer, pPlayer)
+    if not bDark then
+        return
+    end
+    pPlayer:SetProperty(PROPERTY_DARK_ERA, eraIndex)
+    local tItems, tTypes = GrantBoostPairs(iPlayer, pPlayer, eraIndex, 1, 10)
+    print('[TsoDTE] Dark age bonus: player ' .. iPlayer .. ' in ' .. EraName(eraIndex)
+        .. ' [' .. sSource .. '], boosted ' .. (#tTypes > 0 and table.concat(tTypes, ', ') or 'nothing'))
+    if #tItems > 0 then
+        NotifyAtCapital(iPlayer, pPlayer, Locale.Lookup(TXT_DARK_MSG, JoinItems(tItems)))
+    end
 end
 
 function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
@@ -359,19 +446,23 @@ function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
 
     local iLast = pPlayer:GetProperty(PROPERTY_LAST_ERA)
     if iLast == nil then
-        -- 开局或本脚本第一次见到这个存档：只记录，不发放
+        -- 开局或本脚本第一次见到这个存档：只记录，不发放（本时代也不补黑暗时代）
         pPlayer:SetProperty(PROPERTY_LAST_ERA, iEra)
+        pPlayer:SetProperty(PROPERTY_DARK_ERA, iEra)
         return
     end
-    if iEra == iLast then
-        return
+    if iEra ~= iLast then
+        -- 先写标记再发放：发放中途出错也不会在下回合重复给
+        pPlayer:SetProperty(PROPERTY_LAST_ERA, iEra)
+        if (EraPosition[iEra] or 0) > (EraPosition[iLast] or 0) then
+            GrantNewEra(iPlayer, pPlayer, iEra)
+        else
+            -- 时代倒退（不该发生）：不补黑暗时代
+            pPlayer:SetProperty(PROPERTY_DARK_ERA, iEra)
+            return
+        end
     end
-
-    -- 先写标记再发放：发放中途出错也不会在下回合重复给
-    pPlayer:SetProperty(PROPERTY_LAST_ERA, iEra)
-    if (EraPosition[iEra] or 0) > (EraPosition[iLast] or 0) then
-        GrantTwilightPalace(iPlayer, pPlayer, iEra)
-    end
+    CheckDarkAgeBonus(iPlayer, pPlayer, iEra)
 end
 
 -- -----------------------------------------------------------------------------
@@ -384,14 +475,21 @@ function InitTsoDTELeaderTrait()
     TechHasBoost = CollectBoostedTechs()
     CollectEraTables()
     SeedUnitTypeCache()
+    if NotificationTypes ~= nil then
+        NotifyBoost = NotificationTypes.USER_DEFINED_4
+    end
 
     Events.UnitAddedToMap.Add(OnTsoDTEUnitAddedToMap)
     Events.UnitUpgraded.Add(OnTsoDTEUnitUpgraded)
     Events.UnitKilledInCombat.Add(OnTsoDTEUnitKilledInCombat)
     Events.PlayerTurnActivated.Add(OnTsoDTEPlayerTurnActivated)
-    -- 加载时报告一次：Gameplay 环境里到底能不能调 HasDarkAge（官方只在 UI 环境用它）
+    -- 加载时报告一次黑暗时代的两种来源与通知类型
     local pEras = Game.GetEras()
-    print('[TsoDTE] Game.GetEras().HasDarkAge callable in Gameplay: ' .. tostring(pEras ~= nil and pEras.HasDarkAge ~= nil))
+    for iPlayer, pPlayer in pairs(TyphonPlayers) do
+        print('[TsoDTE] Dark age sources for player ' .. iPlayer .. ': property ' .. tostring(pPlayer:GetProperty(PROPERTY_DARK_AGE))
+            .. ', HasDarkAge callable ' .. tostring(pEras ~= nil and pEras.HasDarkAge ~= nil)
+            .. ', notification type ' .. tostring(NotifyBoost))
+    end
     print('[TsoDTE] Leader trait initialized for ' .. TyphonPlayerCount .. ' player(s)')
 end
 

@@ -79,3 +79,26 @@ INSERT INTO DiplomacyInfo (Type, BackgroundImage)
 VALUES
     ('LEADER_TSOD_ROSETTA_AUGUSTUS',
      'LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND');
+
+-- ----------------------------------------------------------------------------
+-- 8. 领袖能力的黑暗时代探测（WP3 的 Lua 读它）
+--    Gameplay 环境的 Lua 读不到「是否黑暗时代」（GameEras:HasDarkAge 只在 UI 环境，实机日志证实）。
+--    所以用修正把它写成玩家属性：处于黑暗时代时，属性 TSOD_TYPHON_DARK_AGE = 1，
+--    Scripts/TsoDTE_LeaderTrait.lua 用 pPlayer:GetProperty 读。
+--    MODIFIER_PLAYER_ADJUST_PROPERTY（Base Modifiers.xml；官方用例 TRAIT_GOLDEN_AGE_UNLOCK_DARK_POLICIES，
+--    参数 Key / Amount）；需求集 PLAYER_HAS_DARK_AGE 是官方现成的（Expansion1_Leaders.xml，
+--    REQUIREMENT_PLAYER_HAS_DARK_AGE）。需实证：需求失效后属性是否随之回到 0（Lua 只认 > 0）。
+--    挂在领袖特性上：开局时挂载，读旧存档不会补挂（要新开局）。
+-- ----------------------------------------------------------------------------
+INSERT INTO Modifiers (ModifierId, ModifierType, SubjectRequirementSetId)
+VALUES
+    ('TSOD_TYPHON_DARK_AGE_PROBE', 'MODIFIER_PLAYER_ADJUST_PROPERTY', 'PLAYER_HAS_DARK_AGE');
+
+INSERT INTO ModifierArguments (ModifierId, Name, Value)
+VALUES
+    ('TSOD_TYPHON_DARK_AGE_PROBE', 'Key',    'TSOD_TYPHON_DARK_AGE'),
+    ('TSOD_TYPHON_DARK_AGE_PROBE', 'Amount', '1');
+
+INSERT INTO TraitModifiers (TraitType, ModifierId)
+VALUES
+    ('TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS', 'TSOD_TYPHON_DARK_AGE_PROBE');
