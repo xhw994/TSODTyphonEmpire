@@ -1,53 +1,39 @@
 -- =============================================================================
--- WP13 战斗法师：湮灭之创、军队回血、通知
+-- WP13 战斗法师：湮灭之创、战场再生、通知
 -- 环境：Gameplay（InGame AddGameplayScripts）
 --
--- 【湮灭之创】
--- 战斗法师组成军团（UnitFormCorps）或军队（UnitFormArmy）时拥有能力 ABILITY_TSOD_ANNIHILATION_SCAR。
--- 施放的是武器 WMD_TSOD_ANNIHILATION_SCAR（UNITOPERATION_WMD_STRIKE），施放的那支军团或军队随之阵亡。
--- 玩家的武器库存 = 场上战斗法师的军团数 + 军队数。库存只由 ReconcilePlayer 维护，且只动这一种武器，不碰官方核弹。
---
--- F6（默认做法，用户可改）：施放者不是军团 / 军队状态的战斗法师（轰炸机、核潜艇、AI 的其他单位……）时，
--- 由离目标最近的一支战斗法师军团或军队代为阵亡，保持「库存 = 军团数」。找不到可阵亡的就只写日志。
--- 只有施放的是湮灭之创才会走这条路；施放官方核弹不管。
+-- 【编队规则】（用户确认）
+--   军团（2 个合成）：战场再生（每回合回血）。
+--   军队（3 个合成）：战场再生 + 湮灭之创。玩家的湮灭之创库存 = 场上战斗法师军队的数量。
+--   普通状态：两个能力都没有。
 --
 -- 【对账】
--- ReconcilePlayer 按场上状态重算库存和能力，是「设成目标值」而不是「加减一次」，
--- 所以事件次序不影响结果，重复调用也安全。在回合开始、编队变化、施放开始 / 结束时调用。
--- 军团被打死、被俘之类的边角情况都由回合开始的对账兜底，不逐个处理。
+-- ReconcilePlayer 按场上状态重算能力与库存，是「设成目标值」，重复调用安全。
+-- 在回合开始、组成军团 / 军队、施放结束时调用。军队被打死、被俘之类的边角情况由回合开始的对账兜底。
+-- 编队按「同一格」分组，每组只认 ID 最小的那个单位（同格不可能有两个独立的陆地军事单位）。
 --
--- 【军队回血】
--- 只给 ARMY 状态且拥有 ABILITY_TSOD_ARMY_REGENERATION 的战斗法师：每回合开始回复 REGEN_HEAL 点生命，
--- 移动或战斗后同样回。用 Lua 实现（已定，不用修正）。
+-- 【施放】
+-- 实机证据（2026-10-21 的 Lua.log）：Gameplay 环境收不到 UnitOperationStarted，
+-- 只收得到 UnitOperationDeactivated（hOperation == WMD_STRIKE，unitID 是施放者），
+-- 而且到这个事件时引擎已经扣掉了一发库存。所以阵亡在 Deactivated 里做：
+--   施放者是军队状态的战斗法师，且库存 < 军队数（说明刚用掉一发湮灭之创）→ 整支军队阵亡。
+-- 施放过的单位标上 PROPERTY_SPENT：即使 Kill 没立刻生效，它也不再计入库存、不再获得湮灭之创，
+-- 避免「没死就每回合补一发」。
+-- 别的单位发射别的武器一概不管（用户否定了 F6）。
 --
 -- 【通知】
--- 只发给人类玩家。AI 的阵亡与回血都不发通知。
+-- 用官方剧本的做法：NotificationTypes.USER_DEFINED_1..3（黑死病、皇家大逃杀剧本都这样用）。
+-- 能力新授予时发（不依赖 UnitFormCorps / UnitFormArmy 在 Gameplay 是否派发）。只发给人类玩家。
 --
 -- 【联机】只读写游戏状态。不用 math.random、不用 ExposedMembers，不做本地玩家判断。
--- 【存档】本脚本不存任何 Lua 状态：库存在 PlayerWMDs 里，能力在单位上，读档后由回合开始的对账核对。
---
--- 【需实证】每条的退路见代码对应位置的注释
---   N1  UnitOperationStarted 里 UnitManager.Kill 施放单位，引擎是否还会结算爆炸。
---   N2  pUnit:GetOperationParameter 能否读到 PARAM_WMD_TYPE / PARAM_X / PARAM_Y。
---   N3  引擎施放时是否自己扣库存。对账同时挂在 Started 与 Deactivated，两种情况下结果都正确。
---   N4  PlayerWMDs:ChangeWeaponCount 是否接受负数。
---   N5  UnitFormCorps / UnitFormArmy 在 Gameplay 环境是否派发（UI 环境已确认在用）。
---       不派发时，回合开始的对账仍会补上能力，只是缺 READY 通知。
---   N6  一支军团或军队只对应一个单位对象（库存计数的依据）。
---   N7  AI 会不会滥用（WMDCapable=1 之后 AI 可能选这个武器）。
---   N8  军队回血与原版静止回血是否叠加。
---   N9  Game.AddWorldViewText 的第一个参数：这里传施放者 / 阵亡者的玩家 ID。
---       若 AI 施放时人类看不到浮字，改传 0（BlackDeath 原版用的是 0）。
+-- 【存档】库存在 PlayerWMDs 里，能力在单位上，施放标记在单位属性里，读档后由对账核对。
 -- =============================================================================
 
 local UNIT_BATTLE_MAGE = 'UNIT_TSOD_BATTLE_MAGE'
 local WEAPON_SCAR      = 'WMD_TSOD_ANNIHILATION_SCAR'
 local ABILITY_SCAR     = 'ABILITY_TSOD_ANNIHILATION_SCAR'
 local ABILITY_REGEN    = 'ABILITY_TSOD_ARMY_REGENERATION'
-
-local NOTIF_READY      = 'NOTIFICATION_TSOD_ANNIHILATION_READY'
-local NOTIF_SACRIFICE  = 'NOTIFICATION_TSOD_ANNIHILATION_SACRIFICE'
-local NOTIF_REGEN      = 'NOTIFICATION_TSOD_ARMY_REGENERATION'
+local PROPERTY_SPENT   = 'TSOD_TYPHON_SCAR_SPENT'
 
 local TXT_READY_MSG     = 'LOC_NOTIFICATION_TSOD_ANNIHILATION_READY_MESSAGE'
 local TXT_READY_SUM     = 'LOC_NOTIFICATION_TSOD_ANNIHILATION_READY_SUMMARY'
@@ -57,15 +43,17 @@ local TXT_REGEN_MSG     = 'LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_MESSAGE'
 local TXT_REGEN_SUM     = 'LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_SUMMARY'
 local TXT_EXHAUSTED     = 'LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED'
 
--- 每回合回复的生命。与原版静止回血是否叠加见 N8。
+-- 每回合回复的生命
 local REGEN_HEAL = 10
 
--- 启动时查出来的索引与枚举（InitTsoDTEBattleMage 里填）
+-- 启动时填
 local UnitTypeIndex = -1
 local WeaponIndex = -1
 local FormationCorps = nil
 local FormationArmy = nil
-local NotifyHash = {}          -- [通知类型名] = 哈希
+local NotifyReady = nil
+local NotifySacrifice = nil
+local NotifyRegen = nil
 
 -- -----------------------------------------------------------------------------
 -- 基础查询
@@ -82,7 +70,11 @@ local function IsBattleMage(pUnit)
     return pUnit ~= nil and pUnit:GetType() == UnitTypeIndex
 end
 
--- 返回 'army' / 'corps' / 'standard'
+local function IsSpent(pUnit)
+    return pUnit:GetProperty(PROPERTY_SPENT) ~= nil
+end
+
+-- 'army' / 'corps' / 'standard'
 local function FormationState(pUnit)
     local iFormation = pUnit:GetMilitaryFormation()
     if iFormation == FormationArmy then
@@ -93,18 +85,46 @@ local function FormationState(pUnit)
     return 'standard'
 end
 
--- 施放单位与目标坐标从操作参数里读。读不到返回 nil 并记日志（N2）。
-local function ReadOperationParam(pUnit, iParam)
-    local bOk, vValue = pcall(function() return pUnit:GetOperationParameter(iParam) end)
-    if not bOk then
-        print('[TsoDTE] Battle mage: GetOperationParameter failed (N2): ' .. tostring(vValue))
-        return nil
+local STATE_RANK = { standard = 0, corps = 1, army = 2 }
+
+-- 按格分组：{ [key] = { lead = pUnit, state = 'army'|'corps'|'standard', members = {...}, spent = bool } }
+-- 返回 tGroups 和按 key 排好序的 aKeys（联机各端遍历顺序一致）
+local function CollectGroups(iPlayer)
+    local pPlayer = Players[iPlayer]
+    local tGroups = {}
+    local aKeys = {}
+    if pPlayer == nil then
+        return tGroups, aKeys
     end
-    return vValue
+    for _, pUnit in pPlayer:GetUnits():Members() do
+        if IsBattleMage(pUnit) then
+            local sKey = pUnit:GetX() .. ',' .. pUnit:GetY()
+            local tGroup = tGroups[sKey]
+            if tGroup == nil then
+                tGroup = { lead = pUnit, state = 'standard', members = {}, spent = false }
+                tGroups[sKey] = tGroup
+                table.insert(aKeys, sKey)
+            end
+            table.insert(tGroup.members, pUnit)
+            if pUnit:GetID() < tGroup.lead:GetID() then
+                tGroup.lead = pUnit
+            end
+            local sState = FormationState(pUnit)
+            if STATE_RANK[sState] > STATE_RANK[tGroup.state] then
+                tGroup.state = sState
+            end
+            if IsSpent(pUnit) then
+                tGroup.spent = true
+            end
+        end
+    end
+    table.sort(aKeys)
+    return tGroups, aKeys
 end
 
--- 能力按数量授予：要有就保证为 1，不要就保证为 0。返回是否新授予（N5 相关）。
-local function SetAbilityPresence(pAbility, sAbility, bWanted)
+-- 能力按数量授予：要有就保证为 1，不要就保证为 0。返回是否新授予。
+local function SetAbilityPresence(pUnit, sAbility, bWanted)
+    local pAbility = pUnit:GetAbility()
     local iCount = pAbility:GetAbilityCount(sAbility)
     if bWanted and iCount < 1 then
         pAbility:ChangeAbilityCount(sAbility, 1)
@@ -115,186 +135,157 @@ local function SetAbilityPresence(pAbility, sAbility, bWanted)
     return false
 end
 
--- 通知只发给人类玩家
-local function NotifyHuman(iPlayer, sNotif, sMsg, sSum, iX, iY)
+-- 通知只发给人类玩家；出错只写日志
+local function NotifyHuman(iPlayer, hType, sMsg, sSum, iX, iY)
     local pPlayer = Players[iPlayer]
-    if pPlayer == nil or not pPlayer:IsHuman() then
+    if pPlayer == nil or not pPlayer:IsHuman() or hType == nil then
         return
     end
-    local hType = NotifyHash[sNotif]
-    if hType == nil then
-        print('[TsoDTE] Battle mage: notification type not registered: ' .. sNotif)
-        return
+    local bOk, sErr = pcall(function()
+        NotificationManager.SendNotification(iPlayer, hType, Locale.Lookup(sMsg), Locale.Lookup(sSum), iX, iY)
+    end)
+    if not bOk then
+        print('[TsoDTE] Battle mage: notification failed: ' .. tostring(sErr))
     end
-    NotificationManager.SendNotification(iPlayer, hType, Locale.Lookup(sMsg), Locale.Lookup(sSum), iX, iY)
 end
 
 -- -----------------------------------------------------------------------------
--- 对账
+-- 对账：能力与库存
 -- -----------------------------------------------------------------------------
--- 按场上状态重算库存与能力。库存目标 = 军团数 + 军队数（N6）。
--- 能力也在这里按状态核对：军团与军队有湮灭之创，军队有战场再生；其他状态的都收回。
 local function ReconcilePlayer(iPlayer)
     local pPlayer = Players[iPlayer]
-    if pPlayer == nil then
+    if pPlayer == nil or WeaponIndex < 0 then
         return
     end
 
-    local iLive = 0
-    for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) then
-            local sState = FormationState(pUnit)
-            local pAbility = pUnit:GetAbility()
-            if sState ~= 'standard' then
-                iLive = iLive + 1
+    local tGroups, aKeys = CollectGroups(iPlayer)
+    local iArmies = 0
+    for _, sKey in ipairs(aKeys) do
+        local tGroup = tGroups[sKey]
+        local pLead = tGroup.lead
+        local bArmy = tGroup.state == 'army' and not tGroup.spent
+        local bRegen = tGroup.state ~= 'standard'
+        if bArmy then
+            iArmies = iArmies + 1
+        end
+        for _, pUnit in ipairs(tGroup.members) do
+            local bIsLead = pUnit:GetID() == pLead:GetID()
+            local bNewScar = SetAbilityPresence(pUnit, ABILITY_SCAR, bIsLead and bArmy)
+            local bNewRegen = SetAbilityPresence(pUnit, ABILITY_REGEN, bIsLead and bRegen)
+            if bNewScar then
+                NotifyHuman(iPlayer, NotifyReady, TXT_READY_MSG, TXT_READY_SUM, pUnit:GetX(), pUnit:GetY())
+            elseif bNewRegen then
+                NotifyHuman(iPlayer, NotifyRegen, TXT_REGEN_MSG, TXT_REGEN_SUM, pUnit:GetX(), pUnit:GetY())
             end
-            SetAbilityPresence(pAbility, ABILITY_SCAR, sState ~= 'standard')
-            SetAbilityPresence(pAbility, ABILITY_REGEN, sState == 'army')
         end
     end
 
     local pWMDs = pPlayer:GetWMDs()
     local iHave = pWMDs:GetWeaponCount(WeaponIndex)
-    if iHave ~= iLive then
-        -- 设成目标值，用差额调库存（N3、N4）。不是「扣一」，所以引擎是否也扣过都不影响结果。
-        pWMDs:ChangeWeaponCount(WeaponIndex, iLive - iHave)
-        print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iLive)
+    if iHave ~= iArmies then
+        pWMDs:ChangeWeaponCount(WeaponIndex, iArmies - iHave)
+        print('[TsoDTE] Battle mage reconcile: player ' .. iPlayer .. ' stock ' .. iHave .. ' -> ' .. iArmies)
     end
 end
 
 -- -----------------------------------------------------------------------------
--- 编队变化
+-- 编队变化：只对账（通知在对账里按「新授予」发，不依赖这两个事件在 Gameplay 是否派发）
 -- -----------------------------------------------------------------------------
-local function OnUnitFormCorps(iPlayer, iUnit)
-    local pUnit = FindUnit(iPlayer, iUnit)
-    if not IsBattleMage(pUnit) then
-        return
+local function OnFormationEvent(iPlayer, iUnit)
+    if IsBattleMage(FindUnit(iPlayer, iUnit)) then
+        ReconcilePlayer(iPlayer)
     end
-    SetAbilityPresence(pUnit:GetAbility(), ABILITY_SCAR, true)
-    NotifyHuman(iPlayer, NOTIF_READY, TXT_READY_MSG, TXT_READY_SUM, pUnit:GetX(), pUnit:GetY())
-    ReconcilePlayer(iPlayer)
-end
-
-local function OnUnitFormArmy(iPlayer, iUnit)
-    local pUnit = FindUnit(iPlayer, iUnit)
-    if not IsBattleMage(pUnit) then
-        return
-    end
-    local pAbility = pUnit:GetAbility()
-    SetAbilityPresence(pAbility, ABILITY_SCAR, true)
-    SetAbilityPresence(pAbility, ABILITY_REGEN, true)
-    NotifyHuman(iPlayer, NOTIF_REGEN, TXT_REGEN_MSG, TXT_REGEN_SUM, pUnit:GetX(), pUnit:GetY())
-    ReconcilePlayer(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
--- 湮灭之创的施放
+-- 施放：UnitOperationDeactivated(playerID, unitID, hOperation, iData1)
 -- -----------------------------------------------------------------------------
--- 离目标最近的一支战斗法师军团或军队（F6）。距离相同时取单位 ID 小的，保证各端一致。
-local function FindNearestScarUnit(iPlayer, iX, iY)
-    local pPlayer = Players[iPlayer]
-    if pPlayer == nil then
-        return nil
-    end
-    local pBest = nil
-    local iBestDist = nil
-    for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) ~= 'standard' then
-            local iDist = Map.GetPlotDistance(pUnit:GetX(), pUnit:GetY(), iX, iY)
-            if pBest == nil or iDist < iBestDist or (iDist == iBestDist and pUnit:GetID() < pBest:GetID()) then
-                pBest = pUnit
-                iBestDist = iDist
-            end
+local function CountLiveArmies(iPlayer)
+    local tGroups, aKeys = CollectGroups(iPlayer)
+    local iArmies = 0
+    for _, sKey in ipairs(aKeys) do
+        if tGroups[sKey].state == 'army' and not tGroups[sKey].spent then
+            iArmies = iArmies + 1
         end
     end
-    return pBest
+    return iArmies, tGroups
 end
 
--- UnitOperationStarted(ownerID, unitID, operationID)
--- 需实证 N1：在 Started 里 Kill，引擎是否还会结算爆炸。
---   退路：把阵亡挪到 UnitOperationDeactivated（同一个 hOperation == WMD_STRIKE）里做。
-local function OnUnitOperationStarted(iOwner, iUnit, iOperation)
-    if iOperation ~= UnitOperationTypes.WMD_STRIKE then
+local function OnUnitOperationDeactivated(iOwner, iUnit, hOperation, iData1)
+    if hOperation ~= UnitOperationTypes.WMD_STRIKE then
         return
     end
+    local pPlayer = Players[iOwner]
     local pStriker = FindUnit(iOwner, iUnit)
-    if pStriker == nil then
+    if pPlayer == nil or pStriker == nil or not IsBattleMage(pStriker) then
+        ReconcilePlayer(iOwner)
         return
     end
 
-    -- N2：武器类型读不到时不处理，只记日志。宁可漏杀也不误杀。
-    local iWeapon = ReadOperationParam(pStriker, UnitOperationTypes.PARAM_WMD_TYPE)
-    if iWeapon == nil then
-        print('[TsoDTE] Battle mage: weapon type unreadable, strike ignored (N2)')
-        return
-    end
-    if iWeapon ~= WeaponIndex then
+    local iArmies, tGroups = CountLiveArmies(iOwner)
+    local iStock = pPlayer:GetWMDs():GetWeaponCount(WeaponIndex)
+    local tGroup = tGroups[pStriker:GetX() .. ',' .. pStriker:GetY()]
+    local sState = tGroup and tGroup.state or FormationState(pStriker)
+    print('[TsoDTE] strike end: player ' .. iOwner .. ' unit ' .. iUnit .. ' state ' .. sState
+        .. ' stock ' .. iStock .. ' armies ' .. iArmies)
+
+    -- 只有「军队状态的战斗法师刚用掉一发湮灭之创」才阵亡
+    if sState ~= 'army' or iStock >= iArmies then
+        ReconcilePlayer(iOwner)
         return
     end
 
-    local iTargetX = ReadOperationParam(pStriker, UnitOperationTypes.PARAM_X)
-    local iTargetY = ReadOperationParam(pStriker, UnitOperationTypes.PARAM_Y)
-    if iTargetX == nil or iTargetY == nil then
-        iTargetX, iTargetY = pStriker:GetX(), pStriker:GetY()
-        print('[TsoDTE] Battle mage: target unreadable (N2), using striker position')
+    local aMembers = (tGroup and tGroup.members) or { pStriker }
+    local iX, iY = pStriker:GetX(), pStriker:GetY()
+    local aIDs = {}
+    for _, pUnit in ipairs(aMembers) do
+        pUnit:SetProperty(PROPERTY_SPENT, 1)
+        table.insert(aIDs, pUnit:GetID())
     end
-
-    local pVictim = nil
-    if IsBattleMage(pStriker) and FormationState(pStriker) ~= 'standard' then
-        pVictim = pStriker
-    else
-        -- F6：施放者不是军团 / 军队状态的战斗法师，由离目标最近的一支代为阵亡
-        pVictim = FindNearestScarUnit(iOwner, iTargetX, iTargetY)
-        if pVictim == nil then
-            print('[TsoDTE] Battle mage: strike by non-corps unit, no corps or army to sacrifice (F6), logged only')
-            return
+    for _, iID in ipairs(aIDs) do
+        local pUnit = FindUnit(iOwner, iID)
+        if pUnit ~= nil then
+            UnitManager.Kill(pUnit)
         end
-        print('[TsoDTE] Battle mage: strike by non-corps unit, unit ' .. pVictim:GetID() .. ' sacrificed instead (F6)')
     end
+    local iLeft = 0
+    for _, iID in ipairs(aIDs) do
+        if FindUnit(iOwner, iID) ~= nil then
+            iLeft = iLeft + 1
+        end
+    end
+    print('[TsoDTE] strike end: army at ' .. iX .. ',' .. iY .. ' killed ' .. #aIDs .. ' unit(s), still listed ' .. iLeft)
 
-    local iX, iY = pVictim:GetX(), pVictim:GetY()
-    UnitManager.Kill(pVictim)
-    NotifyHuman(iOwner, NOTIF_SACRIFICE, TXT_SACRIFICE_MSG, TXT_SACRIFICE_SUM, iX, iY)
-    Game.AddWorldViewText(iOwner, Locale.Lookup(TXT_EXHAUSTED), iX, iY)   -- N9
+    NotifyHuman(iOwner, NotifySacrifice, TXT_SACRIFICE_MSG, TXT_SACRIFICE_SUM, iX, iY)
+    local bOk, sErr = pcall(Game.AddWorldViewText, iOwner, Locale.Lookup(TXT_EXHAUSTED), iX, iY)
+    if not bOk then
+        print('[TsoDTE] Battle mage: AddWorldViewText failed: ' .. tostring(sErr))
+    end
     ReconcilePlayer(iOwner)
 end
 
--- UnitOperationDeactivated(playerID, unitID, hOperation, iData1)
--- 施放结束后再对账一次。若引擎在 Started 之后才扣库存（N3），这里把库存纠正回来。
-local function OnUnitOperationDeactivated(iOwner, iUnit, iOperation, iData1)
-    if iOperation == UnitOperationTypes.WMD_STRIKE then
-        ReconcilePlayer(iOwner)
-    end
-end
-
 -- -----------------------------------------------------------------------------
--- 军队回血
+-- 回合开始：对账 + 回血（每个编队只回主体一次）
 -- -----------------------------------------------------------------------------
-local function HealArmies(iPlayer)
-    local pPlayer = Players[iPlayer]
-    if pPlayer == nil then
-        return
-    end
-    for _, pUnit in pPlayer:GetUnits():Members() do
-        if IsBattleMage(pUnit) and FormationState(pUnit) == 'army'
-            and pUnit:GetAbility():GetAbilityCount(ABILITY_REGEN) > 0 then
-            local iDamage = pUnit:GetDamage()
+local function HealFormations(iPlayer)
+    local tGroups, aKeys = CollectGroups(iPlayer)
+    for _, sKey in ipairs(aKeys) do
+        local pLead = tGroups[sKey].lead
+        if pLead:GetAbility():GetAbilityCount(ABILITY_REGEN) > 0 then
+            local iDamage = pLead:GetDamage()
             if iDamage > 0 then
                 local iNew = math.max(0, iDamage - REGEN_HEAL)
-                pUnit:SetDamage(iNew)
-                print('[TsoDTE] Army regen: player ' .. iPlayer .. ' unit ' .. pUnit:GetID()
+                pLead:SetDamage(iNew)
+                print('[TsoDTE] Regen: player ' .. iPlayer .. ' unit ' .. pLead:GetID()
                     .. ' damage ' .. iDamage .. ' -> ' .. iNew)
             end
         end
     end
 end
 
--- -----------------------------------------------------------------------------
--- 回合开始：对账 + 军队回血
--- -----------------------------------------------------------------------------
 local function OnTsoDTEBattleMageTurnActivated(iPlayer, bIsFirstTime)
     ReconcilePlayer(iPlayer)
-    HealArmies(iPlayer)
+    HealFormations(iPlayer)
 end
 
 -- -----------------------------------------------------------------------------
@@ -317,16 +308,18 @@ local function InitTsoDTEBattleMage()
         return
     end
 
-    for _, sName in ipairs({ NOTIF_READY, NOTIF_SACRIFICE, NOTIF_REGEN }) do
-        NotifyHash[sName] = DB.MakeHash(sName)
+    if NotificationTypes ~= nil then
+        NotifyReady = NotificationTypes.USER_DEFINED_1
+        NotifySacrifice = NotificationTypes.USER_DEFINED_2
+        NotifyRegen = NotificationTypes.USER_DEFINED_3
     end
 
-    Events.UnitFormCorps.Add(OnUnitFormCorps)
-    Events.UnitFormArmy.Add(OnUnitFormArmy)
-    Events.UnitOperationStarted.Add(OnUnitOperationStarted)
+    Events.UnitFormCorps.Add(OnFormationEvent)
+    Events.UnitFormArmy.Add(OnFormationEvent)
     Events.UnitOperationDeactivated.Add(OnUnitOperationDeactivated)
     Events.PlayerTurnActivated.Add(OnTsoDTEBattleMageTurnActivated)
-    print('[TsoDTE] Battle mage module initialized')
+    print('[TsoDTE] Battle mage module initialized (notification types '
+        .. tostring(NotifyReady) .. ', ' .. tostring(NotifySacrifice) .. ', ' .. tostring(NotifyRegen) .. ')')
 end
 
 InitTsoDTEBattleMage()
