@@ -9,8 +9,13 @@
 --   MODIFIER_MAJOR_PLAYERS_ADJUST_UNITS_RELIGIOUS_STRENGTH_BY_RELIGION_TYPE
 --                                        官方 Expansion2_Modifiers.xml（DynamicModifiers 行，
 --                                        COLLECTION_MAJOR_PLAYERS + EFFECT_ADJUST_UNITS_RELIGIOUS_STRENGTH_BY_RELIGION_TYPE）
---   校验函数名 WC_Validate_RegliousBan、AI 选目标 ReligiousTarget：拼写照官方（Reglious 是官方的拼写），
---      两者在安装目录的 Lua 里都没有定义，由引擎处理；目标列表是否正确见 test-plan §10.3 V1。
+--   ValidationLua = WC_Validate_TsoDTE_TheocraticCouncil：由 Scripts/TsoDTE_Congress.lua 用
+--      GameEvents.WC_Validate_TsoDTE_TheocraticCouncil 填 options.ResolutionOptions（已创立宗教的 Hash）。
+--      10-22 实测：照抄官方的 WC_Validate_RegliousBan 时目标列表是地貌（雨林），游戏崩溃。
+--      原因：官方的验证都由 DLC/Expansion2/Scripts/WorldCongress.lua 里的 GameEvents.WC_Validate_* 填目标，
+--      RegliousBan 没有 Lua 处理函数，「世界宗教」的目标由引擎特判；我们的决议拿到的是上一个验证
+--      （WC_Validate_DeforestationFeature：沼泽、森林、雨林）留下的列表。
+--   AI 选目标 ReligiousTarget：照官方（引擎处理）。
 --
 -- 设计（master plan §8.5）：以官方「世界宗教」WC_RES_WORLD_RELIGION 为蓝本，把它的 A 反过来。
 --   选项 1（WhichEffect=1）去神圣化：所选宗教的所有单位 -10 战斗力（普通及宗教战斗力）。
@@ -37,7 +42,7 @@
 -- ----------------------------------------------------------------------------
 -- 1. 类型登记与决议主表
 --    InjectionOnly 照官方（缺省 0，即允许议会自己抽到）。
---    ValidationLua、AITargetChooser 照官方「世界宗教」复用。
+--    ValidationLua 用自己的（见文件头），AITargetChooser 照官方「世界宗教」复用。
 --    LatestEra 不设，照官方 WC_RES_DIPLOVICTORY 等现代决议的写法（只设 EarliestEra）。
 -- ----------------------------------------------------------------------------
 INSERT INTO Types (Type, Kind) VALUES
@@ -52,7 +57,7 @@ INSERT INTO Resolutions (
     'WC_RES_TSOD_THEOCRATIC_COUNCIL', 'RELIGION', 'LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME',
     'LOC_WORLD_CONGRESS_TSOD_DESANCTIFY_RELIGION_DESC',
     'LOC_WORLD_CONGRESS_TSOD_SECULAR_OVERSIGHT_DESC',
-    'WC_Validate_RegliousBan', 'ReligiousTarget',
+    'WC_Validate_TsoDTE_TheocraticCouncil', 'ReligiousTarget',
     0, 'ERA_MODERN'
 );
 

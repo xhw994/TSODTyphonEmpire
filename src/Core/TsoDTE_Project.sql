@@ -4,7 +4,8 @@
 -- 依赖（须先加载）：
 --   DISTRICT_TSOD_MAGE_TOWER            WP5 TsoDTE_District_MageTower.sql
 --   TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE  WP1 TsoDTE_Civilization.sql
---   CIVIC_MASS_MEDIA                    原版现代市政（Base Gameplay/Data/Civics.xml）
+--   CIVIC_MASS_MEDIA                    原版现代市政（Base Gameplay/Data/Civics.xml），用在解锁修正的需求上
+--   REQUIREMENT_PLAYER_HAS_CIVIC         官方需求（参数 CivicType；用例 Expansion2_Civilizations.xml）
 --   MODIFIER_PLAYER_ADD_FAVOR           风云变幻（Expansion2/Data/Expansion2_Modifiers.xml，EFFECT_ADD_PLAYER_FAVOR）
 --   EFFECT_ADD_PLAYER_PROJECT_AVAILABILITY  风云变幻，参数 ProjectType
 -- 本文件用到风云变幻才有的效果，只在 RuleSetInUse RULESET_EXPANSION_2 下加载。
@@ -31,7 +32,9 @@ INSERT INTO Types (Type, Kind) VALUES
 -- -----------------------------------------------------------------------------
 -- 2. 项目主表
 --    PrereqDistrict：城市须有法师塔（项目只在有该区域的城市里出现）。
---    PrereqCivic：须已研究「大众传媒」。与 UnlocksFromEffect 并存，两个条件都要满足。
+--    不设 PrereqCivic：市政树的「解锁」图标按 PrereqCivic 列项目，而 Projects 没有 TraitType 列，
+--      设了的话所有文明的「大众传媒」上都会显示这个项目（10-22 实测：塞西尔也看得到，只是造不了）。
+--      所以「须已研究大众传媒」改由第 3 段解锁修正的需求表达，只有提丰会被授予。
 --    UnlocksFromEffect=1：没有文明能力授予的玩家看不到这个项目（非提丰不可见）。
 -- -----------------------------------------------------------------------------
 INSERT INTO Projects (
@@ -43,7 +46,7 @@ INSERT INTO Projects (
     'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME',
     'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME',
     'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',
-    'DISTRICT_TSOD_MAGE_TOWER', 'CIVIC_MASS_MEDIA', 65, 'ADVISOR_CULTURE',
+    'DISTRICT_TSOD_MAGE_TOWER', NULL, 65, 'ADVISOR_CULTURE',
     'COST_PROGRESSION_GAME_PROGRESS', 1500, 1
 );
 
@@ -53,8 +56,21 @@ INSERT INTO Projects (
 INSERT INTO DynamicModifiers (ModifierType, CollectionType, EffectType) VALUES
     ('MODIFIER_PLAYER_ALLOW_PROJECT_TSOD', 'COLLECTION_OWNER', 'EFFECT_ADD_PLAYER_PROJECT_AVAILABILITY');
 
-INSERT INTO Modifiers (ModifierId, ModifierType) VALUES
-    ('TSOD_TYPHON_DESANCTIFICATION_ALLOW', 'MODIFIER_PLAYER_ALLOW_PROJECT_TSOD');
+-- 需求：玩家已研究「大众传媒」。需实证：研究完成后修正是否随之生效（项目是否出现在生产列表）。
+INSERT INTO Requirements (RequirementId, RequirementType) VALUES
+    ('REQ_TSOD_TYPHON_HAS_MASS_MEDIA', 'REQUIREMENT_PLAYER_HAS_CIVIC');
+
+INSERT INTO RequirementArguments (RequirementId, Name, Value) VALUES
+    ('REQ_TSOD_TYPHON_HAS_MASS_MEDIA', 'CivicType', 'CIVIC_MASS_MEDIA');
+
+INSERT INTO RequirementSets (RequirementSetId, RequirementSetType) VALUES
+    ('REQSET_TSOD_TYPHON_HAS_MASS_MEDIA', 'REQUIREMENTSET_TEST_ALL');
+
+INSERT INTO RequirementSetRequirements (RequirementSetId, RequirementId) VALUES
+    ('REQSET_TSOD_TYPHON_HAS_MASS_MEDIA', 'REQ_TSOD_TYPHON_HAS_MASS_MEDIA');
+
+INSERT INTO Modifiers (ModifierId, ModifierType, SubjectRequirementSetId) VALUES
+    ('TSOD_TYPHON_DESANCTIFICATION_ALLOW', 'MODIFIER_PLAYER_ALLOW_PROJECT_TSOD', 'REQSET_TSOD_TYPHON_HAS_MASS_MEDIA');
 
 INSERT INTO ModifierArguments (ModifierId, Name, Value) VALUES
     ('TSOD_TYPHON_DESANCTIFICATION_ALLOW', 'ProjectType', 'PROJECT_TSOD_DESANCTIFICATION');

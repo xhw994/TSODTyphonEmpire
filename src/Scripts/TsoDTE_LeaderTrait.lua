@@ -486,7 +486,9 @@ function InitTsoDTELeaderTrait()
     -- 加载时报告一次黑暗时代的两种来源与通知类型
     local pEras = Game.GetEras()
     for iPlayer, pPlayer in pairs(TyphonPlayers) do
-        print('[TsoDTE] Dark age sources for player ' .. iPlayer .. ': property ' .. tostring(pPlayer:GetProperty(PROPERTY_DARK_AGE))
+        -- 先存进局部变量：GetProperty 读不到时返回「无值」，直接传给 tostring 会报错（10-22 实测）
+        local vDark = pPlayer:GetProperty(PROPERTY_DARK_AGE)
+        print('[TsoDTE] Dark age sources for player ' .. iPlayer .. ': property ' .. tostring(vDark)
             .. ', HasDarkAge callable ' .. tostring(pEras ~= nil and pEras.HasDarkAge ~= nil)
             .. ', notification type ' .. tostring(NotifyBoost))
     end

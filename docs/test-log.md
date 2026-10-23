@@ -66,7 +66,24 @@
   - 黑暗时代改用属性探测（见上表）；
   - 通知摘要统一用「凡人的韧性」。
 
-## 阶段 2 第三轮 · 待测
+## 阶段 2 第三轮 · 10-22（用户玩塞西尔，罗塞塔是 AI 玩家 1）
 
-- 构建：`a391c2a`（已部署，未推送）。必须新开局。
-- 要看：test-plan §12.0、§12.1、§12.6。重点是施放后军队是否消失（`strike end: army at x,y killed K unit(s), still listed 0`），以及黑暗时代那行 `Dark age bonus ... [property 1]`。
+- 构建：`a391c2a`。
+- 用户反馈：
+  1. 神权理事会的目标下拉框列的是地貌（截图：「雨林」），选不了宗教，游戏崩溃。
+  2. 玩塞西尔时，市政「大众传媒」的解锁图标里也显示「去神圣化」项目（悬停说明完整）；但塞西尔确实造不了。只对了一半。
+  3. 希望罗塞塔作为对手时多用原著台词，要一份前后对照表。
+  - 本轮没有测战斗法师施放、黑暗时代。
+- Lua.log 证据（10-22 23:28）：
+  - `Battle mage module initialized (notification types -1636606976, 125439418, 1887255852)`：USER_DEFINED 类型取到了。
+  - `Runtime Error: bad argument #1 to 'tostring' (value expected)` 于 `TsoDTE_LeaderTrait.lua:489`（`InitTsoDTELeaderTrait` 里加载时那行诊断打印）：`GetProperty` 读不到属性时返回的是「无值」而不是 nil，直接塞给 `tostring()` 会报错。事件注册在它之前，所以功能仍在跑：`New era boost: player 1 entered ERA_CLASSICAL, boosted TECH_CELESTIAL_NAVIGATION, CIVIC_DEFENSIVE_TACTICS`（AI 罗塞塔进入古典时代，1+1 生效）。LuaJIT 桩里 GetProperty 返回显式 nil，所以没测出来。
+  - 没有本 mod 的数据库错误。
+
+## 阶段 2 第四轮 · 待测
+
+- 构建：本轮修复后的构建（下面这次提交）。必须新开局。
+- 本轮改动：
+  - 神权理事会：目标列表改由 `Scripts/TsoDTE_Congress.lua` 的 `WC_Validate_TsoDTE_TheocraticCouncil` 提供（已创立宗教）；没有宗教时不进候选。原因见 `Core/TsoDTE_Congress.sql` 文件头。
+  - 去神圣化：去掉 `PrereqCivic`，「大众传媒」改为解锁修正的需求，非提丰的市政树不再显示。
+  - 领袖能力加载时那行诊断打印的 `tostring` 崩溃修好；LuaJIT 桩改成 GetProperty 读不到时返回「无值」，以后能抓到同类问题。
+- 要看：test-plan §12.0–§12.3、§12.6。

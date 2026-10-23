@@ -51,7 +51,8 @@ local function NewUnit(iPlayer, iID, iType, x, y, iFormation)
     function u:GetMilitaryFormation() return self.formation end
     function u:GetDamage() return self.damage end
     function u:SetDamage(v) self.damage = v end
-    function u:GetProperty(k) return tProps[k] end
+    -- 引擎读不到属性时返回「无值」而不是 nil（10-22 实测：直接传给 tostring 会报错），这里照样模拟
+    function u:GetProperty(k) local v = tProps[k]; if v == nil then return end; return v end
     function u:SetProperty(k, v) tProps[k] = v end
     function u:GetAbility()
         return {
@@ -66,7 +67,7 @@ end
 local function NewPlayer(iID, bHuman)
     local p = { id = iID, human = bHuman, units = {}, props = {}, wmd = {}, boostedTech = {}, boostedCivic = {} }
     function p:IsHuman() return self.human end
-    function p:GetProperty(k) return self.props[k] end
+    function p:GetProperty(k) local v = self.props[k]; if v == nil then return end; return v end
     function p:SetProperty(k, v) self.props[k] = v end
     function p:GetUnits()
         local pl = self
@@ -153,6 +154,17 @@ local function SetupWorld()
         [1] = { GetLeaderTypeName = function() return 'LEADER_OTHER' end },
     }
     Players = { [0] = NewPlayer(0, true), [1] = NewPlayer(1, false) }
+    World.religions = {}
+    Game.GetReligion = function()
+        return {
+            GetReligions = function() return World.religions end,
+            HasBeenFounded = function(_, i) for _, r in ipairs(World.religions) do if r.Religion == i then return true end end return false end,
+        }
+    end
+    GameEvents = setmetatable({}, { __index = function(t, k)
+        local e = { Add = function(f) World.handlers['GE:' .. k] = World.handlers['GE:' .. k] or {}; table.insert(World.handlers['GE:' .. k], f) end }
+        rawset(t, k, e); return e
+    end })
     GameInfo = {
         Units = MakeInfoTable({
             { UnitType = 'UNIT_WARRIOR', Name = 'LOC_UNIT_WARRIOR_NAME' },
@@ -171,6 +183,8 @@ local function SetupWorld()
             { CivicType = 'CIVIC_A', Name = 'LOC_CIVIC_A_NAME', EraType = 'ERA_CLASSICAL' },
             { CivicType = 'CIVIC_B', Name = 'LOC_CIVIC_B_NAME', EraType = 'ERA_CLASSICAL' },
         }, 'CivicType'),
+        Resolutions = MakeInfoTable({ { ResolutionType = 'WC_RES_DEFORESTATION_TREATY', Hash = 501 }, { ResolutionType = 'WC_RES_TSOD_THEOCRATIC_COUNCIL', Hash = 502 } }, 'ResolutionType'),
+        Religions = MakeInfoTable({ { ReligionType = 'RELIGION_PANTHEON', Pantheon = true, Hash = 900 }, { ReligionType = 'RELIGION_ISLAM', Pantheon = false, Hash = 901 }, { ReligionType = 'RELIGION_HINDUISM', Pantheon = false, Hash = 902 } }, 'ReligionType'),
         Boosts = MakeInfoTable({
             { BoostID = 1, TechnologyType = 'TECH_STIRRUPS' }, { BoostID = 2, TechnologyType = 'TECH_A' },
             { BoostID = 3, TechnologyType = 'TECH_B' }, { BoostID = 4, CivicType = 'CIVIC_A' }, { BoostID = 5, CivicType = 'CIVIC_B' },
@@ -346,10 +360,32 @@ local function TestLeaderTrait()
     check(#World.notifications == 1, 'second kill of the same type does nothing')
 end
 
+-- -----------------------------------------------------------------------------
+-- 神权理事会
+-- -----------------------------------------------------------------------------
+local function TestCongress()
+    SetupWorld(); LoadScript('TsoDTE_Congress.lua')
+    -- 没有宗教：从候选里拿掉本决议，其他决议不动
+    local tRes = { Resolutions = { 501, 502 } }
+    Fire('GE:CanUseResolutions', tRes)
+    check(#tRes.Resolutions == 1 and tRes.Resolutions[1] == 501, 'council removed when no religion exists')
+    -- 有宗教：目标只列已创立的宗教，不含万神殿；上一个决议留下的地貌被覆盖
+    World.religions = { { Religion = 0 }, { Religion = 1 }, { Religion = 2 } }
+    tRes = { Resolutions = { 501, 502 } }
+    Fire('GE:CanUseResolutions', tRes)
+    check(#tRes.Resolutions == 2, 'council kept when a religion exists')
+    local tOptions = { ResolutionOptions = { 'FEATURE_JUNGLE' } }
+    Fire('GE:WC_Validate_TsoDTE_TheocraticCouncil', 502, 0, tOptions)
+    check(#tOptions.ResolutionOptions == 2 and tOptions.ResolutionOptions[1] == 901 and tOptions.ResolutionOptions[2] == 902,
+        'targets are founded religions only')
+end
+
 local ok, err = pcall(TestBattleMage)
 if not ok then failures = failures + 1; print('ERROR in battle mage tests: ' .. tostring(err)) end
 ok, err = pcall(TestLeaderTrait)
 if not ok then failures = failures + 1; print('ERROR in leader trait tests: ' .. tostring(err)) end
+ok, err = pcall(TestCongress)
+if not ok then failures = failures + 1; print('ERROR in congress tests: ' .. tostring(err)) end
 
 print(string.format('%d passed, %d failed', passes, failures))
 os.exit(failures == 0 and 0 or 1)
