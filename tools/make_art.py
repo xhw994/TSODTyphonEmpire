@@ -13,7 +13,7 @@ import os
 import struct
 import sys
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, 'images')
@@ -25,7 +25,7 @@ LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
 
 SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
 SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
-SRC_TOWER = '法师塔.jpg'
+# images/法师塔.jpg is Cecil's mage tower (kept only as a modelling reference) - not used for Typhon.
 SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
 
 # Colors (src/Core/TsoDTE_Colors.sql): field 22,20,22; emblem 196,26,32; gold 228,182,78
@@ -254,7 +254,7 @@ def icon_sizes(src, base, sizes):
 
 
 # ----------------------------------------------------------------------------- leader
-ROSETTA_HEAD = (545, 462, 725, 642)        # square crop: crown + face
+ROSETTA_HEAD = (512, 452, 712, 652)        # square crop centered on the head (crown + hair + beard)
 
 
 def leader_icon_master():
@@ -303,12 +303,15 @@ def main():
     bg = crop_resize(rain, (400, 0, 2559, 1080), (1920, 960))
     made['loading_bg'] = emit(bg, 'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND')
     emit(bg, 'LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND')
-    tower = load(SRC_TOWER)
-    made['diplo_bg'] = emit(crop_resize(tower, (880, 0, 2709, 914), (1920, 960)),
+    # throne room above Rosetta's head in his portrait (left of x=240 is the novel's logo)
+    made['diplo_bg'] = emit(crop_resize(rosetta, (240, 0, 1180, 470), (1920, 960)),
                             'LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND')
 
     # historic moments, 456 x 332 like the Cecil mod
-    made['m_district'] = emit(crop_resize(tower, (1050, 0, 2350, 947), (456, 332)), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
+    # stand-in until there is Typhon mage tower art: the gothic spire in the rainy Ordenan scene
+    spire = crop_resize(rain, (0, 0, 740, 539), (456, 332)).convert('RGB')
+    spire = ImageEnhance.Contrast(ImageEnhance.Brightness(spire).enhance(1.45)).enhance(1.35)
+    made['m_district'] = emit(spire, 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
     made['m_building'] = emit(crop_resize(rain, (520, 100, 2020, 1192), (456, 332)), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
     matilda = load(SRC_MATILDA)
     made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
