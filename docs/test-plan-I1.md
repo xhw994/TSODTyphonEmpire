@@ -419,6 +419,12 @@ x、y 换成目标格子；单位类型按需要换。
 
 ### 12.3 神权理事会决议（WP17）
 
+**快速触发（测试开关 mod）**：仓库 `tests/congress_harness/`，已部署为「[测试] 提丰 · 世界议会快速开会」。只在测这一节时和主 mod 一起启用，正式游戏关掉。
+- 世界议会从开局起开会（`WORLD_CONGRESS_INITIAL_ERA` 0），每 3 回合一次（`WORLD_CONGRESS_MAX_TIME_BETWEEN_MEETINGS` 3）；神权理事会不受现代时代限制。
+- 每次开会的候选只留神权理事会和另一个决议，所以只要有已创立的宗教，就一定抽到它。`Lua.log` 有 `[TsoDTE test] congress pool narrowed to 2 resolution(s), theocratic council true`。
+- 需要一个已创立的宗教：作弊菜单「加+1000信仰」，用信仰招募大预言家建宗教；或者等 AI 建。
+- 需实证：初始时代改成 0 后第一次开会是否正常；有问题告诉我，改回 1。
+
 1. 至少有一个已创立的宗教、现代时代后，世界议会能抽到「神权理事会」。
 2. 目标下拉框列的是**宗教**（10-22 改：用自己的验证函数，只列已创立宗教，不含万神殿）。`Lua.log`：`[TsoDTE] Theocratic council: N religion target(s) for player ...`。
 3. 选项 1：所选宗教的单位 −10 战斗力；选项 2：谴责该宗教单位获得外交支持。

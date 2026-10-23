@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mod id="8c810569-c6bb-45dc-bf4f-296699a9998b" version="1">
+  <Properties>
+    <Name>[测试] 提丰 · 世界议会快速开会</Name>
+    <Teaser>只在测试神权理事会时启用。</Teaser>
+    <Description>测试用开关，正式游戏不要启用：世界议会从开局起每 3 回合开一次会；神权理事会不受时代限制；有宗教时每次开会都会抽到它。需要同时启用《黎明之剑》提丰帝国文明。</Description>
+    <Authors>Xegnal</Authors>
+    <AffectsSavedGames>1</AffectsSavedGames>
+    <CompatibleVersions>2.0</CompatibleVersions>
+  </Properties>
+  <Dependencies>
+    <Mod id="4873eb62-8ccc-4574-b784-dda455e74e68" title="Expansion: Gathering Storm" />
+    <Mod id="1e55d0b1-f5d9-48d4-a9b4-32e488b7bf21" title="[TSOD] Typhon Empire Civilization" />
+  </Dependencies>
+  <ActionCriteria>
+    <Criteria id="TsoDTE_Test_Expansion2">
+      <RuleSetInUse>RULESET_EXPANSION_2</RuleSetInUse>
+    </Criteria>
+  </ActionCriteria>
+  <InGameActions>
+    <UpdateDatabase id="TsoDTE_Test_Congress_Data" criteria="TsoDTE_Test_Expansion2">
+      <Properties>
+        <LoadOrder>300</LoadOrder>
+      </Properties>
+      <File>TsoDTE_Test_Congress.sql</File>
+    </UpdateDatabase>
+    <AddGameplayScripts id="TsoDTE_Test_Congress_Script" criteria="TsoDTE_Test_Expansion2">
+      <Properties>
+        <LoadOrder>300</LoadOrder>
+      </Properties>
+      <File>TsoDTE_Test_Congress.lua</File>
+    </AddGameplayScripts>
+  </InGameActions>
+  <Files>
+    <File>TsoDTE_Test_Congress.sql</File>
+    <File>TsoDTE_Test_Congress.lua</File>
+  </Files>
+</Mod>
