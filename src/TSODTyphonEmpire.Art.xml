@@ -161,6 +161,7 @@
 		<Element>
 			<consumerName text="LeaderFallback"/>
 			<relativeArtDefPaths>
+				<Element text="FallbackLeaders.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="LeaderFallback"/>
@@ -489,6 +490,7 @@
 		<Element>
 			<libraryName text="LeaderFallback"/>
 			<relativePackagePaths>
+				<Element text="TsoDTE_LeaderFallbacks"/>
 			</relativePackagePaths>
 		</Element>
 		<Element>
@@ -579,6 +581,7 @@
 		<Element>
 			<libraryName text="UITexture"/>
 			<relativePackagePaths>
+				<Element text="TsoDTE_UITextures"/>
 			</relativePackagePaths>
 		</Element>
 		<Element>

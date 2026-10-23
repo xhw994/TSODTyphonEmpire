@@ -4,3 +4,7 @@ cooker.log
 /refs
 # 构建产物与本机文件
 *.civ6suo
+
+# 设定图原件（用户提供，较大，不进仓库）与由 tools/make_art.py 生成的 PNG 中间文件
+/images/
+/art/generated/

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<AssetObjects..XLP>
+	<m_Version>
+		<major>1</major>
+		<minor>0</minor>
+		<build>0</build>
+		<revision>0</revision>
+	</m_Version>
+	<m_ClassName text="UITexture"/>
+	<m_PackageName text="TsoDTE_UITextures"/>
+	<m_Entries>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_128"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_128"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_200"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_200"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_22"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_256"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_30"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_30"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_32"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_36"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_36"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_44"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_44"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_45"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_45"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_48"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_48"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_50"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_64"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_64"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_80"/>
+			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_256"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_32"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_45"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_45"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_48"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_48"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_50"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_55"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_55"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_64"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_64"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_80"/>
+			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND"/>
+			<m_ObjectName text="LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND"/>
+		</Element>
+		<Element>
+			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND"/>
+			<m_ObjectName text="LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND"/>
+		</Element>
+		<Element>
+			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND"/>
+			<m_ObjectName text="LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND"/>
+		</Element>
+		<Element>
+			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_FOREGROUND"/>
+			<m_ObjectName text="LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_FOREGROUND"/>
+		</Element>
+		<Element>
+			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL"/>
+			<m_ObjectName text="LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL"/>
+		</Element>
+		<Element>
+			<m_EntryID text="MOMENT_BUILDING_TSOD_BURNSTONE_WORKS"/>
+			<m_ObjectName text="MOMENT_BUILDING_TSOD_BURNSTONE_WORKS"/>
+		</Element>
+		<Element>
+			<m_EntryID text="MOMENT_DISTRICT_TSOD_MAGE_TOWER"/>
+			<m_ObjectName text="MOMENT_DISTRICT_TSOD_MAGE_TOWER"/>
+		</Element>
+		<Element>
+			<m_EntryID text="MOMENT_UNIT_TSOD_BATTLE_MAGE"/>
+			<m_ObjectName text="MOMENT_UNIT_TSOD_BATTLE_MAGE"/>
+		</Element>
+	</m_Entries>
+	<m_AllowedPlatforms>
+		<Element>WINDOWS</Element>
+		<Element>MACOS</Element>
+		<Element>IOS</Element>
+		<Element>LINUX</Element>
+		<Element>XBONE</Element>
+		<Element>PS4</Element>
+		<Element>SWITCH</Element>
+		<Element>STADIA</Element>
+	</m_AllowedPlatforms>
+</AssetObjects..XLP>
