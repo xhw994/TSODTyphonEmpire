@@ -25,7 +25,8 @@ LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
 
 SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
 SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
-# images/法师塔.jpg is Cecil's mage tower (kept only as a modelling reference) - not used for Typhon.
+# images/法师塔.jpg is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
+SRC_TOWER = '法师塔.jpg'
 SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
 
 # Colors (src/Core/TsoDTE_Colors.sql): field 22,20,22; emblem 196,26,32; gold 228,182,78
@@ -267,9 +268,6 @@ def leader_icon_master():
     backing = Image.new('RGBA', (S, S), BLACK)
     canvas.paste(backing, (0, 0), circle)
     canvas.paste(head, (0, 0), ImageChops.multiply(circle, head.getchannel('A')))
-    ring = Image.new('L', (S, S), 0)
-    ImageDraw.Draw(ring).ellipse((inset, inset, S - inset, S - inset), outline=255, width=14)
-    canvas.paste(Image.new('RGBA', (S, S), RED), (0, 0), ring)
     return canvas
 
 
@@ -290,11 +288,12 @@ def main():
 
     rosetta = load(SRC_ROSETTA)
     # setup / load screen portrait, 731 x 1461 like the official neutral portraits
-    neutral = feather(crop_resize(rosetta, (143, 0, 1143, 2000), (731, 1461)), 70, 40, 70, 160)
+    # crown to below the knees, so the figure fills the narrow setup-screen panel and the face reads
+    neutral = feather(crop_resize(rosetta, (350, 395, 850, 1395), (731, 1461)), 30, 20, 30, 90)
     made['neutral'] = emit(neutral, 'LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL')
     emit(neutral, 'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_FOREGROUND')
     # diplomacy fallback, 825 x 1024, figure on the left
-    fig = feather(crop_resize(rosetta, (306, 400, 929, 1500), (580, 1024)), 40, 30, 110, 140)
+    fig = feather(crop_resize(rosetta, (360, 395, 870, 1295), (580, 1024)), 30, 20, 90, 110)
     fallback = Image.new('RGBA', (825, 1024), (0, 0, 0, 0))
     fallback.alpha_composite(fig, (0, 0))
     made['fallback'] = emit(fallback, 'FALLBACK_NEUTRAL_LEADER_TSOD_ROSETTA_AUGUSTUS', fallback=True)
@@ -308,10 +307,8 @@ def main():
                             'LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND')
 
     # historic moments, 456 x 332 like the Cecil mod
-    # stand-in until there is Typhon mage tower art: the gothic spire in the rainy Ordenan scene
-    spire = crop_resize(rain, (0, 0, 740, 539), (456, 332)).convert('RGB')
-    spire = ImageEnhance.Contrast(ImageEnhance.Brightness(spire).enhance(1.45)).enhance(1.35)
-    made['m_district'] = emit(spire, 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
+    tower = load(SRC_TOWER)
+    made['m_district'] = emit(crop_resize(tower, (1050, 0, 2350, 947), (456, 332)), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
     made['m_building'] = emit(crop_resize(rain, (520, 100, 2020, 1192), (456, 332)), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
     matilda = load(SRC_MATILDA)
     made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
