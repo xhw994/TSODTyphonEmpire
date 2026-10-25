@@ -323,3 +323,11 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | 贴图包 | `TsoDTE_UITextures`（UITexture）、`TsoDTE_LeaderFallbacks`（LeaderFallback）；包名带前缀，避免和塞西尔的 `UILeaders` 等同名 | `XLPs/` |
 | 领袖贴图 | `LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL` / `_LOADING_FOREGROUND` / `_LOADING_BACKGROUND` / `_BACKGROUND` / `_DIPLOMACY_BACKGROUND`，`FALLBACK_NEUTRAL_LEADER_TSOD_ROSETTA_AUGUSTUS` | `tools/make_art.py` |
 | 历史时刻 | `MOMENT_UNIT_TSOD_BATTLE_MAGE`、`MOMENT_DISTRICT_TSOD_MAGE_TOWER`、`MOMENT_BUILDING_TSOD_BURNSTONE_WORKS` | `Core/TsoDTE_Moments.sql` |
+
+## 9. 模型（10-24）
+
+| 内容 | 做法 | 文件 |
+|---|---|---|
+| 战斗法师 | 复制官方 `UNIT_CROSSBOWMAN` 的单位条目（编队、远程战斗方式、上船、音效），成员换成埃塞俄比亚包的 `Cultist`；由 `tools/make_unit_artdef.py` 生成 | `ArtDefs/Units.artdef` |
+| 法师塔 | 12 个底座（四个时代 × 建筑组合）全部用 `DIS_CMP_Alchemical`，去掉图书馆 / 大学 / 研究实验室各自的建筑变体 | `ArtDefs/Landmarks.artdef` |
+| 构建后还原 | `tools/restore_cooked_entries.py`：TB_ERROR 按元素逐个还原（不再限一处）；被 cooker 清空的 DLC 元素引用（如 `Cultist`）按出现顺序填回 | — |

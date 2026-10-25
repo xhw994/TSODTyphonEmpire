@@ -64,6 +64,9 @@
     <Content Include="ArtDefs\Landmarks.artdef">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="ArtDefs\Units.artdef">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Core\TsoDTE_Agenda_AI.sql">
       <SubType>Content</SubType>
     </Content>

@@ -49,24 +49,53 @@ def asset_entries(path):
     return out
 
 
+ELEMENT_REF = re.compile(r'<m_ElementName text="([^"]*)"\s*/>')
+
+
+def restore_element_refs(src_text, text):
+    """cooker 把找不到的 ArtDef 元素引用（比如 DLC 单位成员 Cultist）清成空串。
+    源文件和部署产物的结构一一对应，按出现顺序比对：部署里是空、源里不是空的，填回去。
+    两边引用个数不一致时不动，避免错位。返回 (新文本, 还原数)。"""
+    src_refs = [m.group(1) for m in ELEMENT_REF.finditer(src_text)]
+    matches = list(ELEMENT_REF.finditer(text))
+    if len(src_refs) != len(matches):
+        print(f"    [跳过] 元素引用个数不一致（源 {len(src_refs)}，部署 {len(matches)}），不还原")
+        return text, 0
+    out, last, fixed = [], 0, 0
+    for want, m in zip(src_refs, matches):
+        if m.group(1) == '' and want != '':
+            out.append(text[last:m.start()])
+            out.append(f'<m_ElementName text="{want}"/>')
+            last = m.end()
+            print(f"    [还原] 元素引用: '' -> {want}")
+            fixed += 1
+    out.append(text[last:])
+    return ''.join(out), fixed
+
+
 def restore(src_artdef, cooked_artdef):
     src = asset_entries(src_artdef)
     broken = [(n, e) for n, e in asset_entries(cooked_artdef).items() if PLACEHOLDER.match(e)]
-    if not broken:
-        return 0
     text = io.open(cooked_artdef, encoding="utf-8").read()
-    fixed = 0
+    text, fixed = restore_element_refs(io.open(src_artdef, encoding="utf-8").read(), text)
     for name, placeholder in broken:
         want = src.get(name)
         if not want or PLACEHOLDER.match(want):
             print(f"    [跳过] {name}: 源文件里也没有可用的 entry")
             continue
-        needle = f'<m_EntryName text="{placeholder}"/>'
-        if text.count(needle) != 1:
-            # 占位符不止一处，无法靠字符串唯一定位
-            print(f"    [跳过] {name}: '{placeholder}' 在文件里出现 {text.count(needle)} 次，无法安全替换")
+        # 在该元素自己的范围里找占位符：artdef 里元素的 m_Name 写在它的字段之后，
+        # 所以从该元素的 m_Name 往前找最近的占位符，且中间不能隔着别的元素的 m_Name。
+        # 这样同一个占位符出现多少次都能逐个还原（每个元素只有一个 Asset 参数）。
+        m = re.search(r'<m_Name text="%s"\s*/>' % re.escape(name), text)
+        if not m:
+            print(f"    [跳过] {name}: 部署产物里找不到这个元素")
             continue
-        text = text.replace(needle, f'<m_EntryName text="{want}"/>')
+        needle = f'<m_EntryName text="{placeholder}"/>'
+        j = text.rfind(needle, 0, m.start())
+        if j < 0 or text.rfind('<m_Name text=', 0, m.start()) > j:
+            print(f"    [跳过] {name}: 占位符不在这个元素里")
+            continue
+        text = text[:j] + f'<m_EntryName text="{want}"/>' + text[j + len(needle):]
         print(f"    [还原] {name}: {placeholder} -> {want}")
         fixed += 1
     if fixed:
