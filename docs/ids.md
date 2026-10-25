@@ -328,6 +328,6 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 
 | 内容 | 做法 | 文件 |
 |---|---|---|
-| 战斗法师 | 复制官方 `UNIT_CROSSBOWMAN` 的单位条目（编队、远程战斗方式、上船、音效），成员换成埃塞俄比亚包的 `Cultist`；由 `tools/make_unit_artdef.py` 生成 | `ArtDefs/Units.artdef` |
+| 战斗法师 | 单位条目复制官方 `UNIT_SLINGER`（4 人、投石兵编队与远程战斗、音效）；成员是自定义的 `TSOD_BattleMage`：复制审判官（`Inquisitor`）的法袍、兜帽、法杖，法袍与兜帽改用文明色 `USE_CIV_COLOR`，动作沿用 `Movement=Slinger`、`Combat=SlingerCombat`。由 `tools/make_unit_artdef.py` 生成（第一版用的邪教徒只有近战动作） | `ArtDefs/Units.artdef` |
 | 法师塔 | 12 个底座（四个时代 × 建筑组合）全部用 `DIS_CMP_Alchemical`，去掉图书馆 / 大学 / 研究实验室各自的建筑变体 | `ArtDefs/Landmarks.artdef` |
 | 构建后还原 | `tools/restore_cooked_entries.py`：TB_ERROR 按元素逐个还原（不再限一处）；被 cooker 清空的 DLC 元素引用（如 `Cultist`）按出现顺序填回 | — |
