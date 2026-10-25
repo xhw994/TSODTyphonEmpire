@@ -10,6 +10,54 @@
 	<m_PackageName text="TsoDTE_UITextures"/>
 	<m_Entries>
 		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_128"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_128"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_256"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_32"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_38"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_50"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_80"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_128"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_128"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_256"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_32"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_38"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_50"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_80"/>
+			<m_ObjectName text="ICON_BUILDING_TSOD_BURNSTONE_WORKS_FOW_80"/>
+		</Element>
+		<Element>
 			<m_EntryID text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_128"/>
 			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_128"/>
 		</Element>
@@ -62,6 +110,62 @@
 			<m_ObjectName text="ICON_CIVILIZATION_TSOD_TYPHON_EMPIRE_80"/>
 		</Element>
 		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_128"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_128"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_22"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_256"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_32"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_38"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_50"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_80"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_128"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_128"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_22"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_256"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_32"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_38"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_50"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_80"/>
+			<m_ObjectName text="ICON_DISTRICT_TSOD_MAGE_TOWER_FOW_80"/>
+		</Element>
+		<Element>
 			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_256"/>
 			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_256"/>
 		</Element>
@@ -92,6 +196,106 @@
 		<Element>
 			<m_EntryID text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_80"/>
 			<m_ObjectName text="ICON_LEADER_TSOD_ROSETTA_AUGUSTUS_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_256"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_30"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_30"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_32"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_38"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_50"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_70"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_70"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_PROJECT_TSOD_DESANCTIFICATION_80"/>
+			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_22"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_256"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_32"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_38"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_50"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_80"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_22"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_256"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_32"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_32"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_38"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_50"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_80"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_FOW_80"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_200"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_200"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_256"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_256"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_38"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_38"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_50"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_50"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_70"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_70"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_95"/>
+			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_PORTRAIT_95"/>
 		</Element>
 		<Element>
 			<m_EntryID text="LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND"/>

@@ -319,7 +319,7 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | 类别 | 名称 | 来源 |
 |---|---|---|
 | 图标图集 | `ICON_ATLAS_TSOD_TYPHON_CIVILIZATION`（13 个尺寸）、`ICON_ATLAS_TSOD_TYPHON_LEADER`（8 个尺寸） | `Icons/TsoDTE_Icons.xml` |
-| 图标别名（暂借官方） | `ICON_UNIT_TSOD_BATTLE_MAGE`(+`_FOW`/`_PORTRAIT`)→弩手；`ICON_DISTRICT_TSOD_MAGE_TOWER`(+`_FOW`)→学院；`ICON_BUILDING_TSOD_BURNSTONE_WORKS`→工厂；`ICON_PROJECT_TSOD_DESANCTIFICATION`→学院项目 | 同上 |
+| 单位 / 区域 / 建筑 / 项目图集（10-24） | `ICON_ATLAS_TSOD_TYPHON_UNIT`(+`_FOW`)、`_UNIT_PORTRAIT`、`_DISTRICT`(+`_FOW`)、`_BUILDING`(+`_FOW`)、`_PROJECT`；源图是用户按 `docs/icon-prompts.md` 生成的 5 张（`images/` 下），由 `tools/icon_art.py` 抠图、套六边形、做 FOW | 同上 |
 | 贴图包 | `TsoDTE_UITextures`（UITexture）、`TsoDTE_LeaderFallbacks`（LeaderFallback）；包名带前缀，避免和塞西尔的 `UILeaders` 等同名 | `XLPs/` |
 | 领袖贴图 | `LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL` / `_LOADING_FOREGROUND` / `_LOADING_BACKGROUND` / `_BACKGROUND` / `_DIPLOMACY_BACKGROUND`，`FALLBACK_NEUTRAL_LEADER_TSOD_ROSETTA_AUGUSTUS` | `tools/make_art.py` |
 | 历史时刻 | `MOMENT_UNIT_TSOD_BATTLE_MAGE`、`MOMENT_DISTRICT_TSOD_MAGE_TOWER`、`MOMENT_BUILDING_TSOD_BURNSTONE_WORKS` | `Core/TsoDTE_Moments.sql` |

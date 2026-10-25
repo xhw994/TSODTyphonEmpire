@@ -271,6 +271,33 @@ def leader_icon_master():
     return canvas
 
 
+# ----------------------------------------------------------------------------- packages
+PLATFORMS = ('WINDOWS', 'MACOS', 'IOS', 'LINUX', 'XBONE', 'PS4', 'SWITCH', 'STADIA')
+
+
+def write_xlp(path, cls, package, entries):
+    body = '\n'.join('\t\t<Element>\n\t\t\t<m_EntryID text="%s"/>\n\t\t\t<m_ObjectName text="%s"/>\n\t\t</Element>'
+                     % (e, e) for e in entries)
+    plats = '\n'.join('\t\t<Element>%s</Element>' % p for p in PLATFORMS)
+    text = ('<?xml version="1.0" encoding="UTF-8" ?>\n<AssetObjects..XLP>\n\t<m_Version>\n\t\t<major>1</major>\n'
+            '\t\t<minor>0</minor>\n\t\t<build>0</build>\n\t\t<revision>0</revision>\n\t</m_Version>\n'
+            '\t<m_ClassName text="%s"/>\n\t<m_PackageName text="%s"/>\n\t<m_Entries>\n%s\n\t</m_Entries>\n'
+            '\t<m_AllowedPlatforms>\n%s\n\t</m_AllowedPlatforms>\n</AssetObjects..XLP>\n') % (cls, package, body, plats)
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(text)
+
+
+def write_packages():
+    """Every texture in src/Textures goes into one of the two packages (fallback vs UI)."""
+    names = sorted(os.path.splitext(f)[0] for f in os.listdir(TEX_DIR) if f.endswith('.tex'))
+    fallback = [n for n in names if n.startswith('FALLBACK_NEUTRAL_')]
+    ui = [n for n in names if n not in fallback]
+    xdir = os.path.join(ROOT, 'src', 'XLPs')
+    write_xlp(os.path.join(xdir, 'TsoDTE_UITextures.xlp'), 'UITexture', 'TsoDTE_UITextures', ui)
+    write_xlp(os.path.join(xdir, 'TsoDTE_LeaderFallbacks.xlp'), 'LeaderFallback', 'TsoDTE_LeaderFallbacks', fallback)
+    return len(ui), len(fallback)
+
+
 # ----------------------------------------------------------------------------- main
 def main():
     preview = None
@@ -313,7 +340,28 @@ def main():
     matilda = load(SRC_MATILDA)
     made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
 
+    # unit / district / building / project icons from the generated images (docs/icon-prompts.md)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import icon_art
+    icons = icon_art.build(IMG, emit, icon_sizes)
+
     if preview:
+        refs = os.path.join(IMG, 'icon-refs')
+        pairs = [('unit', 'unit_icon_crossbowman'), ('unit_fow', 'unit_icon_crossbowman_FOW'),
+                 ('portrait', 'unit_portrait_crossbowman'), ('district', 'district_campus'),
+                 ('district_fow', 'district_campus_FOW'), ('building', 'building_factory'),
+                 ('building_fow', 'building_factory_FOW'), ('project', 'project_campus')]
+        sheet = Image.new('RGBA', (256 * len(pairs), 512 + 80), (70, 90, 120, 255))
+        for i, (k, ref) in enumerate(pairs):
+            sheet.alpha_composite(icons[k][-1], (i * 256, 0))          # ours, 256 px
+            rp = os.path.join(refs, ref + '.png')
+            if os.path.exists(rp):
+                sheet.paste(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
+            x = i * 256 + 8
+            for im in icons[k][:3]:                                      # smallest sizes
+                sheet.alpha_composite(im, (x, 520))
+                x += im.width + 6
+        sheet.save(os.path.join(preview, 'icons_vs_official.png'))
         emblem_color().save(os.path.join(preview, 'emblem_color.png'))
         sheet = Image.new('RGBA', (sum(made['civ'][i].width + 8 for i in range(len(CIV_SIZES))), 256), (196, 26, 32, 255))
         x = 0
@@ -332,7 +380,7 @@ def main():
             bgc = Image.new('RGBA', im.size, (40, 40, 40, 255))
             bgc.alpha_composite(im)
             bgc.convert('RGB').save(os.path.join(preview, k + '.jpg'), quality=85)
-    print('textures written to', TEX_DIR)
+    print('textures written to', TEX_DIR, '; packages (ui, fallback):', write_packages())
 
 
 if __name__ == '__main__':
