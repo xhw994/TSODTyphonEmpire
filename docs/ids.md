@@ -330,4 +330,6 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 |---|---|---|
 | 战斗法师 | 单位条目复制官方 `UNIT_SLINGER`（4 人、投石兵编队与远程战斗、音效）；成员是自定义的 `TSOD_BattleMage`：复制审判官（`Inquisitor`）的法袍、兜帽、法杖，法袍与兜帽改用文明色 `USE_CIV_COLOR`，动作沿用 `Movement=Slinger`、`Combat=SlingerCombat`。由 `tools/make_unit_artdef.py` 生成（第一版用的邪教徒只有近战动作） | `ArtDefs/Units.artdef` |
 | 法师塔 | 12 个底座（四个时代 × 建筑组合）全部用 `DIS_CMP_Alchemical`，去掉图书馆 / 大学 / 研究实验室各自的建筑变体 | `ArtDefs/Landmarks.artdef` |
+| 燃石酸化工厂 | 照官方日本电子工厂（替换工厂）登记：`Buildings.artdef` 的 `BUILDING_TSOD_BURNSTONE_WORKS`（复制 `BUILDING_FACTORY` 的战略视图图案）与生产建筑链第 2 级；`Landmarks.artdef` 工业区的 3 个底座、1 个建筑变体（模型 `DIS_PRD_Factory`）、2 个建筑组合（`WORKSHOP, TSOD_BURNSTONE_WORKS` 及加发电厂）。由 `tools/make_building_artdef.py` 生成 | `ArtDefs/Buildings.artdef`、`ArtDefs/Landmarks.artdef` |
+| 文化外观 | 照德国：`Civilizations.artdef` 音频 `Germany`；`Cultures.artdef` 城市风格 `AncientEarth`、`ModernGlass`，单位外观 `European`（追加进官方列表，不替换）。由 `tools/make_culture_artdef.py` 生成 | `ArtDefs/Civilizations.artdef`、`ArtDefs/Cultures.artdef` |
 | 构建后还原 | `tools/restore_cooked_entries.py`：TB_ERROR 按元素逐个还原（不再限一处）；被 cooker 清空的 DLC 元素引用（如 `Cultist`）按出现顺序填回 | — |

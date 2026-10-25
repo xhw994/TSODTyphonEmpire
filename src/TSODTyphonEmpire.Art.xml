@@ -18,6 +18,9 @@
 			<relativeArtDefPaths>
 				<Element text="Districts.artdef"/>
 				<Element text="Landmarks.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -35,6 +38,7 @@
 		<Element>
 			<consumerName text="Civilizations"/>
 			<relativeArtDefPaths>
+				<Element text="Civilizations.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -61,6 +65,8 @@
 		<Element>
 			<consumerName text="Cultures"/>
 			<relativeArtDefPaths>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -150,6 +156,9 @@
 			<relativeArtDefPaths>
 				<Element text="Districts.artdef"/>
 				<Element text="Landmarks.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="CityBuildings"/>
@@ -265,6 +274,9 @@
 			<relativeArtDefPaths>
 				<Element text="Districts.artdef"/>
 				<Element text="Landmarks.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_Sprite"/>
@@ -309,6 +321,9 @@
 			<relativeArtDefPaths>
 				<Element text="Districts.artdef"/>
 				<Element text="Landmarks.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -372,6 +387,9 @@
 			<consumerName text="Units"/>
 			<relativeArtDefPaths>
 				<Element text="Units.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="Unit"/>
@@ -436,6 +454,9 @@
 			<relativeArtDefPaths>
 				<Element text="Districts.artdef"/>
 				<Element text="Landmarks.artdef"/>
+				<Element text="Buildings.artdef"/>
+				<Element text="Civilizations.artdef"/>
+				<Element text="Cultures.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
