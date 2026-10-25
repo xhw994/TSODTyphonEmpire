@@ -23,24 +23,52 @@
 
 ---
 
-## ① 战斗法师单位图标 → `images/icons/battle_mage_glyph.png`
+## ① 战斗法师单位图标 → `images/战斗法师单位图标.png`（第二版）
 
 游戏里显示在单位旗帜、生产列表上，22 像素也要认得出。官方做法是画单位的武器（弩手就是一把弩）。
 
-- 画法：**纯黑色的平面剪影符号，放在纯白背景上**（我会转成白色并加描边，FOW 版本也由我生成）。
-- 内容：一根竖直的法杖，顶端一块尖菱形水晶，水晶外环绕一个细圆环（法阵），法杖下端略尖。线条粗、形状简单，左右大致对称。
+**第一版的问题**（10-24 实测）：竖直的杖顶着一个圆环，在旗帜上缩小后像棒棒糖、像魔法少女的变身杖。第二版要避开：
+- 不要「细长杆子顶着一个圆」的构图；
+- 要**宽**：像官方的弩那样左右撑开，宽度不小于高度的 80%；
+- 要有「军队」「攻击」的感觉，不要可爱、不要对称的装饰花边。
 
-Midjourney：
-```
-flat black silhouette icon of a vertical battle mage staff, pointed diamond crystal at the top surrounded by a thin circular rune ring, tapered bottom end, bold thick shapes, symmetrical, minimal game UI glyph, pure white background, no shading, no gradient --ar 1:1 --style raw --no text, watermark, border, shadow
-```
+画法同前：**纯黑色的平面剪影符号，放在纯白背景上**，粗线条、大块面，不要细节和细线（我会转成白色、加描边、做 FOW 版本）。正方形，至少 1024×1024。
+
+下面三个方案任选一个，推荐 A。
+
+### 方案 A（推荐）：铁拳握闪电
+
+戴金属护手的拳头，横握一道锯齿形闪电，闪电向左右两侧伸出，整体横向展开。「战斗」加「法术」，小尺寸下也只是一个拳头加一道闪电。
 
 哈吉米（Gemini）：
 ```
-画一个游戏界面用的图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一根竖直的战斗法师法杖，顶端是尖菱形水晶，水晶外环绕一个细圆环法阵，杖尾略尖。线条粗壮、形状简洁、左右对称，像《文明6》的单位图标（参考图里的那把弩）。不要阴影、渐变、文字、边框。正方形 1024×1024。
+画一个游戏界面用的单位图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一只戴金属护手的拳头，横握着一道锯齿形闪电，闪电从拳头两侧向左右伸出，整体横向展开、宽度和高度差不多。粗线条、大块面、没有细节，风格像《文明6》的单位图标（参考图里的那把弩）。不要圆环、不要阴影、渐变、文字、边框。正方形 1024×1024。
 ```
 
-验收：缩到 32 像素还能看出是法杖加圆环。
+Midjourney：
+```
+flat black silhouette game unit icon, an armored gauntlet fist gripping a jagged lightning bolt held horizontally, the bolt extending out to both sides, wide composition, bold chunky shapes, no fine detail, minimal military glyph, pure white background --ar 1:1 --style raw --no text, watermark, border, shadow, circle, ring
+```
+
+### 方案 B：施法的手掌
+
+戴护手的手掌向前张开，掌心前方爆出一团带三四道尖芒的法术光团（星芒形，不要圆环）。
+
+哈吉米（Gemini）：
+```
+画一个游戏界面用的单位图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一只戴金属护手的手掌向前张开，掌心前方爆出一团尖锐的星芒形法术光团（四道尖刺向外射出，不要圆环）。整体宽度和高度差不多，粗线条、大块面、没有细节，风格像《文明6》的单位图标。不要阴影、渐变、文字、边框。正方形 1024×1024。
+```
+
+### 方案 C：法杖与长剑交叉
+
+一把直剑和一根顶端菱形水晶的作战法杖交叉成 X。最像官方「交叉武器」的写法，但两根细长物在 22 像素时可能糊。
+
+哈吉米（Gemini）：
+```
+画一个游戏界面用的单位图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一把直剑和一根顶端为菱形水晶的作战法杖交叉成 X 形，两者都画得粗壮。整体宽度和高度相同，粗线条、大块面、没有细节，风格像《文明6》的单位图标。不要圆环、不要阴影、渐变、文字、边框。正方形 1024×1024。
+```
+
+验收：把图缩到 32 像素看一眼，还能认出拳头加闪电（或手掌加法术、剑加杖），不像别的东西。
 
 ## ② 战斗法师肖像 → `images/icons/battle_mage_portrait.png`
 

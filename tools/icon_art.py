@@ -200,7 +200,13 @@ def build(img_dir, emit, sizes_emit):
     made = {}
 
     def load(n):
-        im = Image.open(os.path.join(img_dir, n)).convert('RGB')
+        # the same name in .png / .jpg / .jpeg / .webp: take the most recently saved one
+        stem = os.path.splitext(n)[0]
+        found = [os.path.join(img_dir, stem + ext) for ext in ('.png', '.jpg', '.jpeg', '.webp')
+                 if os.path.exists(os.path.join(img_dir, stem + ext))]
+        if not found:
+            raise FileNotFoundError(os.path.join(img_dir, stem + '.*'))
+        im = Image.open(max(found, key=os.path.getmtime)).convert('RGB')
         return im.resize((M, M), Image.LANCZOS) if im.size != (M, M) else im
 
     unit, unit_fow = unit_glyph(load('战斗法师单位图标.jpg'))
