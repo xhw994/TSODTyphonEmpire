@@ -127,3 +127,15 @@
 - 忠诚度透镜：照塞西尔手写 `Assets/*.ast`、`Materials/*.mtl`、`ArtDefs/Overlay.artdef`、`XLPs/TsoDTE_UILensAsset.xlp`；贴图由 `tools/make_loyalty_overlay.py` 从国徽生成（512 白色国徽加暗色光晕、128 白色国徽）。
 - 注释清理：41 个文件只动注释（逐文件去注释比对一致），值得留的设计依据移到 `docs/notes.md`；桩测试 41 → 42 全过。
 - 要看：test-plan §12.11。
+
+## WP14 战神教 · 10-25（待测）
+
+- 构建：分支 `war-god-religion-1aa74f` 已合进 `main`（与忠诚度透镜合并：两份 `Overlay.artdef` 取并集），合并后构建并部署到 Mods 目录；9 个 artdef 无 `TB_ERROR`、无被清空的引用，`validate_mod` 0 错误，桩测试 42 全过。必须新开局（开局选项只在开局时读）。
+- 本轮新增：可选宗教「战神教」`RELIGION_TSOD_WAR_GOD`，开局选项「启用战神教」（高级设置，默认开）；宗教色铁灰；百科 4 段。图标、透镜、历史时刻暂借官方「自定义宗教 4」的狮子，美术提示词见 `docs/icon-prompts.md` ⑥⑦。
+- 静态与构建（都过）：
+  - `db_load_test`：语句错误 0，新增外键违例 0（跳过塞西尔联动动作：前缀 `TSOD` 会连塞西尔 mod 自己的行一起清掉，造成 1 条与本轮无关的假违例）。宗教、时刻插图入库，`FavoredReligions` 里没有它。
+  - 配置库、本地化库（游戏缓存副本）、图标库、颜色库（用游戏自带的建表 SQL 新建）：开局参数、14 行文本、图标别名、宗教色都写入成功，外键干净。
+  - `loc_audit` 通过（中英各 237 个 tag）；`lua_lint` 0 错误；WP14 的 SQL 全部能转成 XML；`modifier_lint` 0 错误；`validate_mod` 0 错误。
+  - 构建：`TsoDTE_UILensReligion`、`TsoDTE_StrategicViewReligion` 两个包都烘焙出 BLP，透镜贴图进了 `SHARED_DATA`（与塞西尔的忠诚度透镜相同）；9 个 artdef 没有 `TB_ERROR`，源文件与产物的引用逐个比对 0 处被改。
+  - 发现：输出目录路径太长（超过 260 字符）时，cooker 不报错但大部分 BLP 和 `.dep` 都不生成，`build_mod.py` 照样报成功。第一次构建到临时目录就是这样，改到短路径后正常。
+- 要看：test-plan §12.10（开关开、关各一局；需实证 R1–R4）。

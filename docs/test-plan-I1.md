@@ -427,6 +427,38 @@ x、y 换成目标格子；单位类型按需要换。
 4. 同一局里德国、塞西尔等其他文明的城市外观、音乐不变。
 5. `Modding.log`、`Lua.log` 没有新出现的 ArtDef 或资源加载报错。
 
+### 12.10 可选宗教：战神教（WP14）
+
+开关在「高级设置」里，名为「启用战神教」，默认勾选。**开、关各新开一局。** 图标、透镜图案、历史时刻现在都是官方「自定义宗教 4」的狮子（临时），宗教色是铁灰。
+
+**A. 开关打开（默认，不用动它）**
+
+1. 开局设置 → 高级设置：有「启用战神教」，已勾选；悬停说明是「将《黎明之剑》的战神教加入可创立的宗教……」。只有风云变幻规则集才有这一项。
+2. 文明百科 → 宗教：列表里有「战神教」，页面是 4 段文字（凯尔、狼将军的试炼、铁质权杖与铁灰祭火、冬日猎神），图标是狮子。
+3. 创立宗教（作弊菜单「加+1000信仰」，用信仰招募大预言家）：可选列表里有「战神教」，狮子图标，名字不用自己起。选它。
+   - 想看「任何文明都能选」：换一个非提丰的文明再来一次，或者看 AI 有没有选它。罗塞塔的 AI 不偏好它（数据上没挂 `FavoredReligions`，不用专门测）。
+4. 创立后逐项看：
+   - 「创立宗教」历史时刻：圣典左页上盖的是狮子印章。
+   - 宗教透镜（3D 地图）：信战神教的城市上是白色细线狮子加深色光晕；传播压力箭头上是实心小狮子；地块与宗教面板是铁灰色。
+   - 战略视图（2D 地图）打开宗教透镜：城市上也有小狮子。
+   - 传教士、使徒的单位旗帜：宗教小图标是狮子。
+5. 日志：`Database.log` 没有带 `RELIGION_TSOD_WAR_GOD` 的错误；`Lua.log` 没有 `No data was found on MomentIllustrations`；`ArtDef.log` / `Modding.log` 没有 `TsoDTE_UILensReligion`、`TsoDTE_StrategicViewReligion`、`Religion_Overlay_Tsod_TE_WarGod_Box` 的加载错误。
+
+**B. 开关关闭**
+
+1. 新开一局，高级设置里取消「启用战神教」。
+2. 文明百科的宗教列表、创立宗教的列表里都没有战神教；其他宗教照常。
+3. `Modding.log` 里 `TsoDTE_IG_UpdateDatabase_Religion`、`_UpdateColors_Religion`、`_UpdateIcons_Religion` 三个动作没有应用（criteria 不满足）。
+
+**需实证**（没过就发回来，退路已备）：
+
+| 编号 | 看什么 | 没过时的退路 |
+|---|---|---|
+| R1 | 没动过开关（默认值）时，宗教是否加载 | 默认值没写进配置的话，criteria 改成 `<ConfigurationValueMatches inverse="1">` 匹配值 0：只有明确关掉才不加载 |
+| R2 | 3D 宗教透镜上是否出现狮子（手写的 `.ast` / `.mtl`，与忠诚度透镜同法） | `Overlay.artdef` 两处改为直接引用官方 `Religion_Overlay_Custom4_Box` / `Religion_Pressure_Custom4_Box` |
+| R3 | 2D 战略视图的宗教图标（手写 `StrategicView.artdef`；Historical Religions 的同类写法看起来是坏的，这是第一次实测） | `Icon` 改为引用官方 `ReligionPressureIcon_Custom4` 元素 |
+| R4 | 同时开 Historical Religions（本机在用）时战神教仍在列表里 | 本 mod 在 LoadOrder 110 加入，晚于它的 −3…1；没出现就查它的 `HR_Religions_Data_2.sql` 有没有按配置删宗教 |
+
 ### 12.11 忠诚度透镜、回血不重复（10-25）
 
 1. 打开忠诚度透镜（3D 地图）：提丰城市上是白色国徽（四分盾加皇冠）带暗色光晕；忠诚度压力箭头上是白色小国徽。以前是没有图案或官方默认。

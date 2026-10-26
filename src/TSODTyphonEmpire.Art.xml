@@ -256,6 +256,7 @@
 		<Element>
 			<consumerName text="StrategicView_Properties"/>
 			<relativeArtDefPaths>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -264,6 +265,7 @@
 		<Element>
 			<consumerName text="StrategicView_Route"/>
 			<relativeArtDefPaths>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_Route"/>
@@ -279,6 +281,7 @@
 				<Element text="Buildings.artdef"/>
 				<Element text="Civilizations.artdef"/>
 				<Element text="Cultures.artdef"/>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_Sprite"/>
@@ -289,6 +292,7 @@
 		<Element>
 			<consumerName text="StrategicView_TerrainBlend"/>
 			<relativeArtDefPaths>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_TerrainBlend"/>
@@ -299,6 +303,7 @@
 		<Element>
 			<consumerName text="StrategicView_TerrainBlendCorners"/>
 			<relativeArtDefPaths>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_TerrainBlendCorners"/>
@@ -309,6 +314,7 @@
 		<Element>
 			<consumerName text="StrategicView_TerrainType"/>
 			<relativeArtDefPaths>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="StrategicView_TerrainBlend"/>
@@ -326,6 +332,7 @@
 				<Element text="Buildings.artdef"/>
 				<Element text="Civilizations.artdef"/>
 				<Element text="Cultures.artdef"/>
+				<Element text="StrategicView.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 			</libraryDependencies>
@@ -561,6 +568,7 @@
 		<Element>
 			<libraryName text="StrategicView_Sprite"/>
 			<relativePackagePaths>
+				<Element text="TsoDTE_StrategicViewReligion"/>
 			</relativePackagePaths>
 		</Element>
 		<Element>
@@ -602,6 +610,7 @@
 			<libraryName text="UILensAsset"/>
 			<relativePackagePaths>
 				<Element text="TsoDTE_UILensAsset"/>
+				<Element text="TsoDTE_UILensReligion"/>
 			</relativePackagePaths>
 		</Element>
 		<Element>

@@ -158,3 +158,88 @@ glossy game icon of an open book with a fading cracked halo floating above its p
 4. 建筑：另做偏棕金色的 FOW 版本。
 5. 缩放到各尺寸：单位 22–256（6 个）、肖像 38–256（6 个）、区域 22–256（7 个）、建筑 32–256（6 个）、项目 30–256（7 个）。
 6. 把 `Icons/TsoDTE_Icons.xml` 里对应的官方别名换成自己的图集，构建、部署。
+
+---
+
+# 战神教（WP14）：宗教标志与历史时刻
+
+现在暂借官方「自定义宗教 4」的狮子：宗教图标、宗教透镜（3D 地图上的城市图标、压力箭头，2D 战略视图图标）、历史时刻都是它。**一共只要 1 张，第 2 张可选。** 通用规格同上（正方形、至少 1024×1024、PNG、四周留白约 6%、不要文字水印边框），两张都是**纯黑平面剪影放在纯白背景（#FFFFFF）上**。
+
+风格参考图（`images/icon-refs/`）：
+
+| 参考图 | 看什么 |
+|---|---|
+| `religion_icons_50.png` | 官方小尺寸宗教图标：一整块白色实心剪影（十字、新月、法轮……），22 像素也认得出 |
+| `religion_icon_270_islam.png` | 官方大图标：同一个符号的细线描边版（我从你的剪影自动描边，不用另画） |
+| `religion_moment_book.png` | 「创立宗教」历史时刻：所有宗教共用一本摊开的圣典，左页上盖着本宗教的符号印章（这里是狮子），印章只有 166×122 |
+
+## ⑥ 战神教标志 → `images/战神教标志.png`
+
+用在宗教图标的全部 4 个尺寸（22、50、100、270）和宗教透镜上，所以必须是**一个粗壮、轮廓简单的实心剪影**，缩到 22 像素还认得出。原作意象：教皇的铁质权杖、「战锤击打盾牌一般的巨响」、铁灰色的祭火。
+
+避开：
+- 不要和提丰国徽撞：盾面上**不要**四分格、不要皇冠；
+- 不要像官方已有的宗教符号：单独的十字、新月、星形、法轮；
+- 不要「细长杆子顶一个圆」（战斗法师图标第一版的教训）；两根细长物交叉在 22 像素时容易糊成一个叉。
+
+下面两个方案任选一个，推荐 A。
+
+### 方案 A（推荐）：被战锤击打的盾
+
+一面圆盾或尖底骑士盾（盾面朴素，只有一圈盾缘），一柄方头战锤从右上方斜着砸在盾面上，撞击点迸出三四道短而粗的放射状裂纹或冲击线。大块面主要是盾，所以小尺寸下最稳。
+
+哈吉米（Gemini）：
+```
+画一个游戏界面用的宗教图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一面朴素的圆形骑士盾（只有一圈盾缘，盾面上没有花纹、没有分格、没有皇冠），一柄方头战锤从右上方斜着砸在盾面上，撞击点迸出三四道短而粗的放射状冲击线。粗线条、大块面、没有细节，像《文明6》宗教图标里的十字和新月那样简洁（参考图）。不要阴影、渐变、文字、边框。正方形 1024×1024，主体居中，四周留白。
+```
+
+Midjourney：
+```
+flat black silhouette religion icon, a plain round knight's shield with only a rim, a square-headed war hammer striking it diagonally from the upper right, three or four short thick impact lines bursting from the point of impact, bold chunky shapes, no fine detail, minimal sacred emblem like Civilization VI religion symbols, pure white background --ar 1:1 --style raw --no text, watermark, border, shadow, crown, quartered shield, cross, crescent, star
+```
+
+### 方案 B：权杖与战锤交叉
+
+教皇的铁质权杖（顶端一个粗壮的方形或冠状杖首）和一柄方头战锤交叉成 X，两者都画得很粗，杖首和锤头要大，交叉点后面可以垫一小团三尖火焰（铁色的祭火）把中间填实。
+
+哈吉米（Gemini）：
+```
+画一个游戏界面用的宗教图标符号：纯黑色平面剪影，纯白背景（#FFFFFF）。内容是一根粗壮的铁质权杖（顶端是一个大而方正的杖首）和一柄方头战锤交叉成 X 形，交叉点后面衬着一小团三尖的火焰，把中间填实。两件器物都画得很粗，杖首和锤头都要大，粗线条、大块面、没有细节，像《文明6》宗教图标那样简洁（参考图）。不要阴影、渐变、文字、边框。正方形 1024×1024，主体居中，四周留白。
+```
+
+Midjourney：
+```
+flat black silhouette religion icon, a thick iron sceptre with a large blocky head crossed with a square-headed war hammer in an X, a small three-tongued flame behind the crossing point filling the center, both objects very thick with oversized heads, bold chunky shapes, no fine detail, minimal sacred emblem like Civilization VI religion symbols, pure white background --ar 1:1 --style raw --no text, watermark, border, shadow, cross, crescent, star
+```
+
+验收：缩到 22 像素（大约指甲盖大小）看一眼，还能认出「盾加锤」（或「杖加锤」），不是一团黑块，也不像十字架。
+
+## ⑦ 战神教历史时刻（可选）→ `images/战神教历史时刻.png`
+
+计划里写的是「暴风雪中的铁灰色巨人」，但官方的宗教历史时刻**不是一整幅画**：画面是所有宗教共用的圣典，每个宗教只在左页上盖一个 166×122 的棕色印章（见 `religion_moment_book.png`）。所以这张要的是**巨人的剪影**，我把它转成和官方一样的棕色印章；暴风雪画不进这么小的印章，只用飘起的披风表现风。
+
+**不交这张也行**：官方每个宗教的印章就是它的宗教符号，我会直接用 ⑥ 的标志盖章。
+
+- 内容：冬堡群山前的铁灰色巨人（战神降临的化身）。全身，穿厚重的板甲、头盔遮住脸，一手提着巨大的方头战锤，向左前方迈步，身后一大片向右飘起的破披风。
+- 只要剪影，轮廓要大块、清楚，不要细节；人物占满画面高度。
+
+哈吉米（Gemini）：
+```
+画一个纯黑色平面剪影，纯白背景（#FFFFFF）：一个穿厚重板甲的巨人，头盔遮住脸，一手提着巨大的方头战锤，向左前方大步迈进，身后一大片向右飘起的破披风。全身入画，人物占满画面高度，轮廓大块、清楚，没有细节和细线。不要地面、阴影、渐变、文字、边框。正方形 1024×1024。
+```
+
+Midjourney：
+```
+flat black silhouette of a towering giant in heavy plate armor, closed helmet hiding the face, gripping a huge square-headed war hammer, striding forward to the left, a large tattered cloak billowing to the right behind him, full body filling the frame, bold clean shapes, no fine detail, pure white background --ar 1:1 --style raw --no text, watermark, border, ground, shadow
+```
+
+验收：缩到 80 像素高还能看出是一个提锤的巨人。
+
+## 战神教：我这边拿到图后做的事
+
+1. `python -X utf8 tools/make_religion_art.py --icons`（读 `images/战神教标志.png`，有 `images/战神教历史时刻.png` 就用它做印章）：
+   - 宗教图标：22、50、100 是白色实心剪影；270 是自动描边的细线版，和官方一致；
+   - 宗教透镜：3D 城市图标 512（细线版加深色光晕）、压力箭头 128 与 2D 战略视图图标 128（实心）；
+   - 历史时刻：166×122 的棕色印章。
+2. 脚本同时把 `Icons/TsoDTE_Icons_Religion.sql` 的临时别名换成自己的图集，把时刻插图从官方狮子换成 `MOMENT_RELIGION_TSOD_WAR_GOD`。
+3. 构建、部署，在 test-log 记一轮。
