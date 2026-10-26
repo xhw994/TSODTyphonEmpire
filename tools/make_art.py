@@ -25,6 +25,8 @@ LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
 
 SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
 SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
+# Loading screen background (2880 x 1440, exactly 2:1, so it scales to 1920 x 960 without a crop).
+SRC_LOADING = '奥尔德南 冬日 修图.jpg'
 # images/法师塔.jpg is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
 SRC_TOWER = '法师塔.jpg'
 SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
@@ -327,7 +329,9 @@ def main():
 
     rain = load(SRC_RAIN)
     bg = crop_resize(rain, (400, 0, 2559, 1080), (1920, 960))
-    made['loading_bg'] = emit(bg, 'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND')
+    # the loading screen uses its own winter view; the leader-selection background keeps the rainy night
+    loading = load(SRC_LOADING).resize((1920, 960), Image.LANCZOS)
+    made['loading_bg'] = emit(loading, 'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND')
     emit(bg, 'LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND')
     # throne room above Rosetta's head in his portrait (left of x=240 is the novel's logo)
     made['diplo_bg'] = emit(crop_resize(rosetta, (240, 0, 1180, 470), (1920, 960)),
