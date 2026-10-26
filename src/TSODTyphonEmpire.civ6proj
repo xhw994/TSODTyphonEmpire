@@ -61,7 +61,13 @@
     <Content Include="XLPs\TsoDTE_UITextures.xlp">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="XLPs\TsoDTE_UILensAsset.xlp">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="ArtDefs\Landmarks.artdef">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="ArtDefs\Overlay.artdef">
       <SubType>Content</SubType>
     </Content>
     <Content Include="ArtDefs\Cultures.artdef">

@@ -1,14 +1,5 @@
-"""Write src/ArtDefs/Civilizations.artdef and Cultures.artdef: Typhon looks and sounds like LIKE.
-
-    python -I -X utf8 tools/make_culture_artdef.py "<Civ6 install dir>"
-
-Without these, the game has no city-building style, unit culture or civilization audio entry
-for the civilization. The official way to give a civilization a style is to list it in each
-culture it belongs to (Cultures.artdef: building styles under "Culture", unit looks under
-"UnitCulture") and to give it a Civilizations.artdef entry whose Audio XrefName picks the
-civilization's audio set. We copy all of that from LIKE (Germany: an imperial European look).
-Our culture entries set m_AppendMergedParameterCollections=true, so the civilization is added to
-the official lists instead of replacing them (the Cecil mod does the same with Scotland).
+"""Typhon looks and sounds like LIKE (Germany) via Civilizations.artdef and Cultures.artdef: python -I -X utf8 tools/make_culture_artdef.py "<Civ6 install dir>"
+Without them the civilization has no city style, unit culture or audio set; the culture entries append (m_AppendMergedParameterCollections=true) to the official lists instead of replacing them.
 """
 import copy
 import os
@@ -48,7 +39,7 @@ def write(tree_root, path):
         f.write('<?xml version="1.0" encoding="UTF-8" ?>\n' + ET.tostring(tree_root, encoding='unicode') + '\n')
 
 
-# ---- Civilizations.artdef: copy LIKE's entry (audio set) ---------------------------------
+# Civilizations.artdef: copy LIKE's entry (audio set)
 official = ET.parse(os.path.join(base, 'Civilizations.artdef')).getroot()
 out, colls = skeleton(official)
 for coll in official.find('m_RootCollections'):
@@ -61,7 +52,7 @@ for coll in official.find('m_RootCollections'):
             audio = [v.get('text') for v in mine.iter('m_Value')]
 write(out, os.path.join(root_dir, 'src', 'ArtDefs', 'Civilizations.artdef'))
 
-# ---- Cultures.artdef: join every culture LIKE belongs to ---------------------------------
+# Cultures.artdef: join every culture LIKE belongs to
 official = ET.parse(os.path.join(base, 'Cultures.artdef')).getroot()
 out, colls = skeleton(official)
 joined = {}

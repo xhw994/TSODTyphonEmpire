@@ -1,16 +1,7 @@
--- ============================================================================
--- TsoDTE_Text_CivLeader.sql  (WP1)
--- 文明、领袖名、城市名、市民名的中英文本
--- 动作：InGame UpdateText + FrontEnd UpdateText
--- 只含 docs/ids.md §4 归 WP1 的 tag。特性名与描述归 WP2 / WP3，
--- 载入画面词、引言、百科归 WP8，这里都不写。
--- 用 INSERT OR REPLACE：同一文件被 FrontEnd 与 InGame 各加载一次（照塞西尔）。
--- 城市顺序同 master plan §11.2 与 Core/TsoDTE_Civilization.sql 的 CityNames。
--- ============================================================================
+-- WP1 文明、领袖名、城市名、市民名的中英文本（IG + FE UpdateText），只含 ids.md §4 归 WP1 的 tag。
+-- 用 INSERT OR REPLACE：同一文件被 FrontEnd 与 InGame 各加载一次（照塞西尔）；城市顺序同 CityNames。
 
--- --------------------------------------------------------------------------
 -- zh_Hans_CN
--- --------------------------------------------------------------------------
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
     -- 文明与领袖
@@ -98,9 +89,7 @@ VALUES
     ('zh_Hans_CN', 'LOC_CITIZEN_NAME_TSOD_FERDINAND', '裴迪南'),
     ('zh_Hans_CN', 'LOC_CITIZEN_NAME_TSOD_BARD', '巴德');
 
--- --------------------------------------------------------------------------
 -- en_US
--- --------------------------------------------------------------------------
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
     -- 文明与领袖

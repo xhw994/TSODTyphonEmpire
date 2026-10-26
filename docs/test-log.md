@@ -27,6 +27,8 @@
 | 10-24 | 邪教徒模型实测全是近战动作，改为：单位条目照投石兵（4 人、远程），成员用审判官的法袍兜帽法杖、文明色，动作沿用审判官本来就用的投石兵远程动作。 |
 | 10-24 | 新图标采用「铁拳握闪电」。战斗法师模型原为野蛮人（缺 Units.artdef），改用秘密结社「邪教徒」模型（用户的「邪术士」即此，埃塞俄比亚包），战斗方式照弩手。法师塔原来要建大学才出现炼金术会所模型，改为任何时代、区域一建成就是它。 |
 | 10-23 | 罗塞塔外交台词按原著改写（`docs/dialogue-draft.md`），除「被玩家消灭」那句保留原稿外全部采用。 |
+| 10-25 | 外交政策卡（WP15）取消；领袖多情绪立绘与外交场景不做；战神教（WP14）现在做；发布文案照塞西尔的三份 README；联机不实测，只做静态检查（随机数、本地玩家、遍历顺序等）。 |
+| 10-25 | 忠诚度透镜照塞西尔手写 `.ast` / `.mtl` / 贴图，不用 AssetEditor。 |
 
 ---
 
@@ -113,3 +115,15 @@
   - 原来没有 `Civilizations.artdef` / `Cultures.artdef`，提丰没有城市建筑风格、单位外观文化和文明音频条目。现照德国登记：城市风格 `AncientEarth`、`ModernGlass`，单位外观 `European`，音频 `Germany`。由 `tools/make_culture_artdef.py` 生成。
   - 构建后 7 个 artdef 都没有 `TB_ERROR`、没有被清空的引用；`validate_mod` 0 错误。
 - 要看：test-plan §12.9（本轮新增），以及第四轮未回报的 §12.0–§12.3、§12.6、§12.8 里的新图标与法师塔开局模型。
+
+## 联机静态检查 · 10-25（不实测）
+
+- 安全：没有 `math.random` / `os.time` / `os.clock`；没有 `Game.GetLocalPlayer` 和 `ExposedMembers`；UI 脚本只读不写；`pairs` 不决定状态；`IsHuman` 只管通知；领袖能力挑科技 / 市政用回合、玩家、时代算出的整数下标，各端一致。
+- 已修：战斗法师回血挂在 `Events.PlayerTurnActivated` 上，读档或重连时同一回合会再触发，多回 10 血（单机也能读档刷血）。改为每个编队按回合记一笔（单位属性 `TSOD_TYPHON_REGEN_TURN`），桩测试加了同回合重复触发的用例。
+- 未验证（只有联机才看得出，暂不改）：状态改动挂在 `Events.*` 上（`PlayerTurnActivated`、`UnitKilledInCombat`、`UnitFormCorps` / `UnitFormArmy`、`UnitOperationDeactivated`、`CityProjectCompleted`），官方 Gameplay 脚本只用 `GameEvents.*`。若其中某个只在本机派发，联机会不同步。可行的改法：`GameEvents.PlayerTurnStarted`、`GameEvents.OnCombatOccurred`（击杀）；编队与施放没有对应的 GameEvents。
+
+## 忠诚度透镜与注释清理 · 10-25（待测）
+
+- 忠诚度透镜：照塞西尔手写 `Assets/*.ast`、`Materials/*.mtl`、`ArtDefs/Overlay.artdef`、`XLPs/TsoDTE_UILensAsset.xlp`；贴图由 `tools/make_loyalty_overlay.py` 从国徽生成（512 白色国徽加暗色光晕、128 白色国徽）。
+- 注释清理：41 个文件只动注释（逐文件去注释比对一致），值得留的设计依据移到 `docs/notes.md`；桩测试 41 → 42 全过。
+- 要看：test-plan §12.11。

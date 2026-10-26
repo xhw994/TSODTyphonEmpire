@@ -1,10 +1,5 @@
--- =============================================================================
--- TsoDTE_Text_Agenda.sql  (WP7 议程与 AI)
--- 动作：InGame UpdateText（ids.md §5.1）。
--- 内容：议程名称与说明、议程两条态度条目的说明（SimpleModifierDescription）、
---       AI 发出赞许 / 警告时附带的理由句（StatementKey）。
--- 罗塞塔本人的外交台词（tag 里带 TSOD_ROSETTA_AUGUSTUS 的那一批）归 WP8，不在这里。
--- =============================================================================
+-- WP7 议程文本：议程名与说明、态度条目说明（SimpleModifierDescription）、赞许 / 警告理由句（StatementKey）。
+-- 罗塞塔本人的外交台词（tag 带 TSOD_ROSETTA_AUGUSTUS 的那批）归 WP8，不在这里。
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES

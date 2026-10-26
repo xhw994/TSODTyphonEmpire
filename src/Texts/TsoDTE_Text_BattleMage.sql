@@ -1,8 +1,4 @@
--- ============================================================================
--- WP4 战斗法师基础：文本
--- 动作：InGame UpdateText + FrontEnd UpdateText（开局界面显示特色单位名与说明）。
--- 百科长文归 WP8（Texts/TsoDTE_Text_Pedia.sql），不在这里。
--- ============================================================================
+-- WP4 战斗法师文本（InGame + FrontEnd UpdateText：开局界面显示特色单位名与说明）；百科长文在 Text_Pedia。
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
@@ -16,8 +12,7 @@ VALUES
     ),
 
     -- 能力：弹道学成长
--- （三个能力的 DESCRIPTION 只写名字：单位面板悬停提示会把能力的 Description 整句列出来，
---  I1 反馈要求只显示技能名；效果说明在单位描述和百科里。）
+-- 三个能力的 DESCRIPTION 只写名字：单位面板悬停提示会整句列出（I1 反馈），效果说明在单位描述和百科里。
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', '弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION', '弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW', '+{1_Amount} 弹道学成长'),
@@ -32,7 +27,7 @@ VALUES
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION', '军团级法术'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} 军团级法术'),
 
-    -- ---------------------------------------------------------------- en_US
+    -- en_US
     ('en_US', 'LOC_UNIT_TSOD_BATTLE_MAGE_NAME', 'Battle Mage'),
     (
         'en_US',

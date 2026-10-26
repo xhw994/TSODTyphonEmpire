@@ -1,21 +1,8 @@
--- TsoDTE_Text_Pedia.sql
--- WP8：百科长文、人物与地点条目、领袖引言、载入画面旁白、外交台词。
--- 动作：InGame UpdateText。
---
--- tag 约定全部照官方先例（Base/Assets/UI/Civilopedia/CivilopediaSupport.lua 的
--- FindChapterTextKey / FindPageTextKey，及印度甘地的整套外交台词）。下面的写法都省略了 tag 的统一前缀：
---   文明  PEDIA_CIVILIZATIONS_PAGE_<CivType>_CHAPTER_HISTORY_PARA_n
---   领袖  PEDIA_LEADERS_PAGE_<LeaderType>_QUOTE / _CHAPTER_CAPSULE_BODY / _CHAPTER_DETAILED_BODY / _CHAPTER_HISTORY_PARA_n
---   单位、区域、建筑  PEDIA_<SECTION>_PAGE_<Type>_CHAPTER_HISTORY_PARA_n
---   自定义分组页（行在 Core/TsoDTE_Pedia.sql）  PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_TITLE / _PARA_n
---   外交  DIPLO_<语句>_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY（官方形式带 LEADER_ 前缀）
--- 议程的赞许 / 警告理由句（..._REASON_AGENDA_TSOD_KINDRED）与 DIPLO_MODIFIER_TSOD_KINDRED_* 归 WP7，这里不写。
--- 文中数值一律不写死，具体数值以各包的 DESCRIPTION 为准。
+-- WP8 百科长文、人物与地点条目、领袖引言、载入画面旁白、外交台词（InGame UpdateText）。
+-- tag 约定照官方 CivilopediaSupport.lua 的 FindChapterTextKey / FindPageTextKey 与印度甘地的外交台词；数值不写死，以各包 DESCRIPTION 为准。
 
--- =============================================================================
 -- 文明：提丰帝国
 -- PARA_1 是文明引言（官方文明页没有引言位，放在历史章节的第一段）
--- =============================================================================
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_1',
      '“神明并不是太可靠的保护者。”[NEWLINE]——罗塞塔·奥古斯都'),
@@ -47,10 +34,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_6',
      'After the war Typhon sat at the same table as its former enemy, joined the alliance of human nations and the Theocratic Council, and began a policy of Desanctification at home, prying faith and state apart. The fertilizer of the burnstone works, the Dust of Plenty, freed mortals from waiting on the blessings of the gods of plenty. An empire that once took pride in god-favored knights is now learning to rely on no one but itself.');
 
--- =============================================================================
 -- 领袖：罗塞塔·奥古斯都
--- _QUOTE 由 WP1 的 LeaderQuotes 行引用（领袖引言）
--- =============================================================================
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE',
      '我们，有着超乎你们想象的韧性。'),
@@ -92,18 +76,14 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_5',
      'The greatest gamble of Rosetta’s life came after the Church of the God of War lost its mind: the Winter God-Hunt. He struck a bargain with the Eye of God, cast the lingering avatars of his old friend Malm Dunite, the War God’s Pope, one by one into a brazier as offerings, and so dragged the God of War himself into the mortal world. At the same time the Obsidian Guard purged the maddened priesthood, and the mountains of Winterhold unleashed several Annihilation Scars at once. In the end, with the help of the Cecil Empire, the god fell. After the war Rosetta led Typhon into the alliance of human nations and the Theocratic Council and set about Desanctification. To this emperor, the gods were never reliable protectors.');
 
--- =============================================================================
--- 载入画面旁白（WP1 的 LoadingInfo.LeaderText 引用）
--- =============================================================================
+-- 载入画面旁白
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS',
      '罗塞塔·奥古斯都陛下，提丰的皇帝，黑铁王座的主人。两百年来，您的家族在噩梦里与神明周旋，却从未低头。如今，用学院锻造超凡者的兵团，用燃石喂饱您的子民，把敌人的每一项发明都化为己用。算清每一份代价，也别害怕押上一切——让世界看看，凡人能走多远。'),
     ('en_US', 'LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS',
      'Your Imperial Majesty Rosetta Augustus, Emperor of Typhon, master of the Black Iron Throne. For two hundred years your house has dueled with a god in its nightmares and never once bowed. Now forge legions of Transcendents in your academies, feed your people with burnstone, and turn every invention of your enemies to your own ends. Weigh every cost, yet never fear to wager everything—show the world how far mortals can go.');
 
--- =============================================================================
--- 特色单位：提丰战斗法师（WP4 只写 NAME / DESCRIPTION）
--- =============================================================================
+-- 特色单位：提丰战斗法师
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_1',
      '提丰战斗法师是帝国“量产超凡者”政策的产物。他们大多天赋平平，放在传统法师眼中或许连学徒都不够格，却从童年起便被集中起来，十几年如一日地只练熟一两种战斗法术。单独一人并不起眼，成千上万人集结起来，却能凝聚成令敌军胆寒的“军团级法术”。'),
@@ -120,9 +100,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_3',
      'Unlike other armies, Typhon’s is in no hurry to replace its veterans with new kinds of troops. The empire’s spells, equipment and tactics are refreshed with each age, while these battle-hardened casters stay in the ranks, carrying the lessons of every battle into the next war. Their most fearsome power is the strategic spell once fired in volleys from the peaks of Winterhold to wound a god: the Annihilation Scar.');
 
--- =============================================================================
--- 特色区域：法师塔（WP5 只写 NAME / DESCRIPTION）
--- =============================================================================
+-- 特色区域：法师塔
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_DISTRICTS_PAGE_DISTRICT_TSOD_MAGE_TOWER_CHAPTER_HISTORY_PARA_1',
      '提丰的法师塔远不只是研究魔法的地方。帝国依靠数量众多的法师塔和大批效忠皇室的皇家法师，对绝大多数城市中的超凡者进行登记与感应，并配套兴建了大量培训设施，专门培养更忠诚、更服从命令的“专职施法者”。这套体系耗资巨大，但提丰负担得起。'),
@@ -139,9 +117,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_DISTRICTS_PAGE_DISTRICT_TSOD_MAGE_TOWER_CHAPTER_HISTORY_PARA_3',
      'And because of this all-seeing web, foreign spies who slip into a Typhon city often discover that the eyes atop the towers have been following their every move.');
 
--- =============================================================================
--- 特色建筑：燃石酸化工厂（WP6 只写 NAME / DESCRIPTION）
--- =============================================================================
+-- 特色建筑：燃石酸化工厂
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_1',
      '燃石是提丰东北海岸常见的一种灰白色沉积岩，经过酸化处理后能变成高效的化肥，提丰人称之为“丰饶之尘”。罗塞塔下令在帝国所有的产粮区就地兴建燃石酸化工厂，让化肥不必长途运输便能撒进田里，农场与养猪场也随之一同兴旺起来。'),
@@ -158,18 +134,14 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_3',
      'Even the Cecilians admitted that Typhon’s acidification works were five years ahead of their own alchemical factories. The deeper consequences were spiritual: once mortals could feed themselves with the Dust of Plenty, they had bypassed "divine grace," and corruption began to fester in the divine kingdoms of the gods of plenty. A fertilizer plant thus became a quiet prelude to Typhon’s Desanctification.');
 
--- =============================================================================
--- 自定义分组页：分组名（行在 Core/TsoDTE_Pedia.sql）
--- =============================================================================
+-- 自定义分组页：分组名
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PEOPLE_NAME', '提丰帝国：人物'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PEOPLE_NAME', 'Typhon Empire: People'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PLACES_NAME', '提丰帝国：地点'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PLACES_NAME', 'Typhon Empire: Places');
 
--- =============================================================================
 -- 人物
--- =============================================================================
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     -- 裴迪南
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_TITLE', '裴迪南·温德尔'),
@@ -259,9 +231,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_2',
      'When the god descended into madness, the corruption spread from the very top of the church, and Malm himself became its source. Even after his death his lingering avatars haunted the empire as phantoms, clouding men’s minds. During the Winter God-Hunt, Rosetta cast more than half of the captured avatars one by one into a brazier—the offering in his bargain with the Eye of God—and so dragged the God of War into the mortal world. Precisely because Malm had been his friend, he said, the thing wearing his friend’s face had no right to remain.');
 
--- =============================================================================
 -- 地点
--- =============================================================================
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     -- 奥尔德南
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_TITLE', '奥尔德南'),
@@ -323,13 +293,9 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_PARA_2',
      'The portraits speak. They offer counsel to their descendants, and they whisper temptations too, hoping to pull the living into their frames. The deeper the corridor runs, the older the portraits and the colder their eyes. All of this was meant to be the Eye of God’s prison for the House of Augustus—or so the Eye always believed. Only on the day of the god-slaying did it learn that the shades of the palace had been playing a part for two hundred years: the first Augustus it ever possessed had never submitted, and his will had passed down the bloodline all the way to Rosetta.');
 
--- =============================================================================
--- 外交台词（基调：阴郁、克制、客气里带刀；master plan §8.4）
--- 10-23 用户确认：多数台词按原著改写（出处与对照见 docs/dialogue-draft.md）；
--- 被玩家消灭、玩家拒绝友好、接受代表团三句保留原稿。
--- 照官方甘地的整套 DIPLO_*_LEADER_GANDHI_ANY 做齐，tag 形式与官方一致。
--- 议程理由句（KUDO / WARNING 的 REASON）由 WP7 以 ..._REASON_AGENDA_TSOD_KINDRED 写，这里只写 _EXIT 两句。
--- =============================================================================
+-- 外交台词（基调：阴郁、克制、客气里带刀；master plan §8.4），多数按原著改写（对照见 docs/dialogue-draft.md）。
+-- 被玩家消灭、玩家拒绝友好、接受代表团三句保留原稿；照官方甘地的整套 DIPLO_*_LEADER_GANDHI_ANY 做齐。
+-- 议程理由句（KUDO / WARNING 的 REASON）由 WP7 写，这里只写 _EXIT 两句。
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     -- 初次见面
     ('zh_Hans_CN', 'LOC_DIPLO_FIRST_MEET_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',

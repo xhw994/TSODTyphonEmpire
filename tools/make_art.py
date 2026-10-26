@@ -1,12 +1,5 @@
-"""Generate the mod's textures from the reference art in images/.
-
-Run from the repo root:
-    python -X utf8 tools/make_art.py [--preview DIR]
-
-Writes src/Textures/<NAME>.dds + <NAME>.tex for every texture below (uncompressed RGBA DDS,
-same layout as the Cecil mod's working textures), and art/generated/<NAME>.png as the
-editable source. --preview also writes contact sheets to DIR for review.
-
+"""Generate the mod's textures from images/ (repo root): python -X utf8 tools/make_art.py [--preview DIR]
+Writes src/Textures/<NAME>.dds + .tex and art/generated/<NAME>.png (editable source); --preview also writes contact sheets to DIR.
 Crops are in source-image pixels; adjust them here and re-run.
 """
 import os
@@ -31,13 +24,13 @@ SRC_LOADING = '奥尔德南 冬日 修图.jpg'
 SRC_TOWER = '法师塔.jpg'
 SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
 
-# Colors (src/Core/TsoDTE_Colors.sql): field 22,20,22; emblem 196,26,32; gold 228,182,78
+# Colors: src/Core/TsoDTE_Colors.sql
 BLACK = (22, 20, 22, 255)
 RED = (196, 26, 32, 255)
 GOLD = (228, 182, 78, 255)
 
 
-# ----------------------------------------------------------------------------- DDS / TEX
+# DDS / TEX
 def write_dds(img, path, mips=False):
     """Uncompressed 32-bit RGBA DDS (masks R=0xff, G=0xff00, B=0xff0000, A=0xff000000)."""
     img = img.convert('RGBA')
@@ -131,7 +124,7 @@ def emit(img, name, fallback=False):
     return img
 
 
-# ----------------------------------------------------------------------------- helpers
+# helpers
 def load(name):
     return Image.open(os.path.join(IMG, name)).convert('RGBA')
 
@@ -161,7 +154,7 @@ def erode(mask, px):
     return mask
 
 
-# ----------------------------------------------------------------------------- emblem
+# emblem
 S = 1024
 
 
@@ -256,7 +249,7 @@ def icon_sizes(src, base, sizes):
     return out
 
 
-# ----------------------------------------------------------------------------- leader
+# leader
 ROSETTA_HEAD = (512, 452, 712, 652)        # square crop centered on the head (crown + hair + beard)
 
 
@@ -273,7 +266,7 @@ def leader_icon_master():
     return canvas
 
 
-# ----------------------------------------------------------------------------- packages
+# packages
 PLATFORMS = ('WINDOWS', 'MACOS', 'IOS', 'LINUX', 'XBONE', 'PS4', 'SWITCH', 'STADIA')
 
 
@@ -300,7 +293,7 @@ def write_packages():
     return len(ui), len(fallback)
 
 
-# ----------------------------------------------------------------------------- main
+# main
 def main():
     preview = None
     if '--preview' in sys.argv:
@@ -344,7 +337,6 @@ def main():
     matilda = load(SRC_MATILDA)
     made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
 
-    # unit / district / building / project icons from the generated images (docs/icon-prompts.md)
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import icon_art
     icons = icon_art.build(IMG, emit, icon_sizes)
@@ -357,12 +349,12 @@ def main():
                  ('building_fow', 'building_factory_FOW'), ('project', 'project_campus')]
         sheet = Image.new('RGBA', (256 * len(pairs), 512 + 80), (70, 90, 120, 255))
         for i, (k, ref) in enumerate(pairs):
-            sheet.alpha_composite(icons[k][-1], (i * 256, 0))          # ours, 256 px
+            sheet.alpha_composite(icons[k][-1], (i * 256, 0))
             rp = os.path.join(refs, ref + '.png')
             if os.path.exists(rp):
                 sheet.paste(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
             x = i * 256 + 8
-            for im in icons[k][:3]:                                      # smallest sizes
+            for im in icons[k][:3]:
                 sheet.alpha_composite(im, (x, 520))
                 x += im.width + 6
         sheet.save(os.path.join(preview, 'icons_vs_official.png'))

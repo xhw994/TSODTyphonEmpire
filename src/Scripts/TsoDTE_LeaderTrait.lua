@@ -1,39 +1,5 @@
--- =============================================================================
--- WP3 领袖能力「凡人的韧性」
--- 环境：Gameplay（InGame AddGameplayScripts）
--- 两部分都在这里：击杀给尤里卡、新时代给尤里卡与鼓舞。领袖能力只有一个名字「凡人的韧性」，
--- 通知与界面文字里不出现别的子名称（用户定）。
---
--- 【击杀尤里卡】
--- 战斗中击杀敌方单位后，若尚未研究该单位的前置科技（Units.PrereqTech），
--- 立即获得该科技的尤里卡。每项科技最多由本能力触发一次。
--- 只对领袖为 LEADER_TSOD_ROSETTA_AUGUSTUS（或其 LeaderTraits 带本特性）的玩家生效。
---
--- 联机：只读写游戏状态，不用 Game.GetLocalPlayer、不用 math.random、不用 ExposedMembers。
--- 存档：「已由本能力触发」的标记存在玩家属性里（SetProperty），读档不丢。
---
--- 被杀单位的类型：Events 是事后派发的，派发时被杀单位可能已从 PlayerUnits 里移除
--- （官方 NotificationPanel 的 OnUnitKilledInCombat 也按「FindID 可能为 nil」处理）。
--- 所以先 FindID，取不到再查本脚本维护的单位类型缓存。缓存不进存档，每次加载重建。
---
--- 【新时代加成】
--- 每进入一个新时代：1 个随机尤里卡 + 1 个随机鼓舞；新时代是黑暗时代时各 2 个。
---   黑暗时代判定：GameEras:HasDarkAge 在 Gameplay 环境是 nil（实机 Lua.log 证实），
---   所以改读玩家属性 TSOD_TYPHON_DARK_AGE（由 Core/TsoDTE_Leader.sql 的 TSOD_TYPHON_DARK_AGE_PROBE
---   修正在黑暗时代时写入）。需求的重新评估可能比回合开始晚，所以进入新时代时先给 1+1，
---   之后本时代内任一回合读到黑暗时代、且本时代还没补过，就再补 1+1（PROPERTY_DARK_ERA 记录已补的时代）。
---   属性读不到时再试 HasDarkAge（UI 专用，通常不可用），都不行按非黑暗处理，Lua.log 写明来源。
--- 原先用 SQL 的 MODIFIER_PLAYER_GRANT_RANDOM_TECHNOLOGY_BOOST_ON_NEW_ERA（首尔）与市政版（维尔纽斯），
--- I1 实测过了两个时代都没给，确认在风云变幻里不生效，改到这里。
---   时机：不挂 GameEraChanged，而是在提丰玩家每回合开始（PlayerTurnActivated）时比较
---         「当前游戏时代」和玩家属性里记的「上次处理到的时代」。时代切换发生在回合交替时。
---         记录存在玩家属性里，读档不会重复给。开局（属性为空）只记录、不发放。
---   英雄时代（黑暗时代之后进入的黄金时代）属于黄金时代，不算黑暗时代，给 1 + 1。
---   抽取范围：优先新时代的科技 / 市政；新时代里已经没有可用的（都研究过或已触发），
---         顺延到之后的时代，再没有就往前找更早的时代。只抽在 Boosts 表里有尤里卡 / 鼓舞、
---         尚未研究、尚未触发的项。
---   随机数：联机要同步，不用 math.random；用回合数、玩家 ID、时代算一个确定的伪随机下标。
--- =============================================================================
+-- WP3 领袖能力「凡人的韧性」（Gameplay；InGame AddGameplayScripts）：击杀给尤里卡；新时代给尤里卡与鼓舞（黑暗时代各 2 个）。
+-- 只有一个能力名「凡人的韧性」，通知与界面文字里不出现别的子名称（用户定）。
 
 local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
@@ -69,7 +35,6 @@ local EraPosition = {}         -- [eraIndex] = 在 EraOrder 里的位置
 local BoostTechsByEra = {}     -- [eraIndex] = { techIndex, ... }
 local BoostCivicsByEra = {}    -- [eraIndex] = { civicIndex, ... }
 
--- -----------------------------------------------------------------------------
 local function CollectTyphonPlayers()
     local tLeaders = { [LEADER_TYPHON] = true }
     for row in GameInfo.LeaderTraits() do
@@ -104,9 +69,7 @@ local function CollectBoostedTechs()
     return tTechs
 end
 
--- -----------------------------------------------------------------------------
 -- 单位类型缓存
--- -----------------------------------------------------------------------------
 local function CacheUnitType(playerID, unitID, unitTypeIndex)
     if unitTypeIndex == nil or unitTypeIndex < 0 then
         return
@@ -139,7 +102,8 @@ local function SeedUnitTypeCache()
     end
 end
 
--- 返回被杀单位的类型索引，并清掉它的缓存项
+-- Events 是事后派发的，被杀单位可能已从 PlayerUnits 移除（官方 NotificationPanel 同样处理），
+-- 故先 FindID，取不到再查缓存（缓存不进存档，每次加载重建）。返回类型索引并清掉缓存项。
 local function TakeKilledUnitType(playerID, unitID)
     local unitTypeIndex = nil
     local pUnit = FindUnit(playerID, unitID)
@@ -173,9 +137,6 @@ function OnTsoDTEUnitUpgraded(playerID, unitID, upgradeUnitType)
     end
 end
 
--- -----------------------------------------------------------------------------
--- 通知（只发给人类玩家；出错只写日志，已完成的授予不受影响）
--- -----------------------------------------------------------------------------
 local function NotifyBoostHuman(iPlayer, sMessage, iX, iY)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil or not pPlayer:IsHuman() or NotifyBoost == nil then
@@ -193,9 +154,7 @@ local function JoinItems(tItems)
     return table.concat(tItems, Locale.Lookup(TXT_SEPARATOR))
 end
 
--- -----------------------------------------------------------------------------
 -- 击杀尤里卡
--- -----------------------------------------------------------------------------
 function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unitID)
     -- 不论凶手是谁都先取出并清掉缓存项，避免缓存只增不减
     local unitTypeIndex = TakeKilledUnitType(killedPlayerID, killedUnitID)
@@ -241,9 +200,7 @@ function OnTsoDTEUnitKilledInCombat(killedPlayerID, killedUnitID, playerID, unit
     end
 end
 
--- -----------------------------------------------------------------------------
--- 新时代加成
--- -----------------------------------------------------------------------------
+-- 新时代加成（SQL 的 ..._ON_NEW_ERA 修正在风云变幻里不生效，I1 实测，故改在 Lua 里做）
 local function CollectEraTables()
     local tOrder = {}
     for row in GameInfo.Eras() do
@@ -312,7 +269,7 @@ local function EraSearchOrder(eraIndex)
     return tResult
 end
 
--- 确定的伪随机下标，1..n
+-- 确定的伪随机下标 1..n（联机要同步，不用 math.random）
 local function PickIndex(n, iPlayer, eraIndex, iSalt)
     local iSeed = Game.GetCurrentGameTurn() * 7919 + iPlayer * 104729 + eraIndex * 1299709 + iSalt * 15485863
     -- Park-Miller 一步：乘积不超过 2^46，Lua 5.1 的双精度能精确表示
@@ -338,7 +295,8 @@ local function GrantOneBoost(iPlayer, eraIndex, tByEra, fnAvailable, fnTrigger, 
     return nil
 end
 
--- 返回 (是否黑暗时代, 来源说明)。先读修正写入的玩家属性，读不到再试 HasDarkAge。
+-- 返回 (是否黑暗时代, 来源说明)。GameEras:HasDarkAge 在 Gameplay 环境是 nil（实机证实），
+-- 所以先读修正 TSOD_TYPHON_DARK_AGE_PROBE 写入的玩家属性，读不到再试 HasDarkAge，都不行按非黑暗。
 local function PlayerHasDarkAge(iPlayer, pPlayer)
     local vProp = pPlayer:GetProperty(PROPERTY_DARK_AGE)
     if vProp ~= nil then
@@ -412,7 +370,7 @@ local function GrantNewEra(iPlayer, pPlayer, eraIndex)
     end
 end
 
--- 本时代内读到黑暗时代且还没补过：补 1+1（每个时代只补一次）
+-- 需求重新评估可能晚于回合开始，所以进入新时代时先给 1+1，之后本时代内读到黑暗时代才补 1+1（每时代一次）
 local function CheckDarkAgeBonus(iPlayer, pPlayer, eraIndex)
     if pPlayer:GetProperty(PROPERTY_DARK_ERA) == eraIndex then
         return
@@ -430,6 +388,7 @@ local function CheckDarkAgeBonus(iPlayer, pPlayer, eraIndex)
     end
 end
 
+-- 不挂 GameEraChanged：每回合开始比较当前时代与玩家属性里记的上次时代（时代切换发生在回合交替时）
 function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
     local pPlayer = TyphonPlayers[iPlayer]
     if pPlayer == nil then
@@ -465,7 +424,6 @@ function OnTsoDTEPlayerTurnActivated(iPlayer, bIsFirstTime)
     CheckDarkAgeBonus(iPlayer, pPlayer, iEra)
 end
 
--- -----------------------------------------------------------------------------
 function InitTsoDTELeaderTrait()
     TyphonPlayers, TyphonPlayerCount = CollectTyphonPlayers()
     if TyphonPlayerCount < 1 then
@@ -483,7 +441,6 @@ function InitTsoDTELeaderTrait()
     Events.UnitUpgraded.Add(OnTsoDTEUnitUpgraded)
     Events.UnitKilledInCombat.Add(OnTsoDTEUnitKilledInCombat)
     Events.PlayerTurnActivated.Add(OnTsoDTEPlayerTurnActivated)
-    -- 加载时报告一次黑暗时代的两种来源与通知类型
     local pEras = Game.GetEras()
     for iPlayer, pPlayer in pairs(TyphonPlayers) do
         -- 先存进局部变量：GetProperty 读不到时返回「无值」，直接传给 tostring 会报错（10-22 实测）

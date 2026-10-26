@@ -1,11 +1,5 @@
--- ============================================================================
--- TsoDTE_Colors.sql  (WP1)
--- 提丰配色（master plan §9.2）：黑底红徽，两组备用色
--- 动作：InGame UpdateColors + FrontEnd UpdateColors（照塞西尔）
--- 约定（照官方 PlayerColors.xml）：PrimaryColor = 底色，SecondaryColor = 徽记色。
--- 命名照塞西尔 TsoDCE_Colors.sql：COLOR_PLAYER_TSOD_<文明>_<用途>
--- 颜色值格式 R,G,B,A（0–255），与官方 PlayerStandardColors.xml 相同。
--- ============================================================================
+-- WP1 提丰配色（master plan §9.2）：黑底红徽，两组备用色；PrimaryColor = 底色，SecondaryColor = 徽记色（官方约定）。
+-- 颜色值 R,G,B,A（0–255）；命名 COLOR_PLAYER_TSOD_<文明>_<用途>（同塞西尔）。
 
 INSERT INTO Colors (Type, Color)
 VALUES

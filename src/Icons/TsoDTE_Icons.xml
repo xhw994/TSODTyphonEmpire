@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  WP9 图标（InGame + FrontEnd UpdateIcons）
-  全部是自制贴图：src/Textures 下由 tools/make_art.py 生成（文明、领袖来自 images/ 的设定图；
-  单位、肖像、区域、建筑、项目来自按 docs/icon-prompts.md 生成的图），打进 XLPs/TsoDTE_UITextures.xlp。
-  Filename 写包内逻辑名（无后缀），同塞西尔 mod 的写法。每个图集一张图，Index 都是 0。
+  WP9 图标（InGame + FrontEnd UpdateIcons），贴图由 tools/make_art.py 生成，打进 XLPs/TsoDTE_UITextures.xlp。
+  Filename 写包内逻辑名（无后缀），同塞西尔 mod；每个图集一张图，Index 都是 0。
 -->
 <GameData>
     <IconTextureAtlases>

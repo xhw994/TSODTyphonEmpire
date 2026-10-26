@@ -1,18 +1,7 @@
--- ============================================================================
--- TsoDTE_Config.sql  (WP1)
--- 开局设置界面：文明与领袖条目 + 特色项
--- 动作：FrontEnd UpdateDatabase
--- 规则集只做风云变幻：Domain 'Players:Expansion2_Players'（照塞西尔与官方
--- DLC/Expansion2/Config/Expansion2_Players.xml）。
--- 本文件只引用 ID 与 LOC tag（docs/ids.md §3、§4），不建任何文本：
---   文明能力 tag 归 WP2，领袖能力 tag 归 WP3，
---   战斗法师 / 法师塔 / 燃石酸化工厂的 tag 归 WP4 / WP5 / WP6。
--- 图标名为拟定的美术名，由美术包（WP9 / WP11）照此出图。
--- ============================================================================
+-- WP1 开局设置界面：文明与领袖条目 + 特色项（FrontEnd UpdateDatabase）；只引用 ID 与 LOC tag（ids.md §3、§4），图标名为拟定的美术名。
+-- 规则集只做风云变幻：Domain 'Players:Expansion2_Players'（照官方 Expansion2_Players.xml 与塞西尔）。
 
--- ----------------------------------------------------------------------------
 -- 1. 文明与领袖条目（同时承载文明能力、领袖能力两项展示）
--- ----------------------------------------------------------------------------
 INSERT INTO Players
     (Domain,
      CivilizationType, CivilizationName, CivilizationIcon,
@@ -37,10 +26,8 @@ VALUES
      'LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL',
      'LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND');
 
--- ----------------------------------------------------------------------------
 -- 2. 特色项：特色单位、特色区域、特色建筑
---    Type 照官方填内容本身的类型 ID；SortIndex 照官方 10 / 20 / 30。
--- ----------------------------------------------------------------------------
+-- Type 照官方填内容本身的类型 ID；SortIndex 照官方 10 / 20 / 30。
 INSERT INTO PlayerItems
     (Domain, CivilizationType, LeaderType, Type, Name, Description, Icon, SortIndex)
 VALUES

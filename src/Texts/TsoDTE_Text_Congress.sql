@@ -1,14 +1,8 @@
--- ============================================================================
--- WP17 神权理事会：文本
--- 动作：InGame UpdateText（世界议会只在局内出现，不进 FrontEnd）。
--- 归属：LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME、LOC_WORLD_CONGRESS_TSOD_*（ids.md §4）。
--- 文本规则：效果文本不用第二人称，不写介绍，不写选项标签（官方决议的两个选项也只有效果句）。
--- 术语：战斗力、宗教战斗力、外交支持、[ICON_Religion]、[ICON_Favor] 照官方中文本。
--- ============================================================================
+-- WP17 神权理事会文本（InGame UpdateText：世界议会只在局内出现）；选项不写标签，官方决议的两个选项也只有效果句。
+-- 术语（战斗力、宗教战斗力、外交支持、[ICON_Religion]、[ICON_Favor]）照官方中文本。
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- ---------------------------------------------------------------- zh_Hans_CN
-    -- 决议名
+    -- zh_Hans_CN
     ('zh_Hans_CN', 'LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME', '神权理事会'),
 
     -- 选项 1（A）：去神圣化
@@ -19,7 +13,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_WORLD_CONGRESS_TSOD_SECULAR_OVERSIGHT_DESC',
      '所有文明都可以谴责所选宗教的单位，每次谴责获得 25 点 [ICON_Favor] 外交支持。'),
 
-    -- ---------------------------------------------------------------- en_US
+    -- en_US
     ('en_US', 'LOC_WC_RES_TSOD_THEOCRATIC_COUNCIL_NAME', 'Theocratic Council'),
 
     ('en_US', 'LOC_WORLD_CONGRESS_TSOD_DESANCTIFY_RELIGION_DESC',

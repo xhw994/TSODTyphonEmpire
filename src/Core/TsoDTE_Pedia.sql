@@ -1,22 +1,12 @@
--- TsoDTE_Pedia.sql
--- WP8：文明百科的自定义分组页（人物、地点）。
--- 动作：InGame UpdateDatabase（Civilopedia* 表在 Gameplay 数据库里，官方定义见 Base/Assets/Gameplay/Data/Civilopedia.xml）。
---
--- 先例：风云变幻 Expansion2_Civilopedia.xml 在 CONCEPTS 分区新增 PageGroupId="EXPANSION2" 分组，
---       组内页面全部用官方 "Simple" 版式（唯一章节 CONTENT）。这里照抄同一结构。
--- 文本 tag 由 CivilopediaSupport.lua 的 FindChapterTextKey 按约定拼出（下面省略 tag 的统一前缀）：
---   标题 PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_TITLE
---   正文 PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_PARA_1..n
--- 文本本身在 Texts/TsoDTE_Text_Pedia.sql。
+-- WP8 文明百科的自定义分组页（人物、地点）：照风云变幻 Expansion2_Civilopedia.xml 的 PageGroupId 分组，页面全用官方 "Simple" 版式。
+-- 文本 tag 由 FindChapterTextKey 按约定拼出（PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_TITLE / _PARA_1..n），文本在 Texts/TsoDTE_Text_Pedia.sql。
 
--- 分组：CONCEPTS 分区下两个组，排在官方分组之后
 INSERT OR REPLACE INTO CivilopediaPageGroups
     (SectionId, PageGroupId, Name, Tooltip, VisibleIfEmpty, SortIndex)
 VALUES
     ('CONCEPTS', 'TSOD_TYPHON_PEOPLE', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PEOPLE_NAME', '', 0, 900),
     ('CONCEPTS', 'TSOD_TYPHON_PLACES', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PLACES_NAME', '', 0, 901);
 
--- 页面：人物 7 页、地点 5 页
 INSERT OR REPLACE INTO CivilopediaPages
     (SectionId, PageId, PageGroupId, PageLayoutId, Name, Tooltip, SortIndex)
 VALUES
@@ -33,7 +23,7 @@ VALUES
     ('CONCEPTS', 'TSOD_TYPHON_THROAT_OF_ORANDEL','TSOD_TYPHON_PLACES', 'Simple', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_TITLE','', 40),
     ('CONCEPTS', 'TSOD_TYPHON_TWILIGHT_PALACE',  'TSOD_TYPHON_PLACES', 'Simple', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_TITLE',  '', 50);
 
--- 搜索词：搜「提丰 / Typhon」时能列出这些页面（Term 是 LOC tag，引用 WP1 的文明名）
+-- 搜索词：搜「提丰 / Typhon」时列出这些页面（Term 是 LOC tag，引用文明名）
 INSERT OR REPLACE INTO CivilopediaPageSearchTerms (SectionId, PageId, Term)
 VALUES
     ('CONCEPTS', 'TSOD_TYPHON_FERDINAND',         'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME'),

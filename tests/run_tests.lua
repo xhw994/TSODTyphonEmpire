@@ -1,10 +1,5 @@
--- =============================================================================
--- 纯 Lua 测试：用桩对象模拟游戏接口，跑 src/Scripts 下的两个 Gameplay 脚本。
--- 运行（仓库根目录）：
---   luajit tests/run_tests.lua
--- 能抓到的：语法错误、调用了不存在的方法、空值、对账与阵亡的逻辑错误。
--- 抓不到的：引擎事件在 Gameplay 环境是否派发、修正是否生效、通知是否显示——这些只能进游戏看 Lua.log。
--- =============================================================================
+-- 纯 Lua 测试：用桩对象模拟游戏接口，跑 src/Scripts 下的 Gameplay 脚本。运行（仓库根目录）：luajit tests/run_tests.lua
+-- 抓得到语法错误、空值、对账与阵亡的逻辑；抓不到引擎事件是否派发、修正是否生效、通知是否显示（只能进游戏看 Lua.log）。
 
 local ROOT = (arg and arg[0] and arg[0]:match('^(.*)[/\\]tests[/\\]')) or '.'
 local failures, passes = 0, 0
@@ -18,9 +13,7 @@ local function check(bCond, sName)
     end
 end
 
--- -----------------------------------------------------------------------------
 -- 桩：GameInfo 表（按名字和下标都能取，并且能当迭代器调用）
--- -----------------------------------------------------------------------------
 local function MakeInfoTable(aRows, sKey)
     local t = {}
     for i, row in ipairs(aRows) do
@@ -213,9 +206,7 @@ local function NotesOfType(hType)
     return n
 end
 
--- -----------------------------------------------------------------------------
 -- 战斗法师
--- -----------------------------------------------------------------------------
 local function TestBattleMage()
     -- 1. 军团：只有战场再生，没有湮灭之创，库存 0
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
@@ -291,6 +282,9 @@ local function TestBattleMage()
     p.units[40] = u
     Fire('PlayerTurnActivated', 0, true)
     check(u.damage == 20, 'corps heals 10 at turn start')
+    Fire('PlayerTurnActivated', 0, false)
+    check(u.damage == 20, 'same turn fired again (reload) does not heal twice')
+    World.turn = World.turn + 1
     Fire('PlayerTurnActivated', 0, true)
     check(u.damage == 10, 'corps heals again next turn')
 
@@ -302,9 +296,7 @@ local function TestBattleMage()
     check(ai.wmd[SCAR] == 1 and #World.notifications == 0, 'AI army stocked without notifications')
 end
 
--- -----------------------------------------------------------------------------
 -- 领袖能力
--- -----------------------------------------------------------------------------
 local function TestLeaderTrait()
     SetupWorld(); LoadScript('TsoDTE_LeaderTrait.lua')
     local p = Players[0]
@@ -360,9 +352,7 @@ local function TestLeaderTrait()
     check(#World.notifications == 1, 'second kill of the same type does nothing')
 end
 
--- -----------------------------------------------------------------------------
 -- 神权理事会
--- -----------------------------------------------------------------------------
 local function TestCongress()
     SetupWorld(); LoadScript('TsoDTE_Congress.lua')
     -- 没有宗教：从候选里拿掉本决议，其他决议不动

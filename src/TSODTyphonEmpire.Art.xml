@@ -217,6 +217,7 @@
 		<Element>
 			<consumerName text="Overlay"/>
 			<relativeArtDefPaths>
+				<Element text="Overlay.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="OverlayTexture"/>
@@ -227,6 +228,7 @@
 		<Element>
 			<consumerName text="RangeArrows"/>
 			<relativeArtDefPaths>
+				<Element text="Overlay.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="OverlayTexture"/>
@@ -360,6 +362,7 @@
 		<Element>
 			<consumerName text="UILensAsset"/>
 			<relativeArtDefPaths>
+				<Element text="Overlay.artdef"/>
 			</relativeArtDefPaths>
 			<libraryDependencies>
 				<Element text="OverlayTexture"/>
@@ -598,6 +601,7 @@
 		<Element>
 			<libraryName text="UILensAsset"/>
 			<relativePackagePaths>
+				<Element text="TsoDTE_UILensAsset"/>
 			</relativePackagePaths>
 		</Element>
 		<Element>

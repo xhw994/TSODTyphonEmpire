@@ -137,13 +137,13 @@ ReplaceUIScript 配同 LoadOrder 的 ImportFiles，是梦境之城 README 里写
            │
 阶段 2   WP13 湮灭之创 + 军队回血 + 通知（依赖 WP4；方案 A）
          WP16 去神圣化项目   WP17 神权理事会决议   WP18 系列联动   WP14 战神教
-         WP11 续：多情绪立绘与外交场景
+         ~~WP11 续：多情绪立绘与外交场景~~（10-25 不做）
            │
 集成 I2   同 I1，加平衡测试（Autoplay）
            │
 发布     WP20 发布准备：英文校对、繁体中文、兼容测试、工坊发布物、署名、系列合集
            │
-之后     WP21 联机测试（P2）    WP15 专属外交政策卡（可选）    剧本（P3，不在本计划内）
+之后     WP21 联机：只做静态检查    剧本（P3，不在本计划内）
 ```
 
 | 包 | 名称 | 依赖 | 独占文件 | master plan 章节 | 规模 |
@@ -163,7 +163,7 @@ ReplaceUIScript 配同 LoadOrder 的 ImportFiles，是梦境之城 README 里写
 | WP12 | 历史时刻 | WP0 + 图源 | `Core/TsoDTE_Moments.sql`、时刻插图贴图 | §9.4 | 小（主要是素材） |
 | WP13 | 湮灭之创 + 回血 + 通知 | WP4 合并后 | `Core/TsoDTE_WMD.sql`、`Core/TsoDTE_Notifications.sql`、`Scripts/TsoDTE_BattleMage.lua`、`UI/UnitPanel_TsoDTE.lua`、`Texts/TsoDTE_Text_WMD.sql` | §6.1 的 3、4、5 部分，§8.2 | 大 |
 | WP14 | 战神教 | WP0 | `Core/TsoDTE_Religion_WarGod.sql`、`Texts/TsoDTE_Text_Religion.sql`、宗教图标与叠加层 | §7 | 中（主要是美术） |
-| WP15 | 外交政策卡（可选） | I2 后 | `Core/TsoDTE_Policy.sql`、`Scripts/TsoDTE_Policy.lua` | §8.3 | 小 |
+| ~~WP15~~ | ~~外交政策卡~~（10-25 取消） | — | — | §8.3 | — |
 | WP16 | 去神圣化项目 | WP5 合并后 | `Core/TsoDTE_Project_Desanctification.sql`、`Scripts/TsoDTE_Project.lua`、`Texts/TsoDTE_Text_Project.sql` | §6.4 | 小 |
 | WP17 | 神权理事会决议 | WP0 | `Core/TsoDTE_Congress.sql`、`Texts/TsoDTE_Text_Congress.sql` | §8.5 | 小（但需实证） |
 | WP18 | 系列联动 | WP1、WP7 合并后 | `Core/TsoDTE_Compat_Cecil.sql`、`Core/TsoDTE_Compat_DreamCity.sql`、`Texts/TsoDTE_Text_Compat.sql` | §8.6 | 小 |

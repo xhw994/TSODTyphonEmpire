@@ -1,20 +1,12 @@
--- ============================================================================
--- WP13 湮灭之创与战场再生：文本
--- 动作：InGame UpdateText（不进 FrontEnd：开局界面不显示武器与这两个能力）。
--- 登记：每个 tag 只由本文件插入一次（ids.md §4）。
--- 文本规则：效果文本不用第二人称，不写介绍（介绍放百科）。
--- 两个能力的 DESCRIPTION 只写名字（同战斗法师另外三个能力，I1 反馈：单位面板悬停提示会整句列出），
--- 效果写在单位描述 LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION 里。
--- ============================================================================
+-- WP13 湮灭之创与战场再生文本（InGame UpdateText：开局界面不显示武器与这两个能力）；每个 tag 只由本文件插入一次。
+-- 两个能力的 DESCRIPTION 只写名字（同战斗法师其余能力，I1 反馈：悬停提示会整句列出），效果写在 LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION。
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
-    -- ---------------------------------------------------------------- zh_Hans_CN
-    -- 武器
+    -- zh_Hans_CN
     ('zh_Hans_CN', 'LOC_WMD_TSOD_ANNIHILATION_SCAR_NAME', '湮灭之创'),
 
-    -- 能力
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_ANNIHILATION_SCAR_NAME', '湮灭之创'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_ANNIHILATION_SCAR_DESCRIPTION', '湮灭之创'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_ARMY_REGENERATION_NAME', '战场再生'),
@@ -31,7 +23,7 @@ VALUES
     -- 地图浮字
     ('zh_Hans_CN', 'LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED', '魔力枯竭'),
 
-    -- ---------------------------------------------------------------- en_US
+    -- en_US
     ('en_US', 'LOC_WMD_TSOD_ANNIHILATION_SCAR_NAME', 'Annihilation Scar'),
 
     ('en_US', 'LOC_ABILITY_TSOD_ANNIHILATION_SCAR_NAME', 'Annihilation Scar'),

@@ -1,19 +1,11 @@
--- ============================================================================
--- WP6 燃石酸化工厂 文本（IG UpdateText + FE UpdateText）
--- 百科长文归 WP8（TsoDTE_Text_Pedia.sql），不在这里。
--- 产出与通电加成由界面按 Building_YieldChanges / _BonusWithPower 自动列出，
--- 描述分两类：建筑本身产出（随 RegionalRange 辐射，照官方工厂、核电站的风云变幻句式）；
--- 农场、矿山与采石场加成（BuildingModifiers，只作用于本城）。
--- 科技也辐射：I1 实测确认，文本照写。
--- ============================================================================
+-- WP6 燃石酸化工厂文本（IG + FE UpdateText）；产出与通电加成由界面按 Building_YieldChanges 自动列出，描述只写其余部分。
+-- 建筑自身产出随 RegionalRange 辐射（科技也辐射，I1 实测确认），农场 / 矿山 / 采石场加成只作用于本城。
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
-    -- 建筑名
     ('zh_Hans_CN', 'LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME', '燃石酸化工厂'),
     ('en_US', 'LOC_BUILDING_TSOD_BURNSTONE_WORKS_NAME', 'Burnstone Acidification Works'),
-    -- 建筑描述
     (
         'zh_Hans_CN',
         'LOC_BUILDING_TSOD_BURNSTONE_WORKS_DESCRIPTION',

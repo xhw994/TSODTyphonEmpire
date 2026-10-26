@@ -1,11 +1,4 @@
--- =============================================================================
--- WP12 历史时刻插图（InGame UpdateDatabase）
--- 贴图 456 x 332（同塞西尔 mod），由 tools/make_art.py 从 images/ 的设定图裁出，打进 XLPs/TsoDTE_UITextures.xlp。
---   特色单位：玛蒂尔达·奥古斯都.jpg（原著没有战斗法师的设定图，用提丰皇室的法师代替）
---   特色区域：images/法师塔.jpg 截取塔身（图是塞西尔的法师塔，用户同意截短后借用）
---   特色建筑：奥尔德南雨夜，燃石酸化工厂前的大道
--- 类型与数据类型照官方（Expansion1/2 的 MOMENT_ILLUSTRATION_UNIQUE_*）。
--- =============================================================================
+-- WP12 历史时刻插图（456 x 332），贴图由 tools/make_art.py 生成。
 
 INSERT INTO MomentIllustrations (MomentIllustrationType, MomentDataType, GameDataType, Texture) VALUES
     ('MOMENT_ILLUSTRATION_UNIQUE_UNIT',     'MOMENT_DATA_UNIT',     'UNIT_TSOD_BATTLE_MAGE',         'MOMENT_UNIT_TSOD_BATTLE_MAGE'),
