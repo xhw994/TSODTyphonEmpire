@@ -25,5 +25,5 @@ VALUES
     (
         'en_US',
         'LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME',
-        'Typhon unique building: Burnstone Acidification Works'
+        'Typhonian unique building: Burnstone Acidification Works'
     );

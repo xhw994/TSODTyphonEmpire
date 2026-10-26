@@ -32,7 +32,7 @@ VALUES
     (
         'en_US',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        'Typhon unique Medieval era ranged unit that replaces the Crossbowman. Its [ICON_Strength] Combat Strength grows with the eras. +5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack). Corps and armies heal every turn. An army can cast Annihilation Scar once; the whole army dies after casting.'
+        'Typhonian unique Medieval era ranged unit that replaces the Crossbowman. Its [ICON_Strength] Combat Strength grows as Ballistics and Advanced Ballistics are researched. +5 [ICON_Ranged] Ranged Strength when adjacent to at least one other Battle Mage (does not stack). Corps and armies heal every turn. An army can cast Annihilation Scar once; the whole army dies after casting.'
     ),
 
     ('en_US', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', 'Ballistics Growth'),

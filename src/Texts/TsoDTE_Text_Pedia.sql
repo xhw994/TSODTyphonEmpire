@@ -22,7 +22,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_4',
      '提丰的军队以超凡者闻名。帝国从六岁起挑选有天赋的孩子，哪怕资质平平，也让他们十几年如一日地练熟一两种法术，最终编成成千上万人的超凡者兵团。冬狼、铁河、黑钢等骑士团冲锋在前，黑旗魔法师团等法师团随行支援，他们集结起来释放的“军团级法术”，足以在很短的时间里左右一座要塞的得失。遍布各城的法师塔则登记、感应着国内的每一位超凡者，让这台战争机器始终握在皇室手中。'),
     ('en_US', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_4',
-     'Typhon’s armies are famed for their Transcendents. From the age of six, children with even modest talent are selected and drilled for a decade or more in one or two spells, until they can be massed by the thousand into Transcendent legions. Knightly orders such as the Winterwolf, Iron River and Black Steel lead the charge, while mage corps such as the Black Flag Mage Corps ride beside them. Massed together, their "legion-level spells" can decide the fate of a fortress within hours. A web of Mage Towers across the cities registers and senses every Transcendent in the realm, keeping this war machine firmly in the crown’s hands.'),
+     'Typhon’s armies are famed for their Transcendents. From the age of six, children with even modest talent are selected and drilled for a decade or more in one or two spells, until they can be massed by the thousand into Transcendent legions. Knightly orders such as the Winterwolf, Iron River and Black Steel Knights lead the charge, while mage corps such as the Black Flag Mage Corps ride beside them. Massed together, their "legion-class spells" can decide the fate of a fortress in a short time. A web of Mage Towers across the cities registers and senses every Transcendent in the realm, keeping this war machine firmly in the crown’s hands.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_5',
      '帝国最深的危机来自它自己的信仰。战神教会从最上层开始失控，神官接连陷入疯狂，连教皇马尔姆·杜尼特也成了异变的源头；一份被篡改的外交文书让提丰与塞西尔帝国在神明的推动下兵戎相见，边境要塞冬狼堡随之陷落。罗塞塔没有等待神明的宽恕。他与寄生在家族梦境中的“神之眼”做了一笔交易，把战神的本体拉到人间，又在冬堡群山上同时释放了复数的“湮灭之创”。在塞西尔人的协助下，失控的神明最终陨落——这一役被后人称为“冬日猎神”。'),
@@ -32,7 +32,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_6',
      '战争结束后，提丰与昔日的对手坐上同一张谈判桌，加入了人类诸国的联盟与神权理事会，并在国内推行“去神圣化”，把信仰与国家权力一点点剥离。燃石酸化工厂产出的化肥“丰饶之尘”让凡人不再仰赖丰饶诸神的恩赐。这个曾经以神眷骑士为荣的帝国，如今正试着学会只依靠自己。'),
     ('en_US', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_6',
-     'After the war Typhon sat at the same table as its former enemy, joined the alliance of human nations and the Theocratic Council, and began a policy of Desanctification at home, prying faith and state apart. The fertilizer of the burnstone works, the Dust of Plenty, freed mortals from waiting on the blessings of the gods of plenty. An empire that once took pride in god-favored knights is now learning to rely on no one but itself.');
+     'After the war Typhon sat at the same table as its former enemy, joined the alliance of human nations and the Theocratic Council, and began a policy of Desanctification at home, prying faith and state apart. The fertilizer produced by the Burnstone Acidification Works, the Dust of Plenty, freed mortals from depending on the blessings of the gods of plenty. An empire that once took pride in god-favored knights is now learning to rely on no one but itself.');
 
 -- 领袖：罗塞塔·奥古斯都
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
@@ -59,12 +59,12 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_2',
      '罗塞塔继位后推行了一系列深刻的改革。他削弱分封贵族，把立法权收归皇室，重新核定全国领主的土地；他用职业常备军取代征召兵，把超凡者当作可以批量培养的士兵；他让平民识字，用田地契约法重塑乡村，又下令在帝国各个产粮区就地兴建燃石酸化工厂。改革触动了太多人的利益，他便用强硬的手腕压住反弹，再用改革带来的红利安抚那些心怀不满的封臣——或者干脆让跟不上时代的人被时代淘汰。'),
     ('en_US', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_2',
-     'Upon taking the throne Rosetta launched sweeping reforms. He curbed the feudal nobility, claimed lawmaking for the crown and reassessed every lord’s lands. He replaced levies with a professional standing army and treated Transcendents as soldiers who could be trained in quantity. He taught commoners to read, reshaped the countryside with a land-contract law, and ordered Burnstone Acidification Works built in every grain-growing region of the empire. The reforms threatened too many interests, so he crushed resistance with an iron hand, then used the profits of reform to placate resentful vassals—or simply let those who could not keep up with the times be left behind by them.'),
+     'Upon taking the throne Rosetta launched sweeping reforms. He curbed the feudal nobility, claimed lawmaking for the crown and reassessed every lord’s lands. He replaced levies with a professional standing army and treated Transcendents as soldiers who could be trained in quantity. He taught commoners to read, reshaped the countryside with a land-contract law, and ordered Burnstone Acidification Works built in every grain-growing region of the empire. The reforms threatened too many interests, so he crushed resistance with an iron hand, then used the profits of reform to placate resentful vassals—or simply let those who could not keep up with the times fall behind.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_3',
      '皇帝的冷静背后，是奥古斯都家族隐藏了两百年的秘密。自奥兰戴尔大崩塌以来，梦境之神的一块碎片——“神之眼”——便寄生在家族的梦里，这道诅咒终将把族人引向疯狂。死去的奥古斯都们被困在梦中“黄昏宫殿”的画像里，向后人低语献策，也试图把他们拖进画框。神之眼曾问罗塞塔为何还没有疯，他只回答了一句：“我们，有着超乎你们想象的韧性。”事实上，这个家族在梦中与它周旋了整整两个世纪，一面假装屈服，一面偷取它的知识。在黄昏宫殿的噩梦里，奥古斯都们从未屈服。'),
     ('en_US', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_3',
-     'Behind the emperor’s composure lay a secret the House of Augustus had kept for two centuries. Ever since the Great Collapse of Orandel, a fragment of the God of Dreams known as the Eye of God had lived as a parasite in the family’s dreams, a curse that would sooner or later lead its members into madness. The dead of the line were trapped in the portraits of the Twilight Palace, a realm of dream where they whispered counsel to their descendants and tried to drag them into the frames. When the Eye asked Rosetta why he had not yet gone mad, he answered only: "We are far more resilient than you can imagine." In truth the family had played a game with it for two hundred years, feigning submission while stealing its knowledge. In the nightmares of the Twilight Palace, the House of Augustus never yielded.'),
+     'Behind the emperor’s composure lay a secret the House of Augustus had kept for two centuries. Ever since the Great Collapse of Orandel, a fragment of the God of Dreams known as the Eye of God had lived as a parasite in the family’s dreams, a curse that would sooner or later lead its members into madness. The dead of the line were trapped in the portraits of the Twilight Palace, a realm of dreams where they whispered counsel to their descendants and tried to drag them into the frames. When the Eye asked Rosetta why he had not yet gone mad, he answered only: "We are far more resilient than you can imagine." In truth the family had played a game with it for two hundred years, feigning submission while stealing its knowledge. In the nightmares of the Twilight Palace, the House of Augustus never yielded.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_4',
      '罗塞塔从不拒绝任何可用之物。他会利用邪教、利用诅咒，也会利用对手的技术：第一次见到塞西尔的魔导车时，他的第一反应是把它拆成零件研究；潜伏多年的梦境教派“永眠者”中有人前来投奔时，他没有赶尽杀绝，而是选择招抚，因为在他看来，知识本身是无罪的。他与高文·塞西尔既是对手，也是彼此最清醒的观察者——在罗塞塔眼里，战争有很多种形式，“合作”也是其中之一。'),
@@ -74,7 +74,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_5',
      '罗塞塔一生最大的赌局，是战神教会失控后的那场“冬日猎神”。他与神之眼达成交易，把老友、战神教皇马尔姆·杜尼特残留的化身逐一投入火盆作为祭品，硬生生将战神的本体拉到人间；与此同时，黑曜石禁军清洗了失控的神官，冬堡群山同时释放出复数的“湮灭之创”。最终，在塞西尔人的协助下，战神陨落。战后，罗塞塔带领提丰加入人类诸国的联盟与神权理事会，推行去神圣化。对这位皇帝而言，神明从来都不是可靠的保护者。'),
     ('en_US', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_5',
-     'The greatest gamble of Rosetta’s life came after the Church of the God of War lost its mind: the Winter God-Hunt. He struck a bargain with the Eye of God, cast the lingering avatars of his old friend Malm Dunite, the War God’s Pope, one by one into a brazier as offerings, and so dragged the God of War himself into the mortal world. At the same time the Obsidian Guard purged the maddened priesthood, and the mountains of Winterhold unleashed several Annihilation Scars at once. In the end, with the help of the Cecil Empire, the god fell. After the war Rosetta led Typhon into the alliance of human nations and the Theocratic Council and set about Desanctification. To this emperor, the gods were never reliable protectors.');
+     'The greatest gamble of Rosetta’s life came after the Church of the God of War lost its mind: the Winter God-Hunt. He struck a bargain with the Eye of God, cast the lingering avatars of his old friend Malm Dunite, the God of War’s Pope, one by one into a brazier as offerings, and so dragged the God of War himself into the mortal world. At the same time the Obsidian Guard purged the maddened priesthood, and the mountains of Winterhold unleashed several Annihilation Scars at once. In the end, with the help of the Cecil Empire, the god fell. After the war Rosetta led Typhon into the alliance of human nations and the Theocratic Council and set about Desanctification. To this emperor, the gods were never reliable protectors.');
 
 -- 载入画面旁白
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
@@ -88,12 +88,12 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_1',
      '提丰战斗法师是帝国“量产超凡者”政策的产物。他们大多天赋平平，放在传统法师眼中或许连学徒都不够格，却从童年起便被集中起来，十几年如一日地只练熟一两种战斗法术。单独一人并不起眼，成千上万人集结起来，却能凝聚成令敌军胆寒的“军团级法术”。'),
     ('en_US', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_1',
-     'The Typhon Battle Mage is the product of the empire’s policy of "mass-produced Transcendents." Most have little talent—traditional wizards might not even accept them as apprentices—but from childhood they are gathered together and drilled for a decade or more in just one or two combat spells. One alone is unremarkable. Thousands massed together can weave "legion-level spells" that strike terror into any army.'),
+     'The Typhon Battle Mage is the product of the empire’s policy of "mass-produced Transcendents." Most have little talent—traditional wizards might not even accept them as apprentices—but from childhood they are gathered together and drilled for a decade or more in just one or two combat spells. One alone is unremarkable. Thousands massed together can weave "legion-class spells" that strike terror into any army.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_2',
      '战斗法师很少单独行动。以黑旗魔法师团为代表的骑乘法师团与骑士团同步推进，为冲锋提供不间断的远程支援；军中的“顾问学者”往往也是战斗法师或随军的战神祭司。与塞西尔交战时，冬堡伯爵帕林麾下的战斗法师很快发现，足够高阶的光束法术可以穿透对方战车的护盾，并据此调整了战术。'),
     ('en_US', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_2',
-     'Battle Mages rarely fight alone. Mounted mage corps such as the Black Flag Mage Corps advance in step with the knightly orders, giving a charge unbroken ranged support, and the "scholar advisers" attached to an army are usually Battle Mages or chaplains of the God of War. In the war with Cecil, the battle mages of Palin, Earl of Winterhold, soon learned that sufficiently powerful beam spells could pierce the shields of Cecil’s war machines, and adjusted their tactics accordingly.'),
+     'Battle Mages rarely fight alone. Mounted mage corps such as the Black Flag Mage Corps advance in step with the knightly orders, giving a charge unbroken ranged support, and the "scholar advisors" attached to an army are usually Battle Mages or chaplains of the God of War. In the war with Cecil, the Battle Mages of Palin, Earl of Winterhold, soon learned that sufficiently powerful beam spells could pierce the shields of Cecil’s war machines, and adjusted their tactics accordingly.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_3',
      '与别国的军队不同，提丰并不急于把老兵换成新兵种。帝国的法术、装备与战术随时代不断更新，而这些身经百战的施法者始终留在队列里，把每一场战斗的经验带进下一场战争。他们最可怕的力量，是曾在冬堡群山上齐射、击伤了神明的战略法术——“湮灭之创”。'),
@@ -122,7 +122,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_1',
      '燃石是提丰东北海岸常见的一种灰白色沉积岩，经过酸化处理后能变成高效的化肥，提丰人称之为“丰饶之尘”。罗塞塔下令在帝国所有的产粮区就地兴建燃石酸化工厂，让化肥不必长途运输便能撒进田里，农场与养猪场也随之一同兴旺起来。'),
     ('en_US', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_1',
-     'Burnstone is a greyish-white sedimentary rock common along Typhon’s northeastern coast. Acidified, it becomes a potent fertilizer the Typhonese call the Dust of Plenty. Rosetta ordered Burnstone Acidification Works built on site in every grain-growing region of the empire, so that fertilizer could go straight into the fields without long hauls, and farms and pig yards flourished together.'),
+     'Burnstone is a greyish-white sedimentary rock common along Typhon’s northeastern coast. Acidified, it becomes a potent fertilizer the Typhonians call the Dust of Plenty. Rosetta ordered Burnstone Acidification Works built on site in every grain-growing region of the empire, so that fertilizer could go straight into the fields without long hauls, and farms and pig farms flourished together.'),
 
     ('zh_Hans_CN', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_2',
      '燃石的价值远不止于农业。它是丰饶之尘与晶石基质的原料，酸化时产生的副产物“灰晶”也是一种魔导材料；一座燃石矿场甚至让衰败的莫比乌斯港重获生机。奥尔德南的燃石酸化工厂竖着百米高的烟囱，与纺织厂、印刷厂和符文铸造厂比邻而立，帝都终年不散的雾气里，从此也混进了工厂的怪味。'),
@@ -149,7 +149,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_1',
      '裴迪南·温德尔大公是温德尔家族的家主。这个家族与塞西尔家族一样古老，世代统领冬狼骑士团，继承人要先通过战神的试炼，才能继承“狼将军”的称号。裴迪南本人是前前代的狼将军，被誉为提丰最强大的“骑士领主”，也是罗塞塔最信任的公爵：皇帝离开帝都时，正是他坐镇国内督理政务，而他执掌的护国骑士团只效忠皇室，与战神教会毫无瓜葛。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_1',
-     'Grand Duke Ferdinand Wendell is the head of House Wendell, a family as old as the House of Cecil that has led the Winterwolf Knights for generations. Its heirs must pass the trial of the God of War before they may inherit the title of Wolf General. Ferdinand himself was Wolf General two generations ago and is hailed as Typhon’s mightiest "knight-lord." He is also Rosetta’s most trusted duke: when the emperor leaves the capital it is Ferdinand who governs in his stead, and the knightly order he commands answers to the crown alone, with no ties to the Church of the God of War.'),
+     'Grand Duke Ferdinand Wendell is the head of House of Wendell, a family as old as the House of Cecil that has led the Winterwolf Knights for generations. Its heirs must pass the trial of the God of War before they may inherit the title of Wolf General. Ferdinand himself was Wolf General two generations ago and is hailed as Typhon’s mightiest "knight-lord." He is also Rosetta’s most trusted duke: when the emperor leaves the capital it is Ferdinand who governs in his stead, and the knightly order he commands answers to the crown alone, with no ties to the Church of the God of War.'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_2',
      '裴迪南的独子巴德多年前失踪，孙女安德莎由他一手教导，成为提丰史上最年轻的狼将军。战神教会失控时，老友教皇马尔姆借助精神干涉扭曲了裴迪南的认知，提丰发给塞西尔的解释文书竟被篡改成了战争宣言。罗塞塔却告诉他，这不是他的错——随后把清理军中教会势力的名单交到了他手上。多年以后，安德莎带回了一个消息：巴德还活着，就在塞西尔。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_2',
@@ -177,7 +177,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_1',
      '温莎·玛佩尔是提丰皇家法师协会的会长、罗塞塔大帝的首席法师顾问，地位与公爵相当，是帝国最强大的施法者之一，被尊为传奇法师。她常穿一身淡紫色法袍，仪态端庄稳重。年轻时，她是老法师丹尼尔的第一位学徒，天资卓绝，没过几年，她拿出的成果便连导师都难以驾驭。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_1',
-     'Windsor Marpel is President of Typhon’s Royal Mage Association and chief arcane adviser to Rosetta the Great, ranking alongside the dukes as one of the empire’s mightiest spellcasters, a legendary mage. Poised and composed, she usually wears robes of pale violet. In her youth she was the first apprentice of the old wizard Daniel, and so gifted that within a few years her work had outgrown even her master’s grasp.'),
+     'Windsor Marpel is President of Typhon’s Royal Mage Association and chief arcane advisor to Rosetta the Great, ranking alongside the dukes as one of the empire’s mightiest spellcasters and revered as a legendary mage. Poised and composed, she usually wears robes of pale violet. In her youth she was the first apprentice of the old wizard Daniel, and so gifted that within a few years her work had outgrown even her master’s grasp.'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_2',
      '罗塞塔创立的许多设施都出自温莎的设计。她是皇帝改革中最可靠的技术支柱，也是少数知晓宫廷秘密的人——女仆长戴安娜那具来自古代的身体，正是由她定期维护保养。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_2',
@@ -205,7 +205,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_PARA_2',
      '后来人们才知道，戴安娜并不是人类，而是古代刚铎帝国的“铁人”——一名型号老旧的天文台治安员。她在七百年前脱离了铁人网络，丢失了部分记忆；独处时，她会不由自主地一遍遍画下同一幅画，连她自己也说不清那是什么。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_PARA_2',
-     'Only later did the world learn that Diana is not human at all, but an "Iron Soldier" of the ancient Gondor Empire—an old-model observatory security unit. She left the Iron network seven centuries ago and lost part of her memory. When alone, she finds herself drawing the same picture over and over, though even she cannot say what it shows.'),
+     'Only later did the world learn that Diana is not human at all, but an "Iron Soldier" of the ancient Gondor Empire—an old-model observatory security unit. She left the Iron Soldier network seven centuries ago and lost part of her memory. When alone, she finds herself drawing the same picture over and over, though even she cannot say what it shows.'),
 
     -- 玛蒂尔达
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MATILDA_CHAPTER_CONTENT_TITLE', '玛蒂尔达·奥古斯都'),
@@ -225,7 +225,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_1',
      '马尔姆·杜尼特是战神教会的教皇。战神是提丰的主流信仰，而马尔姆曾第一个站出来支持罗塞塔加冕；他是罗塞塔的长辈与朋友，也是裴迪南多年的老友。但罗塞塔早就看清：在成为任何人的朋友之前，马尔姆首先是战神的教皇——当神权与皇权出现分歧，一个虔诚的信徒只会忠于自己的神。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_1',
-     'Malm Dunite was Pope of the Church of the God of War, the dominant faith of Typhon, and the first to stand up in support of Rosetta’s coronation. He was an elder and a friend to Rosetta and an old companion of Ferdinand. Yet Rosetta had long understood that before he was anyone’s friend, Malm was the War God’s Pope—and when the interests of church and crown diverge, a devout believer stays loyal to his god.'),
+     'Malm Dunite was Pope of the Church of the God of War, the dominant faith of Typhon, and the first to stand up in support of Rosetta’s coronation. He was an elder and a friend to Rosetta and an old companion of Ferdinand. Yet Rosetta had long understood that before he was anyone’s friend, Malm was the God of War’s Pope—and when the interests of church and crown diverge, a devout believer stays loyal to his god.'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_2',
      '战神陷入疯狂后，异变从教会最上层蔓延开来，马尔姆本人成了污染的源头。他死后，残留的化身仍化作幻影出没，扰乱人们的心智。在冬日猎神中，罗塞塔把捕获的大半化身逐一投入火盆，作为与神之眼交易的祭品，将战神拉到了人间。他说，正因为马尔姆曾是他的朋友，那个顶着朋友面孔的东西才更没有资格留在世上。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_2',
@@ -239,7 +239,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_1',
      '奥尔德南是提丰帝国的首都，名字源于古巨人语，意为“千年城”。它作为帝都只有两百年历史：旧帝都奥兰戴尔在大崩塌中沉入地下之前，早有准备的皇帝便已在这片平原上建起了新都。但骄傲的提丰人相信，它会像神话中的巨人王朝一样矗立千年。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_1',
-     'Ordenan, capital of the Typhon Empire, takes its name from the ancient tongue of the giants: "City of a Thousand Years." It has been the capital for only two centuries—before the old capital of Orandel sank in the Great Collapse, a forewarned emperor had already built a new seat on these plains—yet the proud Typhonese believe it will stand for a millennium, like the giant dynasties of legend.'),
+     'Ordenan, capital of the Typhon Empire, takes its name from the ancient tongue of the giants: "City of a Thousand Years." It has been the capital for only two centuries—before the old capital of Orandel sank in the Great Collapse, a forewarned emperor had already built a new seat on these plains—yet the proud Typhonians believe it will stand for a millennium, like the giant dynasties of legend.'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_2',
      '整座城市规划得井然有序，宛如一个棱角分明的几何图形：哥特式尖塔鳞次栉比，帝国大道贯穿全城，常年不散的浓雾笼罩着一切。皇宫黑曜石宫中安放着皇帝的黑铁王座，议会厅的三重尖顶象征皇权、贵族与市民；到了罗塞塔的时代，燃石酸化工厂的百米烟囱也加入了这片天际线。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_2',
@@ -263,7 +263,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_1',
      '冬狼堡是提丰帝国西北边陲的边境要塞，直面昔日的安苏王国、后来的塞西尔帝国，是冬狼防线的核心。温德尔家族的狼将军率领冬狼骑士团世代驻守于此；玛蒂尔达公主出访塞西尔之前，也曾在这里的城墙上与好友安德莎并肩漫步。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_1',
-     'Winterwolf Keep is the border fortress on Typhon’s northwestern frontier, facing what was once the Kingdom of Ansu and later the Cecil Empire, and the heart of the Winterwolf line. The Wolf Generals of House Wendell and their Winterwolf Knights have garrisoned it for generations. Before her mission to Cecil, Princess Matilda walked its walls beside her friend Andesha.'),
+     'Winterwolf Keep is the border fortress on Typhon’s northwestern frontier, facing what was once the Kingdom of Ansu and later the Cecil Empire, and the heart of the Winterwolf line. The Wolf Generals of House of Wendell and their Winterwolf Knights have garrisoned it for generations. Before her mission to Cecil, Princess Matilda walked its walls beside her friend Andesha.'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_2',
      '当战神教会把提丰推入战争，冬狼堡首当其冲。守将安德莎在重伤后带领守军投降，塞西尔的旗帜随即在城头升起，战线被推进到提丰境内。对帝国而言，这是一次耻辱，也是一次清醒的止损：冬狼堡丢了，帝国最精锐的军团却保住了。'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_2',
@@ -319,7 +319,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_DIPLO_GREETING_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我一向忙得要死。有什么要紧的事，直说。'),
     ('en_US',      'LOC_DIPLO_GREETING_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
-     'I am always run off my feet. If it matters, say it plainly.'),
+     'I am always swamped. If it matters, say it plainly.'),
 
     -- 友好宣言
     ('zh_Hans_CN', 'LOC_DIPLO_DECLARE_FRIEND_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -341,7 +341,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_DIPLO_REJECT_DECLARE_FRIEND_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我甚至不会过多地信任你本人。提丰可以是伙伴，但不会是任何人的消耗品。'),
     ('en_US',      'LOC_DIPLO_REJECT_DECLARE_FRIEND_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
-     'I would not even trust you yourself very far. Typhon can be a partner, but it will be no one’s expendable.'),
+     'I would not even trust you personally very far. Typhon can be a partner, but never anyone’s expendable asset.'),
 
     -- 宣战 / 被宣战
     ('zh_Hans_CN', 'LOC_DIPLO_DECLARE_WAR_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -391,7 +391,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_DIPLO_KUDO_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '你的军队强过我的预估。你和我是一类人——这样的对手，才值得认真算计。'),
     ('en_US',      'LOC_DIPLO_KUDO_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
-     'Your army is stronger than I estimated. You and I are the same kind—and only a rival like that is worth careful calculation.'),
+     'Your army is stronger than I estimated. You and I are of a kind—and only a rival like you is worth careful calculation.'),
     ('zh_Hans_CN', 'LOC_DIPLO_WARNING_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我与神明打了两百年交道，被它们附身的人是什么味道，闭着眼睛都闻得出。让你的传教士离开我的城市。'),
     ('en_US',      'LOC_DIPLO_WARNING_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -431,7 +431,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_DIPLO_OPEN_BORDERS_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我们毗邻而居，各有所产，本应互通有无。开放边境吧，让商路先通起来。'),
     ('en_US',      'LOC_DIPLO_OPEN_BORDERS_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
-     'We are neighbors, each with our own goods, and ought to trade. Open the borders and let the trade roads run first.'),
+     'We are neighbors, each with our own goods, and ought to trade. Open the borders and let the trade routes connect first.'),
     ('zh_Hans_CN', 'LOC_DIPLO_ACCEPT_OPEN_BORDERS_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '边境可以开放。享受权利，便要承担对等的义务和责任。'),
     ('en_US',      'LOC_DIPLO_ACCEPT_OPEN_BORDERS_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',

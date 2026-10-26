@@ -10,4 +10,4 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME',
      'Empire of the Extraordinary'),
     ('en_US', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_DESCRIPTION',
-     'Land military units trained in a city with a Campus start with a free promotion.[NEWLINE]Campus and Holy Site districts provide +1 [ICON_GreatGeneral] Great General point per turn.[NEWLINE]Cities with an Encampment ignore pressure from [ICON_Religion] Religions founded by other civilizations.');
+     'Land military units trained in a city with a Campus start with a free promotion.[NEWLINE]Campus and Holy Site districts provide +1 [ICON_GreatGeneral] Great General point per turn.[NEWLINE]Cities with an Encampment ignore religious pressure from [ICON_Religion] Religions founded by other civilizations.');

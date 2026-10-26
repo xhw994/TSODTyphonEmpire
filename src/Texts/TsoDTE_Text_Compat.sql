@@ -10,6 +10,6 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
 
 INSERT OR REPLACE INTO BaseGameText (Tag, Text) VALUES
     ('LOC_DIPLO_MODIFIER_TSOD_CECIL_ROSETTA_TO_GAWAIN',
-     'Rosetta Augustus sees Gawain Cecil as a rival, and a rival is still one of his kind'),
+     'Rosetta Augustus sees Gawain Cecil as a rival, but a rival is still a kindred spirit'),
     ('LOC_DIPLO_MODIFIER_TSOD_CECIL_GAWAIN_TO_ROSETTA',
-     'Gawain Cecil sees Rosetta Augustus as a rival, and a rival is still one of his kind');
+     'Gawain Cecil sees Rosetta Augustus as a rival, but a rival is still a kindred spirit');

@@ -17,12 +17,12 @@ VALUES
 
     -- Agenda
     ('en_US', 'LOC_AGENDA_TSOD_KINDRED_NAME', 'Kindred'),
-    ('en_US', 'LOC_AGENDA_TSOD_KINDRED_DESCRIPTION', 'Always tries to keep a strong army. Likes civilizations whose land forces are no weaker than his. Dislikes civilizations that bring their Religion to his cities.'),
+    ('en_US', 'LOC_AGENDA_TSOD_KINDRED_DESCRIPTION', 'Always tries to keep a strong army. Likes civilizations whose land forces are no weaker than his. Dislikes civilizations that spread their Religion to his cities.'),
 
     -- Attitude modifiers
-    ('en_US', 'LOC_DIPLO_MODIFIER_TSOD_KINDRED_STRONG_MILITARY', 'Rosetta Augustus sees his own kind in you, for your army is no weaker than his'),
-    ('en_US', 'LOC_DIPLO_MODIFIER_TSOD_KINDRED_RELIGION_RECEIVED', 'Rosetta Augustus resents you bringing your religion into his cities'),
+    ('en_US', 'LOC_DIPLO_MODIFIER_TSOD_KINDRED_STRONG_MILITARY', 'Rosetta Augustus sees a kindred spirit in you: your army is no weaker than his'),
+    ('en_US', 'LOC_DIPLO_MODIFIER_TSOD_KINDRED_RELIGION_RECEIVED', 'Rosetta Augustus resents you for spreading your Religion to his cities'),
 
     -- Kudo / warning reasons
     ('en_US', 'LOC_DIPLO_KUDO_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED', '(Your land forces are no weaker than Typhon''s)'),
-    ('en_US', 'LOC_DIPLO_WARNING_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED', '(You have brought your Religion into Typhon''s cities)');
+    ('en_US', 'LOC_DIPLO_WARNING_LEADER_ANY_REASON_AGENDA_TSOD_KINDRED', '(You have spread your Religion to Typhon''s cities)');

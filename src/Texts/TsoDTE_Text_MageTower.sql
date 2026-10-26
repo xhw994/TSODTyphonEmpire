@@ -12,5 +12,5 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
      '提丰特色科学研究区域。替代“学院”区域，且建造花费更低。“法师塔”区域具有防御力且可执行远程攻击。敌方间谍在此城中的行动等级减1。'),
 
     -- 新相邻加成（{1_num} 由游戏填入实际加成值）
-    ('en_US',      'LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE', '+{1_num} [ICON_Science] Science from each adjacent Encampment.'),
+    ('en_US',      'LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE', '+{1_num} [ICON_Science] Science from the adjacent Encampment district.'),
     ('zh_Hans_CN', 'LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE', '+{1_num} [ICON_Science] 科技值来自每个相邻的军营。');

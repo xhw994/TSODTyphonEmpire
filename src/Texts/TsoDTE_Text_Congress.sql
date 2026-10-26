@@ -20,4 +20,4 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
      '-10 Strength (Combat and Religious) for all units of the chosen [ICON_Religion] Religion.'),
 
     ('en_US', 'LOC_WORLD_CONGRESS_TSOD_SECULAR_OVERSIGHT_DESC',
-     'Any player may condemn units of the chosen Religion; each condemnation grants 25 [ICON_Favor] Diplomatic Favor.');
+     'All players may condemn units of the chosen [ICON_Religion] Religion, and doing so grants 25 [ICON_Favor] Diplomatic Favor.');
