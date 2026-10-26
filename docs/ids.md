@@ -84,6 +84,7 @@
 | `LOC_DIPLO_MODIFIER_TSOD_CECIL_ROSETTA_TO_GAWAIN`、`LOC_DIPLO_MODIFIER_TSOD_CECIL_GAWAIN_TO_ROSETTA`（塞西尔联动的态度说明） | `Texts/TsoDTE_Text_Compat.sql` | WP18 |
 | 全部 `LOC_DIPLO_*_LEADER_TSOD_ROSETTA_AUGUSTUS_*` / `LOC_DIPLO_*_TSOD_ROSETTA_AUGUSTUS_*` 外交台词 | 同上 | WP8 |
 | `LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS`（载入画面词）、`LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE`（领袖引言） | 同上 | WP8（WP1 的 `LoadingInfo`、`LeaderQuotes` 行只引用） |
+| `LOC_RELIGION_TSOD_WAR_GOD`，`LOC_TSOD_TYPHON_WAR_GOD_RELIGION_OPTION_NAME` / `_DESCRIPTION`（开局选项），`LOC_PEDIA_RELIGIONS_PAGE_RELIGION_TSOD_WAR_GOD_CHAPTER_HISTORY_PARA_1`–`_4` | `Texts/TsoDTE_Text_Religion.sql`（FE + IG） | WP14（不归 WP8） |
 
 特色单位、区域的特性行直接用单位 / 区域自己的 NAME 与 DESCRIPTION tag，没有单独的特性 tag（照塞西尔与官方先例）；特色建筑的特性另有一个 NAME tag（见上）。
 
@@ -333,3 +334,17 @@ Districts 的 Xref 指向自己的 Landmarks 元素，所以两个文件要登�
 | 燃石酸化工厂 | 照官方日本电子工厂（替换工厂）登记：`Buildings.artdef` 的 `BUILDING_TSOD_BURNSTONE_WORKS`（复制 `BUILDING_FACTORY` 的战略视图图案）与生产建筑链第 2 级；`Landmarks.artdef` 工业区的 3 个底座、1 个建筑变体（模型 `DIS_PRD_Factory`）、2 个建筑组合（`WORKSHOP, TSOD_BURNSTONE_WORKS` 及加发电厂）。由 `tools/make_building_artdef.py` 生成 | `ArtDefs/Buildings.artdef`、`ArtDefs/Landmarks.artdef` |
 | 文化外观 | 照德国：`Civilizations.artdef` 音频 `Germany`；`Cultures.artdef` 城市风格 `AncientEarth`、`ModernGlass`，单位外观 `European`（追加进官方列表，不替换）。由 `tools/make_culture_artdef.py` 生成 | `ArtDefs/Civilizations.artdef`、`ArtDefs/Cultures.artdef` |
 | 构建后还原 | `tools/restore_cooked_entries.py`：TB_ERROR 按元素逐个还原（不再限一处）；被 cooker 清空的 DLC 元素引用（如 `Cultist`）按出现顺序填回 | — |
+
+## 10. 战神教（WP14，10-25）
+
+| 类别 | 名称 | 文件 / 说明 |
+|---|---|---|
+| 开局选项 | 参数 `TsodTyphonWarGodReligion`（`AdvancedOptions`，bool，默认 1，只在风云变幻规则集）→ 配置 `Game` / `TSOD_TYPHON_WAR_GOD_RELIGION` | `Core/TsoDTE_Config_Religion.sql`（FE UpdateDatabase） |
+| criteria | `TsoDTE_WarGodReligion` = 风云变幻 + 上面的配置值为 1 | IG 的宗教数据、宗教色、宗教图标三个动作（LoadOrder 110）；文本与美术不挂 |
+| 宗教 | `RELIGION_TSOD_WAR_GOD`，颜色 `COLOR_RELIGION_TSOD_WAR_GOD`（118,128,140），`IconString` `Wg` | `Core/TsoDTE_Religion_WarGod.sql`、`Core/TsoDTE_Religion_WarGod_Colors.sql`（IG UpdateColors） |
+| 图标 | `ICON_RELIGION_TSOD_WAR_GOD`：临时别名到官方 `ICON_RELIGION_CUSTOM_4`；交图后换图集 `ICON_ATLAS_TSOD_TYPHON_RELIGION`（22 / 50 / 100 / 270，照官方宗教图集） | `Icons/TsoDTE_Icons_Religion.sql`（IG UpdateIcons） |
+| 历史时刻 | 临时用官方 `PM_FoundedReligion_Custom4`；交图后是 `MOMENT_RELIGION_TSOD_WAR_GOD`（166×122 的印章，官方宗教时刻只在圣典左页盖章） | `Core/TsoDTE_Religion_WarGod.sql` |
+| 3D 宗教透镜 | `Overlay.artdef` 的 `ReligionLensIcons` / `ReligionLensArrows` → `Religion_Overlay_Tsod_TE_WarGod_Box` / `Religion_Pressure_Tsod_TE_WarGod_Box`（包 `TsoDTE_UILensReligion`，UILensAsset）→ 材质 `*_Material` → 贴图 `RELIGION_OVERLAY_TSOD_WAR_GOD`（512）、`RELIGION_PRESSURE_TSOD_WAR_GOD`（128），类 `Generic_BaseColor` | `Assets/`、`Materials/`、`XLPs/TsoDTE_UILensReligion.xlp` |
+| 2D 战略视图 | `StrategicView.artdef`：`UILenses/RELIGION_TSOD_WAR_GOD`（箭头引用官方 `ReligionPressureArrow_ReligionPressureArrow`）+ `UILensEntries/ReligionPressureIcon_TSOD_WAR_GOD` → 贴图 `RELIGION_PRESSURE_ICON_TSOD_WAR_GOD`（128，`StrategicView_Sprite`，包 `TsoDTE_StrategicViewReligion`） | `ArtDefs/StrategicView.artdef`、`XLPs/TsoDTE_StrategicViewReligion.xlp` |
+| 贴图生成 | `tools/make_religion_art.py`：现在的透镜贴图由官方狮子生成；`--icons` 读 `images/战神教标志.png`（与可选的 `images/战神教历史时刻.png`），一次出图标、透镜、印章并切换登记。`make_art.write_packages` 改为按 `.tex` 的类分包，透镜贴图不进 UI 包 | `tools/` |
+| 合并注意 | `Overlay.artdef` 与忠诚度透镜共用一个文件：合并时把本分支的两个 `ReligionLens*` 元素并进 `Overlays` 集合；`Art.xml` 的 `UILensAsset` 库同时保留 `TsoDTE_UILensAsset` 与 `TsoDTE_UILensReligion` | — |

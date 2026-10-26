@@ -10,6 +10,7 @@ editable source. --preview also writes contact sheets to DIR for review.
 Crops are in source-image pixels; adjust them here and re-run.
 """
 import os
+import re
 import struct
 import sys
 
@@ -292,8 +293,11 @@ def write_xlp(path, cls, package, entries):
 def write_packages():
     """Every texture in src/Textures goes into one of the two packages (fallback vs UI)."""
     names = sorted(os.path.splitext(f)[0] for f in os.listdir(TEX_DIR) if f.endswith('.tex'))
-    fallback = [n for n in names if n.startswith('FALLBACK_NEUTRAL_')]
-    ui = [n for n in names if n not in fallback]
+    cls = {n: re.search(r'<m_ClassName text="([^"]*)"', open(os.path.join(TEX_DIR, n + '.tex'), encoding='utf-8').read()).group(1)
+           for n in names}
+    # lens textures (Generic_BaseColor, StrategicView_Sprite) belong to their own packages
+    fallback = [n for n in names if cls[n] == 'Leader_Fallback']
+    ui = [n for n in names if cls[n] == 'UserInterface']
     xdir = os.path.join(ROOT, 'src', 'XLPs')
     write_xlp(os.path.join(xdir, 'TsoDTE_UITextures.xlp'), 'UITexture', 'TsoDTE_UITextures', ui)
     write_xlp(os.path.join(xdir, 'TsoDTE_LeaderFallbacks.xlp'), 'LeaderFallback', 'TsoDTE_LeaderFallbacks', fallback)
