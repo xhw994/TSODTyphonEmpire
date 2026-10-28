@@ -226,6 +226,22 @@
 			<m_ObjectName text="ICON_PROJECT_TSOD_DESANCTIFICATION_80"/>
 		</Element>
 		<Element>
+			<m_EntryID text="ICON_RELIGION_TSOD_WAR_GOD_100"/>
+			<m_ObjectName text="ICON_RELIGION_TSOD_WAR_GOD_100"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_RELIGION_TSOD_WAR_GOD_22"/>
+			<m_ObjectName text="ICON_RELIGION_TSOD_WAR_GOD_22"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_RELIGION_TSOD_WAR_GOD_270"/>
+			<m_ObjectName text="ICON_RELIGION_TSOD_WAR_GOD_270"/>
+		</Element>
+		<Element>
+			<m_EntryID text="ICON_RELIGION_TSOD_WAR_GOD_50"/>
+			<m_ObjectName text="ICON_RELIGION_TSOD_WAR_GOD_50"/>
+		</Element>
+		<Element>
 			<m_EntryID text="ICON_UNIT_TSOD_BATTLE_MAGE_22"/>
 			<m_ObjectName text="ICON_UNIT_TSOD_BATTLE_MAGE_22"/>
 		</Element>
@@ -324,6 +340,10 @@
 		<Element>
 			<m_EntryID text="MOMENT_DISTRICT_TSOD_MAGE_TOWER"/>
 			<m_ObjectName text="MOMENT_DISTRICT_TSOD_MAGE_TOWER"/>
+		</Element>
+		<Element>
+			<m_EntryID text="MOMENT_RELIGION_TSOD_WAR_GOD"/>
+			<m_ObjectName text="MOMENT_RELIGION_TSOD_WAR_GOD"/>
 		</Element>
 		<Element>
 			<m_EntryID text="MOMENT_UNIT_TSOD_BATTLE_MAGE"/>

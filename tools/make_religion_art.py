@@ -85,21 +85,22 @@ def lens(filled, line):
             emit(pip.copy(), SPRITE, 'StrategicView_Sprite', ['StrategicView_Sprite', 'StrategicView', 'Sprite'], True)]
 
 
-def stamp(filled):
+def stamp(mask, figure=False):
+    # A full figure (the moment art) needs most of the seal to stay legible; a symbol keeps the official margin.
     rnd = random.Random(14)
     grain = Image.new('L', (166, 122))
     grain.putdata([rnd.randint(150, 255) for _ in range(166 * 122)])
-    out = paint(filled, BROWN, 80, 166, 122, center=(86, 55))
+    out = paint(mask, BROWN, 116 if figure else 80, 166, 122, center=(86, 61) if figure else (86, 55))
     out.putalpha(ImageChops.multiply(out.getchannel('A'), grain.filter(ImageFilter.GaussianBlur(0.8))))
     return out
 
 
-def icons(filled, line, moment_mask):
+def icons(filled, line, moment_mask, figure):
     made = [emit(paint(filled, (255, 255, 255), round(s * 0.88), s), '%s_%d' % (ICON, s), 'UserInterface',
                  ['UserInterface'], False) for s in FILLED_SIZES]
     made.append(emit(paint(line, (255, 255, 255), round(LINE_SIZE * 0.82), LINE_SIZE), '%s_%d' % (ICON, LINE_SIZE),
                      'UserInterface', ['UserInterface'], False))
-    made.append(emit(stamp(moment_mask), MOMENT, 'UserInterface', ['UserInterface'], False))
+    made.append(emit(stamp(moment_mask, figure), MOMENT, 'UserInterface', ['UserInterface'], False))
     rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + [LINE_SIZE])
     with open(os.path.join(ROOT, 'src', 'Icons', 'TsoDTE_Icons_Religion.sql'), 'w', encoding='utf-8', newline='\n') as f:
         f.write('-- War God Faith icons (InGame UpdateIcons), written by tools/make_religion_art.py --icons.\n'
@@ -129,8 +130,9 @@ def main():
     line = master(mask_of(a.line)) if a.line else contour(filled)
     made = lens(filled, line)
     if a.icons:
-        moment_mask = master(mask_of(a.moment)) if os.path.exists(a.moment) else filled
-        made += icons(filled, line, moment_mask)
+        figure = os.path.exists(a.moment)
+        moment_mask = master(mask_of(a.moment)) if figure else filled
+        made += icons(filled, line, moment_mask, figure)
         print('packages (ui, fallback):', write_packages())
     if a.preview:
         os.makedirs(a.preview, exist_ok=True)
