@@ -8,7 +8,7 @@ import re
 import struct
 import sys
 
-from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # The user's art library in the workspace, outside the repo
@@ -30,6 +30,14 @@ SRC_LOADING = '地点与场景/奥尔德南 冬日 修图.jpg'
 # SRC_TOWER (below) is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
 SRC_TOWER = '建筑与造物/法师塔.jpg'
 SRC_MATILDA = '人物/玛蒂尔达·奥古斯都.jpg'
+# Historic moments are drawn in the official look (user's choice, 10-27): ink sketch toned dark brown to warm
+# yellow, edges faded with a moment PS template. The templates are among the six whose edge is closest to the
+# mean alpha of the 288 official 456 x 332 Moment*.dds; Cecil's three moments use the other three.
+# The 25 templates are local files of the civ6-modding skill (assets/ is not in its git; see its
+# references/local-resources.md).
+MOMENT_TEMPLATES = os.path.join(ROOT, '..', 'Civ6 modding', 'civ6-modding-suite', 'skills', 'civ6-modding',
+                                'assets', 'templates', 'moment')
+MOMENT_SIZE = (456, 332)
 
 # Colors: src/Core/TsoDTE_Colors.sql
 BLACK = (22, 20, 22, 255)
@@ -159,6 +167,46 @@ def erode(mask, px):
     for _ in range(px // 4):
         mask = mask.filter(ImageFilter.MinFilter(9))
     return mask
+
+
+# historic moments: same look as Cecil's tools/make_art.py
+# The official moments' tone band, dark brown to warm yellow (civ6-modding skill, art_pipeline.py MOMENT_RAMP,
+# from the 288 official 456 x 332 Moment*.dds; their opaque pixels run from luminance ~53 to ~196)
+MOMENT_RAMP = [(55, 42, 20), (74, 56, 28), (88, 70, 36), (105, 86, 46), (122, 103, 55), (140, 119, 65),
+               (157, 136, 76), (174, 152, 87), (192, 169, 99), (210, 185, 112), (221, 195, 123)]
+
+
+def sketch_gray(gray, blur=5, mix=0.6, lift=0.75):
+    """Pencil sketch of a grey picture: colour dodge of the blurred negative keeps the lines and turns flat
+    areas to paper, times a lightened copy of the picture so forms keep some shading. The official moments
+    are ink drawings; plain toning left the dark paintings a muddy brown."""
+    neg = ImageOps.invert(gray).filter(ImageFilter.GaussianBlur(blur))
+    lines = Image.new('L', gray.size)
+    lines.putdata([255 if b >= 255 else min(255, a * 255 // (255 - b))
+                   for a, b in zip(gray.tobytes(), neg.tobytes())])
+    shade = gray.point(lambda v: round(255 * (v / 255) ** lift))
+    return ImageChops.multiply(lines, Image.blend(Image.new('L', gray.size, 255), shade, mix))
+
+
+def moment(img, box, template):
+    """Crop to 456 x 332 and draw it as an official-style moment: ink sketch on the tone band; alpha is the
+    template's brush edge (the PSD composite is the edge shape, white = keep)."""
+    img = crop_resize(img, box, MOMENT_SIZE)
+    alpha = img.getchannel('A')
+    visible = alpha.point(lambda v: 255 if v > 128 else 0)
+    gray = ImageOps.autocontrast(img.convert('L'), cutoff=1, mask=visible)    # levels from what shows
+    gray = ImageOps.autocontrast(sketch_gray(gray), cutoff=1, mask=visible)
+    n = len(MOMENT_RAMP) - 1
+    lut = [[], [], []]
+    for v in range(256):
+        t = v / 255 * n
+        i = min(int(t), n - 1)
+        for c in range(3):
+            lut[c].append(round(MOMENT_RAMP[i][c] + (MOMENT_RAMP[i + 1][c] - MOMENT_RAMP[i][c]) * (t - i)))
+    out = Image.merge('RGB', [gray.point(lut[c]) for c in range(3)]).convert('RGBA')
+    edge = Image.open(os.path.join(MOMENT_TEMPLATES, template + '.psd')).convert('L').resize(MOMENT_SIZE, Image.LANCZOS)
+    out.putalpha(ImageChops.multiply(alpha, edge))
+    return out
 
 
 # emblem
@@ -340,12 +388,12 @@ def main():
     made['diplo_bg'] = emit(crop_resize(rosetta, (240, 0, 1180, 470), (1920, 960)),
                             'LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND')
 
-    # historic moments, 456 x 332 like the Cecil mod
+    # historic moments, 456 x 332 like the official ones (crop box, edge template)
     tower = load(SRC_TOWER)
-    made['m_district'] = emit(crop_resize(tower, (1050, 0, 2350, 947), (456, 332)), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
-    made['m_building'] = emit(crop_resize(rain, (520, 100, 2020, 1192), (456, 332)), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
+    made['m_district'] = emit(moment(tower, (1050, 0, 2350, 947), '12'), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
+    made['m_building'] = emit(moment(rain, (520, 100, 2020, 1192), '15'), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
     matilda = load(SRC_MATILDA)
-    made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
+    made['m_unit'] = emit(moment(matilda, (0, 450, 1999, 1906), '6'), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
 
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import icon_art

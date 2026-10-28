@@ -9,6 +9,9 @@ from make_art import GEN_DIR, TEX, TEX_DIR, emblem_mono, write_dds
 
 OVERLAY = 'LOYALTY_OVERLAY_TSOD_TYPHON_EMPIRE'
 PRESSURE = 'LOYALTY_PRESSURE_TSOD_TYPHON_EMPIRE'
+# Emblem long side on the 128 px pressure pip: the 85 official Loyalty_Pressure_*.dds have a median of 43
+# (range 36-54), so 44 like them (user's choice, 10-27; it was 76)
+PRESSURE_EMBLEM = 44
 
 
 def fitted(emblem, box, canvas):
@@ -43,7 +46,7 @@ def main():
     overlay = halo(512, 150, 60, 215)
     overlay.alpha_composite(fitted(emblem, 250, 512))
     emit(overlay, OVERLAY)
-    emit(fitted(emblem, 76, 128), PRESSURE)
+    emit(fitted(emblem, PRESSURE_EMBLEM, 128), PRESSURE)
     print('wrote', OVERLAY, PRESSURE, 'to', TEX_DIR)
 
 
