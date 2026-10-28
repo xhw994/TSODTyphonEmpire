@@ -11,3 +11,4 @@ cooker.log
 # Claude Code local settings and notes
 .claude/
 __pycache__/
+/docs/
