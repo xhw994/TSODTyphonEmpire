@@ -9,7 +9,7 @@ VALUES
     ('ABILITY_TSOD_ANNIHILATION_SCAR', 'KIND_ABILITY'),
     ('ABILITY_TSOD_ARMY_REGENERATION', 'KIND_ABILITY');
 
--- 2. 武器（WMDs）：UnitPanel_TsoDTE.lua 按 Name 的译文认武器
+-- 2. 武器（WMDs）：TsoDTE_UnitPanel.lua 按 Name 的译文认武器
 INSERT INTO
     WMDs (
         WeaponType,

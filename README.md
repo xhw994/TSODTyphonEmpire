@@ -74,7 +74,6 @@ Place it next to an Encampment from the start.
 
 Built on the game's native weapon of mass destruction system, but presented as a skill of the Battle Mage army. Only a Battle Mage in army formation shows the button, and each army is one cast. Blast radius 1; it damages units and buildings only, not population, improvements or roads, and leaves no fallout. Corps need the Nationalism civic and armies need the Mobilization civic, as in the base game.
 
-The native nuclear diplomatic consequences still apply; the mod adds no extra penalty.
 
 ---
 
@@ -85,7 +84,7 @@ The native nuclear diplomatic consequences still apply; the mod adds no extra pe
 | Available to | Typhon only |
 | Requires | A Mage Tower district; unlocked by the Mass Media civic |
 | Repeatable | Yes; cost grows with game progress |
-| On completion | Half of your Faith becomes an equal amount of Science toward the current research, and you gain 25 Diplomatic Favor |
+| On completion | Half of your Faith becomes an equal amount of Science, and you gain 25 Diplomatic Favor |
 
 ---
 
@@ -118,14 +117,11 @@ It joins the resolution pool whenever the mod is enabled, with or without Typhon
 
 ### Optional Religion: War God Faith
 
-The Church of the God of War from *Sword of Dawn*, devoted to Kel, added as an optional religion. Its Civilopedia entry tells the story of the church.
+The Church of the God of War from *Sword of Dawn*, devoted to Kel, added as a religion. Its Civilopedia entry tells the story of the church.
 
 | Attribute | Value |
 |---|---|
 | Available to | Any civilization can found it, not only Typhon |
-| Game setup option | **Enable War God Faith**, in the advanced options; on by default. Turn it off and the religion is not loaded |
-| Requires | The Gathering Storm ruleset |
-| Art | The religion icon is temporary art |
 
 ---
 
@@ -171,9 +167,7 @@ A loyalty lens overlay with the Typhon emblem, 57 city names from the fan map of
 ## Compatibility
 
 - **Cecil Empire:** with both mods enabled, Rosetta Augustus and Gawain Cecil each get a diplomatic attitude toward the other ("a rival is still a kindred spirit"). It only loads when the Cecil mod is detected.
-- **Dream City:** no dedicated linkage; the two mods do not change the same content and can be enabled together.
-- **Unit Panel:** the mod replaces the Unit Panel script so that only Annihilation Scar is shown, and chains with other mods that also change it (for example the Klee mod) following the community convention. A UI mod that replaces the Unit Panel outright may bring the official nuclear buttons back onto the Battle Mage.
-- **Multiplayer:** supported by the mod definition, but not specifically tested yet.
+- **Unit Panel:** the mod replaces the Unit Panel script so that only Annihilation Scar is shown, and chains with other mods that also change it (for example the Klee mod) following the community convention. A UI mod that replaces the Unit Panel outright may add extra base-game nuclear buttons to the Battle Mage.
 
 If you find a conflict, please open an issue with your mod list and the `Database.log` and `Lua.log` files.
 
@@ -185,11 +179,11 @@ If you find a conflict, please open an issue with your mod list and the `Databas
 |---|---|
 | Source material & lore | Original novelist of *Sword of Dawn* (远瞳) |
 | Base game assets | Firaxis Games / 2K; unit, district and building models reuse official assets, including the Ethiopia Pack |
-| Artwork | The novel author's Bilibili posts and official setting art; the officially endorsed fan map "Typhon map and emblem"; AI-generated icons, processed |
-| Technical references | Sun and Moon of Teyvat Pack (Klee) by Shimamura et al. |
+| Artwork | Emblem, portraits, backgrounds and moment illustrations from the novel author's Bilibili posts and official setting art; some icons generated with AI (Gemini), processed |
+| Thanks | Sun and Moon of Teyvat Pack (Klee) by Shimamura et al. |
 | Modding tutorials | Hemmelfort, Sukritact, QQ group 711403691 |
 | Reference material | Civilopedia, Civilization Fandom |
-| Development assistance | Claude |
+| Development assistance | The three Claude sisters and Gemini Argon |
 
 ---
 

@@ -102,8 +102,8 @@ def icons(filled, line, moment_mask):
     made.append(emit(stamp(moment_mask), MOMENT, 'UserInterface', ['UserInterface'], False))
     rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + [LINE_SIZE])
     with open(os.path.join(ROOT, 'src', 'Icons', 'TsoDTE_Icons_Religion.sql'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write('-- WP14 战神教图标（InGame UpdateIcons，criteria TsoDTE_WarGodReligion），由 tools/make_religion_art.py --icons 生成。\n'
-                '-- 界面按 "ICON_" .. ReligionType 取图；尺寸照官方宗教图集 22 / 50 / 100 / 270。\n'
+        f.write('-- War God Faith icons (InGame UpdateIcons), written by tools/make_religion_art.py --icons.\n'
+                '-- The UI looks up "ICON_" .. ReligionType; sizes follow the official religion atlases 22 / 50 / 100 / 270.\n'
                 'INSERT INTO IconTextureAtlases (Name, IconSize, IconsPerRow, IconsPerColumn, Filename) VALUES\n'
                 '%s;\n\nINSERT INTO IconDefinitions (Name, Atlas, "Index") VALUES\n    (\'%s\', \'%s\', 0);\n'
                 % (rows, ICON, ATLAS))

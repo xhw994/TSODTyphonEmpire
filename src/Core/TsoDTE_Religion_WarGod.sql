@@ -1,5 +1,5 @@
--- WP14 战神教（InGame，criteria TsoDTE_WarGodReligion）。照 Historical Religions：Types + Religions + 时刻插图，不挂 FavoredReligions。
--- 百科页由官方查询按 Religions 自动生成，正文在 Texts/TsoDTE_Text_Religion.sql。
+-- War God Faith (InGame, criteria TsoDTE_Expansion2): Types + Religions + moment illustration, as in Historical Religions.
+-- No FavoredReligions. The pedia page is generated from Religions; its text is in Texts/TsoDTE_Text_Religion.sql.
 
 INSERT INTO Types (Type, Kind) VALUES
     ('RELIGION_TSOD_WAR_GOD', 'KIND_RELIGION');

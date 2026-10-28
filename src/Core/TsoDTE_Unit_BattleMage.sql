@@ -27,7 +27,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE');
 
 -- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech）
--- WMDCapable = 1：单位面板会给每种 WMD 各出一个按钮，靠 UnitPanel_TsoDTE.lua 过滤；
+-- WMDCapable = 1：单位面板会给每种 WMD 各出一个按钮，靠 TsoDTE_UnitPanel.lua 过滤；
 -- UI 替换未生效时，官方核弹等按钮会重新出现。
 INSERT INTO
     Units (
