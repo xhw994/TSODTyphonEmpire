@@ -15,7 +15,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
 
     -- en_US
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME', 'Desanctification'),
-    ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', 'Desanctify'),
+    ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', 'Desanctification'),
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',
      'Requires a Mage Tower district and the Mass Media civic.[NEWLINE]On completion: converts half of the current [ICON_Faith] Faith into an equal amount of [ICON_Science] Science toward the current research.[NEWLINE]Grants 25 [ICON_Favor] Diplomatic Favor.'),
 
