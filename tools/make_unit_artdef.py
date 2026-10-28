@@ -1,14 +1,6 @@
-"""Write src/ArtDefs/Units.artdef for the battle mage from official unit art entries.
-
-    python -X utf8 tools/make_unit_artdef.py "<Civ6 install dir>"
-
-Civ6 unit models are built from attachments (robe, hood, staff, body, head) on a shared skeleton;
-the member's Movement / Combat references pick the animation set. So the battle mage is:
-  - unit entry: a copy of UNIT_SLINGER (4-member squad, slinger formation, ranged combat, sounds),
-  - member:     TSOD_BattleMage, a copy of the base-game Inquisitor (hooded robe and staff) whose
-                robe and hood take the civilization colours, keeping the Inquisitor's
-                Movement=Slinger / Combat=SlingerCombat, i.e. a ranged throwing-style attack.
-History: the Secret Societies Cultist (first try) only had melee animations.
+"""Write src/ArtDefs/Units.artdef for the battle mage from official unit art entries: python -X utf8 tools/make_unit_artdef.py "<Civ6 install dir>"
+Unit entry: copy of UNIT_SLINGER (4-member squad, ranged combat, sounds). Member TSOD_BattleMage: copy of the Inquisitor (robe and staff, civ-coloured)
+keeping its Movement=Slinger / Combat=SlingerCombat ranged animations (the Secret Societies Cultist had only melee ones).
 """
 import copy
 import os

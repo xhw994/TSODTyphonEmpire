@@ -1,18 +1,6 @@
-"""Give the burnstone works (replaces the Factory) a model in the industrial zone.
-
-    python -I -X utf8 tools/make_building_artdef.py "<Civ6 install dir>"
-
-Writes src/ArtDefs/Buildings.artdef and adds a DISTRICT_INDUSTRIAL_ZONE element to
-src/ArtDefs/Landmarks.artdef. It follows the official Electronics Factory, Japan's Factory
-replacement, in Base:
-  - Buildings.artdef: a [Building] element (copy of BUILDING_FACTORY: strategic-view sprites)
-    and a "Buildings (Level 2)" entry in the ProductionBuildings chain.
-  - Landmarks.artdef, industrial zone: the district ground for each building set
-    (BaseVariants), the building model itself (BuildingVariants), and the building sets
-    that name it (BuildingSets). Without these the district has no model for the building.
-The model is the standard Factory (DIS_PRD_Factory). The industrial zone's other children are
-official and stay as they are: artdef collections merge by element name.
-Run it again after changing the constants; it replaces its own entries.
+"""Give the burnstone works a Factory-like model in the industrial zone: python -I -X utf8 tools/make_building_artdef.py "<Civ6 install dir>"
+Writes src/ArtDefs/Buildings.artdef and a DISTRICT_INDUSTRIAL_ZONE element in Landmarks.artdef (base variants, building model, building sets; without them the district has no model).
+Follows Japan's Electronics Factory; the zone's other children stay official (artdef collections merge by name). Re-running replaces its own entries.
 """
 import copy
 import os
@@ -49,7 +37,6 @@ def find(coll, wanted):
 
 
 def swap_text(el, old, new):
-    """Replace old with new in every text attribute under el (names and references)."""
     hits = 0
     for node in el.iter():
         t = node.get('text')
@@ -68,7 +55,7 @@ def write(tree_root, path):
 
 report = {}
 
-# ---- Buildings.artdef --------------------------------------------------------------------
+# Buildings.artdef
 official = ET.parse(os.path.join(base, 'Buildings.artdef')).getroot()
 out = ET.Element(official.tag)
 for node in official:
@@ -99,7 +86,7 @@ for coll in official.find('m_RootCollections'):
         new.append(el)
 write(out, os.path.join(root_dir, 'src', 'ArtDefs', 'Buildings.artdef'))
 
-# ---- Landmarks.artdef: the industrial zone -----------------------------------------------
+# Landmarks.artdef: the industrial zone
 official_zone = find(root_coll(ET.parse(os.path.join(base, 'Landmarks.artdef')).getroot(), 'Districts'), DISTRICT)
 zone = copy.deepcopy(official_zone)
 for ch in zone.find('m_ChildCollections'):

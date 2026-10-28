@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
-"""构建后修补：把 cooker 解析不了的 BLP entry 名还原回源 artdef 里的值。
+"""Post-build patch: restores BLP entry names the cooker cannot resolve back to the values in the source artdef.
 
-背景
+Background
 ----
-Civ6 的 AssetCooker 只在 `requiredGameArtIDs` 声明过、且 SDK Assets 里**存在
-pantry 目录**的 project 里查找资产。SDK Assets 只带了 Civ6 / Expansion1 /
-Expansion2 / Shared / CivRoyaleScenario 五份 pantry，其余 DLC（Ethiopia 等）
-一份都没有。
+Civ6's AssetCooker looks up assets only in projects that declare them in requiredGameArtIDs and whose SDK Assets have a **pantry directory** present.
+The SDK Assets ship only five pantry directories (Civ6 / Expansion1 /
+Expansion2 / Shared / CivRoyaleScenario); the other DLCs (Ethiopia etc.)
+have none at all.
 
-于是引用这些 DLC 的资产时，cooker 既不报错也不中断，只是把 `m_EntryName`
-悄悄换成 `TB_ERROR` 之类的占位符 —— 游戏里的表现就是「那个模型不显示」。
+So when assets from those DLCs are referenced, the cooker reports no error and does not stop; it only quietly replaces `m_EntryName`
+with a placeholder such as `TB_ERROR`. In-game, the symptom is that the model does not show.
 
-但运行时不受这个限制：只要玩家装了对应 DLC，游戏会照常加载它的 BLP 包
-（可在 Logs/ArtDef.log 里看到 `Loading Package: .../DLC/Ethiopia/.../tilebases.blp`）。
-所以把 entry 名还原回去即可，其余字段 cooker 并没有改动。
+At runtime, however, this limit does not apply: as long as the player has the matching DLC, the game loads its BLP package as usual
+(visible in Logs/ArtDef.log as `Loading Package: .../DLC/Ethiopia/.../tilebases.blp`).
+So restoring the entry name is enough; the cooker did not change any other field.
 
-用法
+Usage
 ----
-    python tools/restore_cooked_entries.py <源 ArtDefs 目录> <已部署的 mod 目录>
+    python tools/restore_cooked_entries.py <source ArtDefs dir> <deployed mod dir>
 
-平时不用手动跑：.civ6proj 里挂了一个 AfterTargets="Build" 的 target，
-每次构建完会自动调用本脚本。命令行和 ModBuddy 图形界面构建都会触发。
-留着这个入口是为了单独补跑，比如手工改过部署产物之后。
+Normally it does not need to be run by hand: the .civ6proj has an AfterTargets="Build" target
+that calls this script automatically after every build. Both command-line builds and ModBuddy GUI builds trigger it.
+The entry point is kept for running it separately, e.g. after manually editing the deployed output.
 """
 import sys, io, os, re
 import xml.etree.ElementTree as ET
@@ -30,7 +30,7 @@ PLACEHOLDER = re.compile(r"^(TB|BLP|ASSET)_ERROR$")
 
 
 def asset_entries(path):
-    """{元素名: 该元素 Asset 参数的 entry 名}"""
+    """{element name: entry name of that element's Asset parameter}"""
     out = {}
     root = ET.parse(path).getroot()
     for el in root.iter("Element"):
@@ -53,9 +53,9 @@ ELEMENT_REF = re.compile(r'<m_ElementName text="([^"]*)"\s*/>')
 
 
 def restore_element_refs(src_text, text):
-    """cooker 把找不到的 ArtDef 元素引用（比如 DLC 单位成员 Cultist）清成空串。
-    源文件和部署产物的结构一一对应，按出现顺序比对：部署里是空、源里不是空的，填回去。
-    两边引用个数不一致时不动，避免错位。返回 (新文本, 还原数)。"""
+    """The cooker clears references to ArtDef elements it cannot find (e.g. DLC unit member Cultist) to empty strings.
+    The source file and the deployed output have matching structure, so they are compared in order of appearance: where the deployed value is empty and the source's is not, the source value is filled back in.
+    If the reference counts differ between the two, nothing is changed, to avoid misalignment. Returns (new text, number restored)."""
     src_refs = [m.group(1) for m in ELEMENT_REF.finditer(src_text)]
     matches = list(ELEMENT_REF.finditer(text))
     if len(src_refs) != len(matches):
@@ -83,9 +83,9 @@ def restore(src_artdef, cooked_artdef):
         if not want or PLACEHOLDER.match(want):
             print(f"    [跳过] {name}: 源文件里也没有可用的 entry")
             continue
-        # 在该元素自己的范围里找占位符：artdef 里元素的 m_Name 写在它的字段之后，
-        # 所以从该元素的 m_Name 往前找最近的占位符，且中间不能隔着别的元素的 m_Name。
-        # 这样同一个占位符出现多少次都能逐个还原（每个元素只有一个 Asset 参数）。
+        # Look for the placeholder within the element's own scope: an artdef element's m_Name comes after its fields,
+        # so search backward from the element's m_Name for the nearest placeholder, without crossing another element's m_Name.
+        # This way each occurrence of a placeholder can be restored one by one (each element has only one Asset parameter).
         m = re.search(r'<m_Name text="%s"\s*/>' % re.escape(name), text)
         if not m:
             print(f"    [跳过] {name}: 部署产物里找不到这个元素")

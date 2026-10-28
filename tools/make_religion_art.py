@@ -7,7 +7,7 @@ import random
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
-from make_art import GEN_DIR, IMG, ROOT, TEX, TEX_DIR, write_dds, write_packages
+from make_art import GEN_DIR, ICON_SRC, ROOT, TEX, TEX_DIR, write_dds, write_packages
 
 SRC = '战神教标志.png'
 MOMENT_SRC = '战神教历史时刻.png'
@@ -102,15 +102,15 @@ def icons(filled, line, moment_mask):
     made.append(emit(stamp(moment_mask), MOMENT, 'UserInterface', ['UserInterface'], False))
     rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + [LINE_SIZE])
     with open(os.path.join(ROOT, 'src', 'Icons', 'TsoDTE_Icons_Religion.sql'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write('-- WP14 战神教图标（InGame UpdateIcons，criteria TsoDTE_WarGodReligion），由 tools/make_religion_art.py --icons 生成。\n'
-                '-- 界面按 "ICON_" .. ReligionType 取图；尺寸照官方宗教图集 22 / 50 / 100 / 270。\n'
+        f.write('-- War God Faith icons (InGame UpdateIcons), written by tools/make_religion_art.py --icons.\n'
+                '-- The UI looks up "ICON_" .. ReligionType; sizes follow the official religion atlases 22 / 50 / 100 / 270.\n'
                 'INSERT INTO IconTextureAtlases (Name, IconSize, IconsPerRow, IconsPerColumn, Filename) VALUES\n'
                 '%s;\n\nINSERT INTO IconDefinitions (Name, Atlas, "Index") VALUES\n    (\'%s\', \'%s\', 0);\n'
                 % (rows, ICON, ATLAS))
     religion = os.path.join(ROOT, 'src', 'Core', 'TsoDTE_Religion_WarGod.sql')
     text = open(religion, encoding='utf-8').read()
     if INTERIM_MOMENT in text:
-        text = text.replace("-- 临时借官方自定义宗教 4 的插图（狮子），与临时图标一致。\n", '')
+        text = text.replace("-- Temporarily borrows the illustration of official custom religion 4 (the lion), matching the temporary icon.\n", '')
         with open(religion, 'w', encoding='utf-8', newline='\n') as f:
             f.write(text.replace("'%s'" % INTERIM_MOMENT, "'%s'" % MOMENT))
     return made
@@ -118,9 +118,9 @@ def icons(filled, line, moment_mask):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--src', default=os.path.join(IMG, SRC))
+    ap.add_argument('--src', default=os.path.join(ICON_SRC, SRC))
     ap.add_argument('--line')
-    ap.add_argument('--moment', default=os.path.join(IMG, MOMENT_SRC))
+    ap.add_argument('--moment', default=os.path.join(ICON_SRC, MOMENT_SRC))
     ap.add_argument('--icons', action='store_true')
     ap.add_argument('--preview')
     a = ap.parse_args()

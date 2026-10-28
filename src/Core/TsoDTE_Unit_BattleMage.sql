@@ -1,24 +1,7 @@
--- ============================================================================
--- WP4 战斗法师基础：UNIT_TSOD_BATTLE_MAGE（替代弩手）
--- 动作：InGame UpdateDatabase。依赖 TsoDTE_Civilization.sql 先建好
---       CIVILIZATION_TSOD_TYPHON_EMPIRE（CivilizationTraits 外键）。
--- 先例：
---   单位行与 UnitAiInfos 照 Base Units.xml 的 UNIT_CROSSBOWMAN；
---   成长能力照 GranColombia_Maya 的尼杭（Inactive 能力 + 标签限定 +
---     MODIFIER_PLAYER_UNITS_GRANT_ABILITY 授予 + MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH）；
---   科技条件照 AGENDA_HIGH_NUKE_LOVE（TraitModifiers + Owner + REQUIREMENT_PLAYER_HAS_TECHNOLOGY）；
---   相邻加成照希腊重装步兵 ABILITY_HOPLITE（MODIFIER_SINGLE_UNIT_ATTACH_MODIFIER 套
---     MODIFIER_UNIT_ADJUST_COMBAT_STRENGTH）；
---   只加远程攻击照晋升 VOLLEY / TORTOISE（REQUIREMENT_PLAYER_IS_ATTACKING + REQUIREMENT_COMBAT_TYPE_MATCHES）。
--- I1 实测：MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH 只改近战（面板 70），不改远程（仍 40）；
---   「远程攻击时 +N」那条路走通了（预览里有高级弹道学的 +5、军团级法术的 +5）。
---   所以成长拆成两半：近战用基础战斗力修正（面板直接显示），远程用远程攻击时的普通战斗力修正（战斗预览显示）。
--- 不升级：不写 UnitUpgrades，也不设 MandatoryObsoleteTech（弩手是 TECH_ADVANCED_BALLISTICS）。
--- ============================================================================
+-- WP4 Battle Mage UNIT_TSOD_BATTLE_MAGE (replaces the Crossbowman); depends on TsoDTE_Civilization.sql creating the civ first (CivilizationTraits foreign key).
+-- No upgrade: no UnitUpgrades written and no MandatoryObsoleteTech set; per-item precedents are in docs/notes.md.
 
--- ---------------------------------------------------------------------------
--- 1. 类型登记
--- ---------------------------------------------------------------------------
+-- 1. Type registration
 INSERT INTO
     Types (Type, Kind)
 VALUES
@@ -28,9 +11,7 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'KIND_ABILITY'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'KIND_ABILITY');
 
--- ---------------------------------------------------------------------------
--- 2. 特性：特色单位挂到文明上（ids.md §5.5 归 WP4）
--- ---------------------------------------------------------------------------
+-- 2. Trait: unique unit attached to the civ (ids.md §5.5 assigns it to WP4)
 INSERT INTO
     Traits (TraitType, Name, Description)
 VALUES
@@ -45,13 +26,9 @@ INSERT INTO
 VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE');
 
--- ---------------------------------------------------------------------------
--- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech）
---    WMDCapable 自 WP13 起为 1（阶段 1 曾临时设 0）。单位面板会给每种 WMD 各出一个按钮，
---    由 src/UI/UnitPanel_TsoDTE.lua 过滤：战斗法师只留湮灭之创，且只在军团 / 军队状态下出现。
---    依赖这层 UI 过滤；若 UI 替换未生效（测试清单 §8），官方核弹等按钮会重新出现。
---    UnitAiInfos 里的 UNITTYPE_NUCLEAR 保持不动。
--- ---------------------------------------------------------------------------
+-- 3. Unit row (stats copied from the Crossbowman; MandatoryObsoleteTech removed)
+-- WMDCapable = 1: the unit panel gives each WMD its own button, filtered by TsoDTE_UnitPanel.lua;
+-- if the UI replacement does not take effect, base-game buttons such as nuclear weapons reappear.
 INSERT INTO
     Units (
         UnitType,
@@ -94,7 +71,7 @@ VALUES
         'ADVISOR_CONQUEST',
         'YIELD_GOLD',
         'TECH_MACHINERY',
-        1 -- WMDCapable：WP13 起为 1，依赖 UnitPanel_TsoDTE.lua 的按钮过滤
+        1
     );
 
 INSERT INTO
@@ -102,7 +79,7 @@ INSERT INTO
 VALUES
     ('UNIT_TSOD_BATTLE_MAGE', 'UNIT_CROSSBOWMAN');
 
--- AI 类型：弩手的三条 + UNITTYPE_NUCLEAR（官方只给轰炸机、喷气轰炸机、核潜艇）
+-- AI types: the Crossbowman's three plus UNITTYPE_NUCLEAR (the base game gives it only to bombers, jet bombers and nuclear submarines)
 INSERT INTO
     UnitAiInfos (UnitType, AiType)
 VALUES
@@ -111,9 +88,7 @@ VALUES
     ('UNIT_TSOD_BATTLE_MAGE', 'UNITTYPE_LAND_COMBAT'),
     ('UNIT_TSOD_BATTLE_MAGE', 'UNITTYPE_NUCLEAR');
 
--- ---------------------------------------------------------------------------
--- 4. 标签：单位类与能力类
--- ---------------------------------------------------------------------------
+-- 4. Tags: unit class and ability class
 INSERT INTO
     Tags (Tag, Vocabulary)
 VALUES
@@ -129,11 +104,8 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'CLASS_TSOD_BATTLE_MAGE'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'CLASS_TSOD_BATTLE_MAGE');
 
--- ---------------------------------------------------------------------------
--- 5. 能力
---    两个成长能力 Inactive = 1：不自动生效，只能由授予修正给（同尼杭）。
---    军团级法术 Inactive = 0：凡带 CLASS_TSOD_BATTLE_MAGE 的单位自动拥有（同重装步兵）。
--- ---------------------------------------------------------------------------
+-- 5. Abilities
+-- Ballistics Growth ability Inactive = 1: granted only by the grant modifier (same as Nihang); Legion-Class Spell Inactive = 0: units with the tag get it automatically (same as Heavy Infantry).
 INSERT INTO
     UnitAbilities (UnitAbilityType, Name, Description, Inactive)
 VALUES
@@ -165,21 +137,16 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT');
 
--- 授予修正挂在本包自己的特色单位特性上（ids.md §5.5），不碰 WP1 的文明能力壳
+-- The grant modifier attaches to the mod's own unique unit trait (ids.md §5.5) and does not touch WP1's civ ability shell
 INSERT INTO
     TraitModifiers (TraitType, ModifierId)
 VALUES
     ('TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE', 'TSOD_TYPHON_BATTLE_MAGE_GRANT_BALLISTICS'),
     ('TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE', 'TSOD_TYPHON_BATTLE_MAGE_GRANT_ADV_BALLISTICS');
 
--- ---------------------------------------------------------------------------
--- 6. 修正
---    成长（累加）：机械 40/30 → 弹道学 60/50 → 高级弹道学 85/70（远程/近战）
---      弹道学       ：基础战斗力 +20（近战，面板显示）；远程攻击时 +20（战斗预览显示）
---      高级弹道学   ：基础战斗力 +20（近战，面板显示）；远程攻击时 +25（战斗预览显示）
---    远程单位防守时用近战战斗力，只有发起远程攻击时才用远程攻击力，所以「远程攻击时」覆盖了远程攻击力的全部用途。
---    军团级法术：相邻有另一个战斗法师时，远程攻击 +5
--- ---------------------------------------------------------------------------
+-- 6. Modifiers: cumulative growth, Mechanical 40/30 → Ballistics 60/50 → Advanced Ballistics 85/70 (ranged/melee)
+-- MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH changes only melee, not ranged (confirmed in-game, I1),
+-- so melee uses the base combat strength modifier (shown in the panel), and ranged uses the ordinary combat strength modifier "when attacking at range" (shown in the combat preview).
 INSERT INTO
     Modifiers (ModifierId, ModifierType, OwnerRequirementSetId, SubjectRequirementSetId)
 VALUES
@@ -244,9 +211,7 @@ VALUES
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT', 'ModifierId', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH'),
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH', 'Amount', '5');
 
--- ---------------------------------------------------------------------------
--- 7. 需求
--- ---------------------------------------------------------------------------
+-- 7. Requirements
 INSERT INTO
     Requirements (RequirementId, RequirementType)
 VALUES
@@ -281,12 +246,9 @@ VALUES
     ('REQSET_TSOD_TYPHON_BATTLE_MAGE_RANGED_ATTACK', 'REQ_TSOD_TYPHON_COMBAT_IS_RANGED'),
     ('REQSET_TSOD_TYPHON_ADJACENT_BATTLE_MAGE', 'REQ_TSOD_TYPHON_ADJACENT_BATTLE_MAGE');
 
--- ---------------------------------------------------------------------------
--- 8. 战斗预览说明（Preview）
---    串联用的外层 TSOD_TYPHON_BATTLE_MAGE_CONCERT 不写（同重装步兵，只给内层写）。
---    两条基础战斗力修正计入面板基础值、不进预览，不写。
---    文本只写能力名（同官方「+5 齐射（升级）」），效果说明在能力描述里。
--- ---------------------------------------------------------------------------
+-- 8. Combat preview text (Preview)
+-- Written only on the inner layer (same as Heavy Infantry); the outer CONCERT layer is not written. Base combat strength modifiers count toward the panel's base value and are neither shown in the preview nor written.
+-- The text holds only the ability name (same as the official "+5 Volley (upgrade)"); the effect description is in the ability description.
 INSERT INTO
     ModifierStrings (ModifierId, Context, Text)
 VALUES

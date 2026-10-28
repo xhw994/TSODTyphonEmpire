@@ -1,8 +1,5 @@
--- =============================================================================
--- 测试开关：每次世界议会的候选决议只留「神权理事会」和一个别的决议（议会每次抽两个），
--- 所以只要场上有已创立的宗教，每次开会都会出现神权理事会。只在测试时启用。
--- 没有宗教时，主 mod 的 Scripts/TsoDTE_Congress.lua 会把神权理事会从候选里拿掉，这里只剩一个别的决议。
--- =============================================================================
+-- Test switch: the World Congress candidates keep only Theocratic Council and one other resolution (Congress draws two each time), so Theocratic Council always appears once a religion is founded; enable only for testing.
+-- With no religion, the main mod's Scripts/TsoDTE_Congress.lua removes Theocratic Council, leaving only the other resolution here.
 
 local RESOLUTION_TYPE = 'WC_RES_TSOD_THEOCRATIC_COUNCIL'
 

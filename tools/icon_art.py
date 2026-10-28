@@ -1,15 +1,6 @@
-"""Turn the generated icon images in images/ into Civ6 icon sets (called from make_art.py).
+"""Turn the generated icon images (make_art.ICON_SRC) into Civ6 icon sets (called from make_art.py).
 
-Inputs (one image each, see docs/icon-prompts.md):
-    战斗法师单位图标.jpg   black glyph on white      -> unit icon + FOW
-    战斗法师肖像.jpg       figure on magenta         -> unit portrait
-    法师塔区域图案.jpg     glyph on black            -> district icon (blue hexagon) + FOW
-    燃石酸化工厂.jpg       building on magenta       -> building icon + FOW
-    去神圣化项目.jpg       glyph on black            -> project icon (silver hexagon)
-
-Styles follow the official icons (extracted to images/icon-refs/): unit glyphs are white with a dark
-edge and a gold-on-brown FOW version; districts and projects are a glyph on a pointy-top hexagon
-badge; buildings are painted objects with a sepia FOW version.
+Source images and prompts: docs/icon-prompts.md. Styles follow the official icons (make_art.ICON_REFS).
 """
 import math
 import os
@@ -24,7 +15,7 @@ BUILDING_SIZES = [32, 38, 50, 80, 128, 256]
 PROJECT_SIZES = [30, 32, 38, 50, 70, 80, 256]
 
 
-# ----------------------------------------------------------------------------- keying
+# keying
 def _alpha_from(img, fn):
     rgb = img.convert('RGB')
     a = Image.new('L', rgb.size)
@@ -68,7 +59,6 @@ def key_black(img, threshold=28):
     stack = [(x, 0) for x in range(w)] + [(x, h - 1) for x in range(w)] + \
             [(0, y) for y in range(h)] + [(w - 1, y) for y in range(h)]
     def fill(seeds, mark, limit=None):
-        """Flood dark pixels from seeds; returns the visited list (stops early past limit)."""
         seen = []
         while seeds:
             x, y = seeds.pop()
@@ -93,7 +83,7 @@ def key_black(img, threshold=28):
                 if len(region) > (w * h) // 600:
                     for qx, qy in region:
                         px[qx, qy] = 255
-    alpha = ImageOps.invert(bg).filter(ImageFilter.GaussianBlur(1.2))   # soft 1-2 px edge
+    alpha = ImageOps.invert(bg).filter(ImageFilter.GaussianBlur(1.2))
     res = rgb.convert('RGBA')
     res.putalpha(alpha)
     return res
@@ -122,7 +112,7 @@ def solid(color, mask):
     return out
 
 
-# ----------------------------------------------------------------------------- unit glyph
+# unit glyph
 def unit_glyph(src):
     a = fit(_mask_rgba(key_white_glyph(src)), 0.80).getchannel('A')
     edge = dilate(a, 12)
@@ -141,7 +131,7 @@ def _mask_rgba(alpha):
     return img
 
 
-# ----------------------------------------------------------------------------- hexagon badges
+# hexagon badges
 def hexagon(cx, cy, r):
     return [(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a))) for a in range(-90, 270, 60)]
 
@@ -162,7 +152,6 @@ def _vgradient(top, bottom):
 
 
 def badge(glyph, outer, rim, top, bottom, light, glyph_fill):
-    """Pointy-top hexagon: outer border, dark rim, gradient face, thin light inner line, glyph."""
     c, R = M / 2, M * 0.47
     out = Image.new('RGBA', (M, M), (0, 0, 0, 0))
     out.alpha_composite(solid(outer + (255,), _poly(hexagon(c, c, R))))
@@ -194,7 +183,7 @@ def district_fow(main):
     return sepia(main, tone=(222, 196, 140), contrast=0.7, brightness=1.05)
 
 
-# ----------------------------------------------------------------------------- build all
+# build all
 def build(img_dir, emit, sizes_emit):
     """emit(img, name) writes one texture; sizes_emit(master, base, sizes) writes a size set."""
     made = {}

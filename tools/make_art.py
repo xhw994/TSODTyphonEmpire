@@ -1,12 +1,6 @@
-"""Generate the mod's textures from the reference art in images/.
-
-Run from the repo root:
-    python -X utf8 tools/make_art.py [--preview DIR]
-
-Writes src/Textures/<NAME>.dds + <NAME>.tex for every texture below (uncompressed RGBA DDS,
-same layout as the Cecil mod's working textures), and art/generated/<NAME>.png as the
-editable source. --preview also writes contact sheets to DIR for review.
-
+"""Generate the mod's textures from the art library (../Civ6 modding/黎明之剑-素材/, catalogue in its README.md):
+python -X utf8 tools/make_art.py [--preview DIR]
+Writes src/Textures/<NAME>.dds + .tex and art/generated/<NAME>.png (editable source); --preview also writes contact sheets to DIR.
 Crops are in source-image pixels; adjust them here and re-run.
 """
 import os
@@ -14,31 +8,44 @@ import re
 import struct
 import sys
 
-from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-IMG = os.path.join(ROOT, 'images')
+# The user's art library in the workspace, outside the repo
+IMG = os.path.join(ROOT, '..', 'Civ6 modding', '黎明之剑-素材')
+ICON_SRC = os.path.join(IMG, '模组', '提丰帝国', '图标源图')   # generated icon sources (docs/icon-prompts.md)
 TEX_DIR = os.path.join(ROOT, 'src', 'Textures')
 GEN_DIR = os.path.join(ROOT, 'art', 'generated')
+# Official icons beside ours in --preview; fill with the civ6-modding skill:
+#   art_pipeline.py ref ICON_UNIT_CROSSBOWMAN --out art/generated/refs   (and the other icons in the preview pairs)
+ICON_REFS = os.path.join(GEN_DIR, 'refs')
 
 CIV_SIZES = [22, 30, 32, 36, 44, 45, 48, 50, 64, 80, 128, 200, 256]
 LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
 
-SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
-SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
+SRC_ROSETTA = '人物/罗塞塔·奥古斯都大帝.jpg'
+SRC_RAIN = '地点与场景/奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
 # Loading screen background (2880 x 1440, exactly 2:1, so it scales to 1920 x 960 without a crop).
-SRC_LOADING = '奥尔德南 冬日 修图.jpg'
-# images/法师塔.jpg is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
-SRC_TOWER = '法师塔.jpg'
-SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
+SRC_LOADING = '地点与场景/奥尔德南 冬日 修图.jpg'
+# SRC_TOWER (below) is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
+SRC_TOWER = '建筑与造物/法师塔.jpg'
+SRC_MATILDA = '人物/玛蒂尔达·奥古斯都.jpg'
+# Historic moments are drawn in the official look (user's choice, 10-27): ink sketch toned dark brown to warm
+# yellow, edges faded with a moment PS template. The templates are among the six whose edge is closest to the
+# mean alpha of the 288 official 456 x 332 Moment*.dds; Cecil's three moments use the other three.
+# The 25 templates are local files of the civ6-modding skill (assets/ is not in its git; see its
+# references/local-resources.md).
+MOMENT_TEMPLATES = os.path.join(ROOT, '..', 'Civ6 modding', 'civ6-modding-suite', 'skills', 'civ6-modding',
+                                'assets', 'templates', 'moment')
+MOMENT_SIZE = (456, 332)
 
-# Colors (src/Core/TsoDTE_Colors.sql): field 22,20,22; emblem 196,26,32; gold 228,182,78
+# Colors: src/Core/TsoDTE_Colors.sql
 BLACK = (22, 20, 22, 255)
 RED = (196, 26, 32, 255)
 GOLD = (228, 182, 78, 255)
 
 
-# ----------------------------------------------------------------------------- DDS / TEX
+# DDS / TEX
 def write_dds(img, path, mips=False):
     """Uncompressed 32-bit RGBA DDS (masks R=0xff, G=0xff00, B=0xff0000, A=0xff000000)."""
     img = img.convert('RGBA')
@@ -132,7 +139,7 @@ def emit(img, name, fallback=False):
     return img
 
 
-# ----------------------------------------------------------------------------- helpers
+# helpers
 def load(name):
     return Image.open(os.path.join(IMG, name)).convert('RGBA')
 
@@ -162,7 +169,47 @@ def erode(mask, px):
     return mask
 
 
-# ----------------------------------------------------------------------------- emblem
+# historic moments: same look as Cecil's tools/make_art.py
+# The official moments' tone band, dark brown to warm yellow (civ6-modding skill, art_pipeline.py MOMENT_RAMP,
+# from the 288 official 456 x 332 Moment*.dds; their opaque pixels run from luminance ~53 to ~196)
+MOMENT_RAMP = [(55, 42, 20), (74, 56, 28), (88, 70, 36), (105, 86, 46), (122, 103, 55), (140, 119, 65),
+               (157, 136, 76), (174, 152, 87), (192, 169, 99), (210, 185, 112), (221, 195, 123)]
+
+
+def sketch_gray(gray, blur=5, mix=0.6, lift=0.75):
+    """Pencil sketch of a grey picture: colour dodge of the blurred negative keeps the lines and turns flat
+    areas to paper, times a lightened copy of the picture so forms keep some shading. The official moments
+    are ink drawings; plain toning left the dark paintings a muddy brown."""
+    neg = ImageOps.invert(gray).filter(ImageFilter.GaussianBlur(blur))
+    lines = Image.new('L', gray.size)
+    lines.putdata([255 if b >= 255 else min(255, a * 255 // (255 - b))
+                   for a, b in zip(gray.tobytes(), neg.tobytes())])
+    shade = gray.point(lambda v: round(255 * (v / 255) ** lift))
+    return ImageChops.multiply(lines, Image.blend(Image.new('L', gray.size, 255), shade, mix))
+
+
+def moment(img, box, template):
+    """Crop to 456 x 332 and draw it as an official-style moment: ink sketch on the tone band; alpha is the
+    template's brush edge (the PSD composite is the edge shape, white = keep)."""
+    img = crop_resize(img, box, MOMENT_SIZE)
+    alpha = img.getchannel('A')
+    visible = alpha.point(lambda v: 255 if v > 128 else 0)
+    gray = ImageOps.autocontrast(img.convert('L'), cutoff=1, mask=visible)    # levels from what shows
+    gray = ImageOps.autocontrast(sketch_gray(gray), cutoff=1, mask=visible)
+    n = len(MOMENT_RAMP) - 1
+    lut = [[], [], []]
+    for v in range(256):
+        t = v / 255 * n
+        i = min(int(t), n - 1)
+        for c in range(3):
+            lut[c].append(round(MOMENT_RAMP[i][c] + (MOMENT_RAMP[i + 1][c] - MOMENT_RAMP[i][c]) * (t - i)))
+    out = Image.merge('RGB', [gray.point(lut[c]) for c in range(3)]).convert('RGBA')
+    edge = Image.open(os.path.join(MOMENT_TEMPLATES, template + '.psd')).convert('L').resize(MOMENT_SIZE, Image.LANCZOS)
+    out.putalpha(ImageChops.multiply(alpha, edge))
+    return out
+
+
+# emblem
 S = 1024
 
 
@@ -175,7 +222,7 @@ def _bezier(p0, p1, p2, p3, n=24):
     return pts
 
 
-# Heater shield as on the banner in 提丰地图和国徽.jpg: peaked top edge, straight sides, curved base.
+# Heater shield as on the Typhon map-and-arms banner (source image): peaked top edge, straight sides, curved base.
 SHIELD = ([(184, 211), (514, 110), (844, 211), (844, 560)]
           + _bezier((844, 560), (844, 760), (700, 880), (514, 930))
           + _bezier((514, 930), (328, 880), (184, 760), (184, 560)))
@@ -257,7 +304,7 @@ def icon_sizes(src, base, sizes):
     return out
 
 
-# ----------------------------------------------------------------------------- leader
+# leader
 ROSETTA_HEAD = (512, 452, 712, 652)        # square crop centered on the head (crown + hair + beard)
 
 
@@ -274,7 +321,7 @@ def leader_icon_master():
     return canvas
 
 
-# ----------------------------------------------------------------------------- packages
+# packages
 PLATFORMS = ('WINDOWS', 'MACOS', 'IOS', 'LINUX', 'XBONE', 'PS4', 'SWITCH', 'STADIA')
 
 
@@ -304,7 +351,7 @@ def write_packages():
     return len(ui), len(fallback)
 
 
-# ----------------------------------------------------------------------------- main
+# main
 def main():
     preview = None
     if '--preview' in sys.argv:
@@ -341,32 +388,31 @@ def main():
     made['diplo_bg'] = emit(crop_resize(rosetta, (240, 0, 1180, 470), (1920, 960)),
                             'LEADER_TSOD_ROSETTA_AUGUSTUS_DIPLOMACY_BACKGROUND')
 
-    # historic moments, 456 x 332 like the Cecil mod
+    # historic moments, 456 x 332 like the official ones (crop box, edge template)
     tower = load(SRC_TOWER)
-    made['m_district'] = emit(crop_resize(tower, (1050, 0, 2350, 947), (456, 332)), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
-    made['m_building'] = emit(crop_resize(rain, (520, 100, 2020, 1192), (456, 332)), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
+    made['m_district'] = emit(moment(tower, (1050, 0, 2350, 947), '12'), 'MOMENT_DISTRICT_TSOD_MAGE_TOWER')
+    made['m_building'] = emit(moment(rain, (520, 100, 2020, 1192), '15'), 'MOMENT_BUILDING_TSOD_BURNSTONE_WORKS')
     matilda = load(SRC_MATILDA)
-    made['m_unit'] = emit(crop_resize(matilda, (0, 450, 1999, 1906), (456, 332)), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
+    made['m_unit'] = emit(moment(matilda, (0, 450, 1999, 1906), '6'), 'MOMENT_UNIT_TSOD_BATTLE_MAGE')
 
-    # unit / district / building / project icons from the generated images (docs/icon-prompts.md)
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import icon_art
-    icons = icon_art.build(IMG, emit, icon_sizes)
+    icons = icon_art.build(ICON_SRC, emit, icon_sizes)
 
     if preview:
-        refs = os.path.join(IMG, 'icon-refs')
-        pairs = [('unit', 'unit_icon_crossbowman'), ('unit_fow', 'unit_icon_crossbowman_FOW'),
-                 ('portrait', 'unit_portrait_crossbowman'), ('district', 'district_campus'),
-                 ('district_fow', 'district_campus_FOW'), ('building', 'building_factory'),
-                 ('building_fow', 'building_factory_FOW'), ('project', 'project_campus')]
+        refs = ICON_REFS
+        pairs = [('unit', 'ICON_UNIT_CROSSBOWMAN_256'), ('unit_fow', 'ICON_UNIT_CROSSBOWMAN_FOW_256'),
+                 ('portrait', 'ICON_UNIT_CROSSBOWMAN_PORTRAIT_256'), ('district', 'ICON_DISTRICT_CAMPUS_256'),
+                 ('district_fow', 'ICON_DISTRICT_CAMPUS_FOW_256'), ('building', 'ICON_BUILDING_FACTORY_256'),
+                 ('building_fow', 'ICON_BUILDING_FACTORY_FOW_256'), ('project', 'ICON_PROJECT_ENHANCE_DISTRICT_CAMPUS_256')]
         sheet = Image.new('RGBA', (256 * len(pairs), 512 + 80), (70, 90, 120, 255))
         for i, (k, ref) in enumerate(pairs):
-            sheet.alpha_composite(icons[k][-1], (i * 256, 0))          # ours, 256 px
+            sheet.alpha_composite(icons[k][-1], (i * 256, 0))
             rp = os.path.join(refs, ref + '.png')
             if os.path.exists(rp):
-                sheet.paste(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
+                sheet.alpha_composite(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
             x = i * 256 + 8
-            for im in icons[k][:3]:                                      # smallest sizes
+            for im in icons[k][:3]:
                 sheet.alpha_composite(im, (x, 520))
                 x += im.width + 6
         sheet.save(os.path.join(preview, 'icons_vs_official.png'))

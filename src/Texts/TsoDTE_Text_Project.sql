@@ -1,25 +1,19 @@
--- ============================================================================
--- WP16 去神圣化：文本
--- 动作：InGame UpdateText（项目只在局内生产面板出现，不进 FrontEnd）。
--- 归属：LOC_PROJECT_TSOD_DESANCTIFICATION_*、LOC_NOTIFICATION_TSOD_DESANCTIFICATION_*（ids.md §4）。
--- 文本规则：效果文本不用第二人称，不写介绍（介绍放百科）。描述只说效果。
--- 术语：信仰值、科技值、外交支持、Diplomatic Favor 照官方中英文本。
--- ============================================================================
+-- WP16 Desanctification text (InGame UpdateText: the project appears only in the in-game production panel); effect text does not use second person, and descriptions state only the effect.
+-- Terms: faith value, science value, diplomatic support, and Diplomatic Favor follow the official Chinese and English text.
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- ---------------------------------------------------------------- zh_Hans_CN
-    -- 项目
+    -- zh_Hans_CN
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME', '去神圣化'),
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', '去神圣化'),
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',
      '需要“法师塔”区域与“大众传媒”市政。[NEWLINE]完成时：将 [ICON_Faith] 信仰值的一半转化为等量的 [ICON_Science] 科技值，计入当前研究。[NEWLINE]获得 25 点 [ICON_Favor] 外交支持。'),
 
-    -- 通知（消息与摘要）
+    -- Notifications (messages and summary)
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
      '去神圣化完成：信仰值的一半已转化为科技值，并获得 25 点外交支持。'),
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY', '去神圣化完成'),
 
-    -- ---------------------------------------------------------------- en_US
+    -- en_US
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME', 'Desanctification'),
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', 'Desanctify'),
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',

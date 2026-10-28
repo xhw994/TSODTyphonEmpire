@@ -1,9 +1,5 @@
--- =============================================================================
--- TsoDTE_Text_CivTrait.sql  (WP2 文明能力「超凡者的帝国」文本)
--- 动作：InGame UpdateText + FrontEnd UpdateText（开局界面要显示特性名与说明）。
--- 说明里写「学院」：法师塔替代学院，数据条件同时认两者。
--- 能力 ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION 是隐藏能力，没有文本。
--- =============================================================================
+-- WP2 civ ability text (InGame + FrontEnd UpdateText: the start screen shows the trait name and description).
+-- The description says "Campus" (the Mage Tower replaces Campus, and the condition accepts both); the hidden ability ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION has no text.
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME',
@@ -14,4 +10,4 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME',
      'Empire of the Extraordinary'),
     ('en_US', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_DESCRIPTION',
-     'Land military units trained in a city with a Campus start with a free promotion.[NEWLINE]Campus and Holy Site districts provide +1 [ICON_GreatGeneral] Great General point per turn.[NEWLINE]Cities with an Encampment ignore pressure from [ICON_Religion] Religions founded by other civilizations.');
+     'Land military units trained in a city with a Campus start with a free promotion.[NEWLINE]Campus and Holy Site districts provide +1 [ICON_GreatGeneral] Great General point per turn.[NEWLINE]Cities with an Encampment ignore religious pressure from [ICON_Religion] Religions founded by other civilizations.');

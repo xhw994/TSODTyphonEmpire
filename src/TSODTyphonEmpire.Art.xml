@@ -609,6 +609,7 @@
 		<Element>
 			<libraryName text="UILensAsset"/>
 			<relativePackagePaths>
+				<Element text="TsoDTE_UILensAsset"/>
 				<Element text="TsoDTE_UILensReligion"/>
 			</relativePackagePaths>
 		</Element>

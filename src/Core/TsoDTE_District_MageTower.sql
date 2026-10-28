@@ -1,34 +1,21 @@
--- =============================================================================
--- TsoDTE_District_MageTower.sql  ·  WP5 法师塔（替代学院）
--- 动作：InGame UpdateDatabase（criteria TsoDTE_Expansion2）
---   本文件用到风云变幻才有的表 / 行：Districts_XP2、PROMOTION_SPACE_ROCK，
---   以及迭起兴衰起才有的 MODIFIER_CITY_ADJUST_SPY_BONUS，不能在原版规则集下加载。
--- 依赖：CIVILIZATION_TSOD_TYPHON_EMPIRE（WP1 的 TsoDTE_Civilization.sql，须先加载）
--- 先例：玛雅「天文台」、朝鲜「书院」（替代学院）；高卢「奥皮杜姆」（区域城防与远程攻击）
--- =============================================================================
+-- WP5 Mage Tower (replaces Campus); loaded only under the Gathering Storm ruleset: Districts_XP2, PROMOTION_SPACE_ROCK, and MODIFIER_CITY_ADJUST_SPY_BONUS, which exists only from Rise and Fall onward.
+-- Depends on TsoDTE_Civilization.sql being loaded first; precedents: Maya's Observatory, Korea's Seowon, Gaul's Oppidum.
 
--- -----------------------------------------------------------------------------
--- 1. 类型登记
--- -----------------------------------------------------------------------------
+-- 1. Type registration
 INSERT INTO Types (Type, Kind) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER',                    'KIND_DISTRICT'),
     ('TRAIT_CIVILIZATION_DISTRICT_TSOD_MAGE_TOWER', 'KIND_TRAIT');
 
--- -----------------------------------------------------------------------------
--- 2. 特色区域特性（照天文台 / 奥皮杜姆：特性名直接用区域名，不另设说明）
--- -----------------------------------------------------------------------------
+-- 2. Unique district trait (follows the Observatory / Oppidum: the trait name is the district name, no separate description)
 INSERT INTO Traits (TraitType, Name) VALUES
     ('TRAIT_CIVILIZATION_DISTRICT_TSOD_MAGE_TOWER', 'LOC_DISTRICT_TSOD_MAGE_TOWER_NAME');
 
 INSERT INTO CivilizationTraits (CivilizationType, TraitType) VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_DISTRICT_TSOD_MAGE_TOWER');
 
--- -----------------------------------------------------------------------------
--- 3. 区域主表
---    学院的值照抄（解锁、掠夺、顾问、造价曲线、维护费……），造价减半为 27；
---    ZOC / HitPoints / CityStrengthModifier 照奥皮杜姆（ZOC=1, HitPoints=100, CityStrengthModifier=2）。
---    CaptureRemovesBuildings 保持学院的 0（图书馆等建筑被占领时不消失）。
--- -----------------------------------------------------------------------------
+-- 3. Main district row
+-- Values copied from the Campus; cost halved to 27; ZOC / HitPoints / CityStrengthModifier follow the Oppidum.
+-- CaptureRemovesBuildings kept at the Campus's 0 (buildings such as the Library do not disappear when the district is captured).
 INSERT INTO Districts (
     DistrictType, Name, Description, PrereqTech,
     PlunderType, PlunderAmount, AdvisorType,
@@ -48,14 +35,11 @@ INSERT INTO Districts (
 INSERT INTO DistrictReplaces (CivUniqueDistrictType, ReplacesDistrictType) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER', 'DISTRICT_CAMPUS');
 
--- 风云变幻：能远程攻击的区域都要给射程。
--- 先例：DISTRICT_CITY_CENTER / ENCAMPMENT / OPPIDUM / IKANDA / THANH 在 Districts_XP2 里都是 AttackRange=2。
+-- Gathering Storm: every district that can attack at range needs a range (precedent: City Center, Encampment and Oppidum all have AttackRange=2 in Districts_XP2).
 INSERT INTO Districts_XP2 (DistrictType, AttackRange) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER', 2);
 
--- -----------------------------------------------------------------------------
--- 4. 学院的附属行（照天文台先例，数值与学院相同）
--- -----------------------------------------------------------------------------
+-- 4. Companion row of the Campus (follows the Observatory precedent; values same as the Campus)
 INSERT INTO District_GreatPersonPoints (DistrictType, GreatPersonClassType, PointsPerTurn) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER', 'GREAT_PERSON_CLASS_SCIENTIST', 1);
 
@@ -66,36 +50,24 @@ INSERT INTO District_TradeRouteYields (DistrictType, YieldType, YieldChangeAsOri
     ('DISTRICT_TSOD_MAGE_TOWER', 'YIELD_FOOD',    0, 1, 0),
     ('DISTRICT_TSOD_MAGE_TOWER', 'YIELD_SCIENCE', 0, 0, 1);
 
--- -----------------------------------------------------------------------------
--- 5. 相邻加成
--- 5a. 保留学院的全部相邻加成：加载时从学院现有的行复制。
---     不逐条写死，是因为学院的相邻加成随规则集 / DLC / 游戏模式而变（书院、天文台各自补过）：
---       原版        Mountains_Science1~5、Jungle_Science、District_Science、GBR_Science
---       迭起兴衰起  Government_Science
---       风云变幻    Geothermal_Science、Reef_Science、Pamukkale_Science
---       秘密结社模式 LeyLine_Science（埃塞俄比亚包，LoadOrder 0，早于本 mod 的 100）
---     风云变幻规则集下预期 12 行，秘密结社模式下 13 行（需实证）。
--- -----------------------------------------------------------------------------
+-- 5. Adjacency bonuses
+-- 5a. Keeps all of the Campus's adjacency bonuses: copied from the Campus's existing rows at load time rather than hard-coded one by one,
+--     since the Campus's adjacency bonuses vary with ruleset, DLC and game mode (details and expected row counts in docs/notes.md).
 INSERT INTO District_Adjacencies (DistrictType, YieldChangeId)
 SELECT 'DISTRICT_TSOD_MAGE_TOWER', YieldChangeId
 FROM District_Adjacencies
 WHERE DistrictType = 'DISTRICT_CAMPUS';
 
--- 5b. 新增：每个相邻的军营区域 +2 科技（「大量相邻加成」的标准值；写法照 Government_Science）
+-- 5b. New: +2 Science for each adjacent Encampment district (the standard value for "large adjacency"; written like Government_Science)
 INSERT INTO Adjacency_YieldChanges (ID, Description, YieldType, YieldChange, TilesRequired, AdjacentDistrict) VALUES
     ('TSOD_TYPHON_MAGE_TOWER_ENCAMPMENT_SCIENCE', 'LOC_DISTRICT_TSOD_MAGE_TOWER_ENCAMPMENT_SCIENCE', 'YIELD_SCIENCE', 2, 1, 'DISTRICT_ENCAMPMENT');
 
 INSERT INTO District_Adjacencies (DistrictType, YieldChangeId) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER', 'TSOD_TYPHON_MAGE_TOWER_ENCAMPMENT_SCIENCE');
 
--- -----------------------------------------------------------------------------
--- 6. 反间谍：敌方间谍在本城的行动等级 -1
---    数值照领事馆（CONSULATE_SPY_BONUS, Amount=1）。领事馆用的
---    MODIFIER_PLAYER_CITIES_ADJUST_SPY_BONUS 只在埃塞俄比亚包里定义，这里改用资料片自带的
---    MODIFIER_CITY_ADJUST_SPY_BONUS（COLLECTION_OWNER + EFFECT_ADJUST_CITY_SPY_BONUS，
---    总督「安保专家」「本地线人」同款）。挂在 DistrictModifiers 上时 OWNER 解析为区域所在城市，
---    先例：DISTRICT_IKANDA 的 MODIFIER_CITY_CORPS_ARMY_ADJUST_DISCOUNT、DISTRICT_COTHON 的 MODIFIER_CITY_ADJUST_UNIT_DOMAIN_PRODUCTION。
--- -----------------------------------------------------------------------------
+-- 6. Counter-espionage: enemy spy operations in this city -1 level
+-- Value follows the Consulate (Amount=1), but its MODIFIER_PLAYER_CITIES_ADJUST_SPY_BONUS is defined only in the Ethiopia pack,
+-- so the expansion's own MODIFIER_CITY_ADJUST_SPY_BONUS is used instead; when attached to DistrictModifiers, OWNER resolves to the district's city.
 INSERT INTO Modifiers (ModifierId, ModifierType) VALUES
     ('TSOD_TYPHON_MAGE_TOWER_SPY_DEFENSE', 'MODIFIER_CITY_ADJUST_SPY_BONUS');
 
@@ -105,11 +77,8 @@ INSERT INTO ModifierArguments (ModifierId, Name, Value) VALUES
 INSERT INTO DistrictModifiers (DistrictType, ModifierId) VALUES
     ('DISTRICT_TSOD_MAGE_TOWER', 'TSOD_TYPHON_MAGE_TOWER_SPY_DEFENSE');
 
--- -----------------------------------------------------------------------------
--- 7. 风云变幻：摇滚乐队「太空摇滚」晋升对学院的加成也给法师塔
---    先例：书院（Expansion1_Expansion2.xml）、天文台（GranColombia_Maya_Expansion2.xml）
---    各自补了 ROCKBAND_SPACE_ROCK_<区域> 与 _MODIFIER 两条，数值与学院版相同。
--- -----------------------------------------------------------------------------
+-- 7. Gathering Storm: the Space Rock rock band's promotion bonus to the Campus also applies to the Mage Tower
+-- The Seowon and Observatory each got their own ROCKBAND_SPACE_ROCK_<district> and _MODIFIER rows; values same as the Campus version.
 INSERT INTO Modifiers (ModifierId, ModifierType) VALUES
     ('TSOD_TYPHON_ROCKBAND_SPACE_ROCK_MAGE_TOWER',          'MODIFIER_PLAYER_UNIT_ADJUST_ROCK_BAND_LEVEL_DISTRICT'),
     ('TSOD_TYPHON_ROCKBAND_SPACE_ROCK_MAGE_TOWER_MODIFIER', 'MODIFIER_PLAYER_UNIT_ADJUST_TOURISM_BOMB_DISTRICT');
@@ -124,14 +93,4 @@ INSERT INTO UnitPromotionModifiers (UnitPromotionType, ModifierId) VALUES
     ('PROMOTION_SPACE_ROCK', 'TSOD_TYPHON_ROCKBAND_SPACE_ROCK_MAGE_TOWER'),
     ('PROMOTION_SPACE_ROCK', 'TSOD_TYPHON_ROCKBAND_SPACE_ROCK_MAGE_TOWER_MODIFIER');
 
--- -----------------------------------------------------------------------------
--- 未写、有意交给替代关系（DistrictReplaces）处理的学院引用，官方书院 / 天文台也都没补：
---   Buildings.PrereqDistrict（图书馆、大学、研究实验室、伊斯兰学校）、
---   Buildings.AdjacentDistrict（桑科雷大学、阿蒙森-斯科特科考站）、
---   GreatPersonClasses / GreatPersonIndividuals（大科学家激活）、Projects（学院研究资助）、
---   Boosts（有记载的历史）、UnitOperations（窃取科技推动）、政策 / 总督 / 信条的
---   DistrictType 参数、EmergencyScoreSources（空间站紧急状况）、Improvement_Adjacencies
---   （Mission_Science_Campus）、RANDOM_EVENT_SOLAR_FLARE。
--- 不归本包：图标（WP9，按惯例名 ICON_DISTRICT_TSOD_MAGE_TOWER / _FOW）、模型（WP10）、
---   历史时刻插图（WP12）、AI 偏好（WP7）、开局界面 PlayerItems（WP1）、百科（WP8）。
--- -----------------------------------------------------------------------------
+-- The Campus's other references (building prerequisite districts, Great People, projects, policies...) are intentionally handled by DistrictReplaces; the list is in docs/notes.md.
