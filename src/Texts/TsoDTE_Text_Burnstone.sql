@@ -1,5 +1,5 @@
--- WP6 燃石酸化工厂文本（IG + FE UpdateText）；产出与通电加成由界面按 Building_YieldChanges 自动列出，描述只写其余部分。
--- 建筑自身产出随 RegionalRange 辐射（科技也辐射，I1 实测确认），农场 / 矿山 / 采石场加成只作用于本城。
+-- WP6 Burnstone Acidification Works text (IG + FE UpdateText); the yield and powered bonuses are listed automatically by the UI from Building_YieldChanges, so the description covers only the rest.
+-- The building's own yields spill over with RegionalRange (science spills too, confirmed in-game by I1); the farm / mine / quarry bonuses apply only to this city.
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
@@ -16,7 +16,7 @@ VALUES
         'LOC_BUILDING_TSOD_BURNSTONE_WORKS_DESCRIPTION',
         'A building unique to Typhon. Its +6 [ICON_Production] Production and +3 [ICON_Science] Science bonus is extended to all City Centers within 6 tiles that do not already have a bonus from this building type.[NEWLINE]Farms in this city provide +5 [ICON_Food] Food, and Mines and Quarries in this city provide +2 [ICON_Production] Production. These two bonuses do not extend to other cities.'
     ),
-    -- 特色建筑特性名（官方先例：日本电子厂的特性名「日本特色建筑：电子厂」）
+    -- Unique building trait name (official precedent: the Japan Electronics Factory trait name "Japanese Unique Building: Electronics Factory")
     (
         'zh_Hans_CN',
         'LOC_TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS_NAME',

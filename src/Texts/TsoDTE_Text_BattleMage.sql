@@ -1,9 +1,9 @@
--- WP4 战斗法师文本（InGame + FrontEnd UpdateText：开局界面显示特色单位名与说明）；百科长文在 Text_Pedia。
+-- WP4 Battle Mage text (InGame + FrontEnd UpdateText: the start screen shows the unique unit name and description); the long Civilopedia article is in Text_Pedia.
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
-    -- 单位（同时被 TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE 的 Name / Description 引用）
+    -- Unit (also referenced by the Name / Description of TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE)
     ('zh_Hans_CN', 'LOC_UNIT_TSOD_BATTLE_MAGE_NAME', '战斗法师'),
     (
         'zh_Hans_CN',
@@ -11,18 +11,18 @@ VALUES
         '中世纪提丰特色远程单位，替代弩手。其 [ICON_Strength] 战斗力随时代成长。与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。组成军团或军队后每回合恢复生命；组成军队后可施放一次“湮灭之创”，施放后整支军队阵亡。'
     ),
 
-    -- 能力：弹道学成长
--- 三个能力的 DESCRIPTION 只写名字：单位面板悬停提示会整句列出（I1 反馈），效果说明在单位描述和百科里。
+    -- Ability: Ballistics Growth
+-- The DESCRIPTION of the three abilities holds only the name: the unit panel hover tip lists the whole sentence (I1 feedback); the effect is described in the unit description and the Civilopedia.
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_NAME', '弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_DESCRIPTION', '弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_BALLISTICS_PREVIEW', '+{1_Amount} 弹道学成长'),
 
-    -- 能力：高级弹道学成长
+    -- Ability: Advanced Ballistics Growth
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_NAME', '高级弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_DESCRIPTION', '高级弹道学成长'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS_PREVIEW', '+{1_Amount} 高级弹道学成长'),
 
-    -- 能力：军团级法术
+    -- Ability: Legion-Class Spell
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_NAME', '军团级法术'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_DESCRIPTION', '军团级法术'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_BATTLE_MAGE_CONCERT_PREVIEW', '+{1_Amount} 军团级法术'),

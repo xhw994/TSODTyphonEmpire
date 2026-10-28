@@ -1,7 +1,7 @@
--- WP4 战斗法师 UNIT_TSOD_BATTLE_MAGE（替代弩手）；依赖 TsoDTE_Civilization.sql 先建文明（CivilizationTraits 外键）。
--- 不升级：不写 UnitUpgrades，也不设 MandatoryObsoleteTech；各项先例见 docs/notes.md。
+-- WP4 Battle Mage UNIT_TSOD_BATTLE_MAGE (replaces the Crossbowman); depends on TsoDTE_Civilization.sql creating the civ first (CivilizationTraits foreign key).
+-- No upgrade: no UnitUpgrades written and no MandatoryObsoleteTech set; per-item precedents are in docs/notes.md.
 
--- 1. 类型登记
+-- 1. Type registration
 INSERT INTO
     Types (Type, Kind)
 VALUES
@@ -11,7 +11,7 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'KIND_ABILITY'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'KIND_ABILITY');
 
--- 2. 特性：特色单位挂到文明上（ids.md §5.5 归 WP4）
+-- 2. Trait: unique unit attached to the civ (ids.md §5.5 assigns it to WP4)
 INSERT INTO
     Traits (TraitType, Name, Description)
 VALUES
@@ -26,9 +26,9 @@ INSERT INTO
 VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE');
 
--- 3. 单位本体（数值照弩手；去掉 MandatoryObsoleteTech）
--- WMDCapable = 1：单位面板会给每种 WMD 各出一个按钮，靠 TsoDTE_UnitPanel.lua 过滤；
--- UI 替换未生效时，官方核弹等按钮会重新出现。
+-- 3. Unit row (stats copied from the Crossbowman; MandatoryObsoleteTech removed)
+-- WMDCapable = 1: the unit panel gives each WMD its own button, filtered by TsoDTE_UnitPanel.lua;
+-- if the UI replacement does not take effect, base-game buttons such as nuclear weapons reappear.
 INSERT INTO
     Units (
         UnitType,
@@ -79,7 +79,7 @@ INSERT INTO
 VALUES
     ('UNIT_TSOD_BATTLE_MAGE', 'UNIT_CROSSBOWMAN');
 
--- AI 类型：弩手的三条 + UNITTYPE_NUCLEAR（官方只给轰炸机、喷气轰炸机、核潜艇）
+-- AI types: the Crossbowman's three plus UNITTYPE_NUCLEAR (the base game gives it only to bombers, jet bombers and nuclear submarines)
 INSERT INTO
     UnitAiInfos (UnitType, AiType)
 VALUES
@@ -88,7 +88,7 @@ VALUES
     ('UNIT_TSOD_BATTLE_MAGE', 'UNITTYPE_LAND_COMBAT'),
     ('UNIT_TSOD_BATTLE_MAGE', 'UNITTYPE_NUCLEAR');
 
--- 4. 标签：单位类与能力类
+-- 4. Tags: unit class and ability class
 INSERT INTO
     Tags (Tag, Vocabulary)
 VALUES
@@ -104,8 +104,8 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'CLASS_TSOD_BATTLE_MAGE'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'CLASS_TSOD_BATTLE_MAGE');
 
--- 5. 能力
--- 成长能力 Inactive = 1：只由授予修正给（同尼杭）；军团级法术 Inactive = 0：带标签的单位自动拥有（同重装步兵）。
+-- 5. Abilities
+-- Ballistics Growth ability Inactive = 1: granted only by the grant modifier (same as Nihang); Legion-Class Spell Inactive = 0: units with the tag get it automatically (same as Heavy Infantry).
 INSERT INTO
     UnitAbilities (UnitAbilityType, Name, Description, Inactive)
 VALUES
@@ -137,16 +137,16 @@ VALUES
     ('ABILITY_TSOD_BATTLE_MAGE_ADV_BALLISTICS', 'TSOD_TYPHON_BATTLE_MAGE_ADV_BALLISTICS_RANGED'),
     ('ABILITY_TSOD_BATTLE_MAGE_CONCERT', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT');
 
--- 授予修正挂在本包自己的特色单位特性上（ids.md §5.5），不碰 WP1 的文明能力壳
+-- The grant modifier attaches to the mod's own unique unit trait (ids.md §5.5) and does not touch WP1's civ ability shell
 INSERT INTO
     TraitModifiers (TraitType, ModifierId)
 VALUES
     ('TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE', 'TSOD_TYPHON_BATTLE_MAGE_GRANT_BALLISTICS'),
     ('TRAIT_CIVILIZATION_UNIT_TSOD_BATTLE_MAGE', 'TSOD_TYPHON_BATTLE_MAGE_GRANT_ADV_BALLISTICS');
 
--- 6. 修正：成长累加，机械 40/30 → 弹道学 60/50 → 高级弹道学 85/70（远程/近战）
--- MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH 只改近战、不改远程（I1 实测），
--- 所以近战用基础战斗力修正（面板显示），远程用「远程攻击时」的普通战斗力修正（战斗预览显示）。
+-- 6. Modifiers: cumulative growth, Mechanical 40/30 → Ballistics 60/50 → Advanced Ballistics 85/70 (ranged/melee)
+-- MODIFIER_UNIT_ADJUST_BASE_COMBAT_STRENGTH changes only melee, not ranged (confirmed in-game, I1),
+-- so melee uses the base combat strength modifier (shown in the panel), and ranged uses the ordinary combat strength modifier "when attacking at range" (shown in the combat preview).
 INSERT INTO
     Modifiers (ModifierId, ModifierType, OwnerRequirementSetId, SubjectRequirementSetId)
 VALUES
@@ -211,7 +211,7 @@ VALUES
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT', 'ModifierId', 'TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH'),
     ('TSOD_TYPHON_BATTLE_MAGE_CONCERT_STRENGTH', 'Amount', '5');
 
--- 7. 需求
+-- 7. Requirements
 INSERT INTO
     Requirements (RequirementId, RequirementType)
 VALUES
@@ -246,9 +246,9 @@ VALUES
     ('REQSET_TSOD_TYPHON_BATTLE_MAGE_RANGED_ATTACK', 'REQ_TSOD_TYPHON_COMBAT_IS_RANGED'),
     ('REQSET_TSOD_TYPHON_ADJACENT_BATTLE_MAGE', 'REQ_TSOD_TYPHON_ADJACENT_BATTLE_MAGE');
 
--- 8. 战斗预览说明（Preview）
--- 只给内层写（同重装步兵），外层 CONCERT 不写；基础战斗力修正计入面板基础值、不进预览，也不写。
--- 文本只写能力名（同官方「+5 齐射（升级）」），效果说明在能力描述里。
+-- 8. Combat preview text (Preview)
+-- Written only on the inner layer (same as Heavy Infantry); the outer CONCERT layer is not written. Base combat strength modifiers count toward the panel's base value and are neither shown in the preview nor written.
+-- The text holds only the ability name (same as the official "+5 Volley (upgrade)"); the effect description is in the ability description.
 INSERT INTO
     ModifierStrings (ModifierId, Context, Text)
 VALUES

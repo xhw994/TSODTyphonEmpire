@@ -1,15 +1,15 @@
--- WP1 提丰配色（master plan §9.2）：黑底红徽，两组备用色；PrimaryColor = 底色，SecondaryColor = 徽记色（官方约定）。
--- 颜色值 R,G,B,A（0–255）；命名 COLOR_PLAYER_TSOD_<文明>_<用途>（同塞西尔）。
+-- WP1 Typhon colors (master plan §9.2): black base with red emblem, two alternate sets; PrimaryColor = base color, SecondaryColor = emblem color (base-game convention).
+-- Color values R,G,B,A (0–255); naming COLOR_PLAYER_TSOD_<civ>_<purpose> (same as Cecil).
 
 INSERT INTO Colors (Type, Color)
 VALUES
-    -- 主色：黑底红徽
+    -- Primary: black base, red emblem
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_PRIMARY',        '22,20,22,255'),
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_SECONDARY',      '196,26,32,255'),
-    -- 备用 1：红底黑徽（反色）
+    -- Alternate 1: red base, black emblem (inverted)
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_ALT1_PRIMARY',   '164,20,28,255'),
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_ALT1_SECONDARY', '22,20,22,255'),
-    -- 备用 2：红底金徽（原文「金红色的旗帜」）
+    -- Alternate 2: red base, gold emblem (design text: "gold-red banner")
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_ALT2_PRIMARY',   '150,18,26,255'),
     ('COLOR_PLAYER_TSOD_TYPHON_EMPIRE_ALT2_SECONDARY', '228,182,78,255');
 

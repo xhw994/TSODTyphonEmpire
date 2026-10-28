@@ -1,5 +1,5 @@
--- 纯 Lua 测试：用桩对象模拟游戏接口，跑 src/Scripts 下的 Gameplay 脚本。运行（仓库根目录）：luajit tests/run_tests.lua
--- 抓得到语法错误、空值、对账与阵亡的逻辑；抓不到引擎事件是否派发、修正是否生效、通知是否显示（只能进游戏看 Lua.log）。
+-- Pure-Lua tests: stubs simulate the game API and run the Gameplay scripts under src/Scripts. Run from the repo root: luajit tests/run_tests.lua
+-- Catches syntax errors, nil values, and the reconciliation and death logic; does not catch whether engine events are dispatched, whether modifiers take effect, or whether notifications show (only the in-game Lua.log can show that).
 
 local ROOT = (arg and arg[0] and arg[0]:match('^(.*)[/\\]tests[/\\]')) or '.'
 local failures, passes = 0, 0
@@ -13,7 +13,7 @@ local function check(bCond, sName)
     end
 end
 
--- 桩：GameInfo 表（按名字和下标都能取，并且能当迭代器调用）
+-- Stub: GameInfo table (indexable by name and by index, and callable as an iterator)
 local function MakeInfoTable(aRows, sKey)
     local t = {}
     for i, row in ipairs(aRows) do
@@ -30,7 +30,7 @@ local function MakeInfoTable(aRows, sKey)
     end })
 end
 
--- 每个测试重建整套环境
+-- Rebuild the whole environment for each test
 local World
 
 local function NewUnit(iPlayer, iID, iType, x, y, iFormation)
@@ -44,7 +44,7 @@ local function NewUnit(iPlayer, iID, iType, x, y, iFormation)
     function u:GetMilitaryFormation() return self.formation end
     function u:GetDamage() return self.damage end
     function u:SetDamage(v) self.damage = v end
-    -- 引擎读不到属性时返回「无值」而不是 nil（10-22 实测：直接传给 tostring 会报错），这里照样模拟
+    -- The engine returns "no value" instead of nil when a property cannot be read (confirmed in-game 10-22: passing it straight to tostring raises an error); simulated here as well
     function u:GetProperty(k) local v = tProps[k]; if v == nil then return end; return v end
     function u:SetProperty(k, v) tProps[k] = v end
     function u:GetAbility()
@@ -195,8 +195,8 @@ local function LoadScript(sRel)
     f()
 end
 
-local MAGE = 1        -- GameInfo.Units 下标
-local SCAR = 1        -- GameInfo.WMDs 下标
+local MAGE = 1        -- GameInfo.Units index
+local SCAR = 1        -- GameInfo.WMDs index
 local ABILITY_SCAR = 'ABILITY_TSOD_ANNIHILATION_SCAR'
 local ABILITY_REGEN = 'ABILITY_TSOD_ARMY_REGENERATION'
 
@@ -206,9 +206,9 @@ local function NotesOfType(hType)
     return n
 end
 
--- 战斗法师
+-- Battle Mage
 local function TestBattleMage()
-    -- 1. 军团：只有战场再生，没有湮灭之创，库存 0
+    -- 1. Corps: battlefield regeneration only, no Annihilation Scar, stock 0
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
     local p = Players[0]
     local u = NewUnit(0, 10, MAGE, 3, 3, MilitaryFormationTypes.CORPS_FORMATION)
@@ -219,19 +219,19 @@ local function TestBattleMage()
     check((p.wmd[SCAR] or 0) == 0, 'corps adds no stock')
     check(NotesOfType(NotificationTypes.USER_DEFINED_3) == 1, 'corps regen notification sent once')
 
-    -- 2. 升级成军队：湮灭之创 + 战场再生，库存 1，就绪通知
+    -- 2. Promoted to army: Annihilation Scar + battlefield regeneration, stock 1, ready notification
     u.formation = MilitaryFormationTypes.ARMY_FORMATION
     Fire('UnitFormArmy', 0, 10)
     check(u.abilities[ABILITY_SCAR] == 1 and u.abilities[ABILITY_REGEN] == 1, 'army gets scar and regen')
     check(p.wmd[SCAR] == 1, 'army stock is 1')
     check(NotesOfType(NotificationTypes.USER_DEFINED_1) == 1, 'army ready notification sent once')
 
-    -- 3. 回合开始重复对账：不重复通知、库存不变
+    -- 3. Repeated reconciliation at turn start: no repeated notification, stock unchanged
     Fire('PlayerTurnActivated', 0, true)
     check(p.wmd[SCAR] == 1, 'stock stays 1 after turn start')
     check(NotesOfType(NotificationTypes.USER_DEFINED_1) == 1, 'no duplicate ready notification')
 
-    -- 4. 施放结束：引擎已扣成 0 → 整支军队阵亡，库存对回 0
+    -- 4. After firing: the engine has deducted to 0, so the whole army dies and stock reconciles back to 0
     p.wmd[SCAR] = 0
     Fire('UnitOperationDeactivated', 0, 10, UnitOperationTypes.WMD_STRIKE, 0)
     check(#World.killed == 1 and World.killed[1] == 10, 'casting army is killed')
@@ -241,7 +241,7 @@ local function TestBattleMage()
     Fire('PlayerTurnActivated', 0, true)
     check((p.wmd[SCAR] or 0) == 0, 'no refill next turn')
 
-    -- 5. 别的武器（库存没少）：不杀
+    -- 5. Other weapons (stock not reduced): no kill
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
     p = Players[0]
     u = NewUnit(0, 20, MAGE, 4, 4, MilitaryFormationTypes.ARMY_FORMATION)
@@ -251,7 +251,7 @@ local function TestBattleMage()
     Fire('UnitOperationDeactivated', 0, 20, UnitOperationTypes.WMD_STRIKE, 0)
     check(#World.killed == 0, 'no kill when the scar stock did not drop')
 
-    -- 6. Kill 没立刻生效：标记已施放，不再计入库存、不再有湮灭之创
+    -- 6. Kill not taken effect immediately: marked as fired, no longer counted in stock, no Annihilation Scar
     World.killRemoves = false
     p.wmd[SCAR] = 0
     Fire('UnitOperationDeactivated', 0, 20, UnitOperationTypes.WMD_STRIKE, 0)
@@ -261,7 +261,7 @@ local function TestBattleMage()
     check((p.wmd[SCAR] or 0) == 0, 'spent army is not restocked')
     check((u.abilities[ABILITY_SCAR] or 0) == 0, 'spent army loses the scar')
 
-    -- 7. 同格两个单位对象（编队成员）：只算一支军队，能力只给 ID 小的
+    -- 7. Two unit objects on the same tile (formation members): counted as one army, ability given only to the lower ID
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
     p = Players[0]
     local a = NewUnit(0, 31, MAGE, 7, 7, MilitaryFormationTypes.ARMY_FORMATION)
@@ -274,7 +274,7 @@ local function TestBattleMage()
     Fire('UnitOperationDeactivated', 0, 31, UnitOperationTypes.WMD_STRIKE, 0)
     check(#World.killed == 2, 'both formation members killed')
 
-    -- 8. 回血：每回合 10，只回主体
+    -- 8. Healing: 10 per turn, main body only
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
     p = Players[0]
     u = NewUnit(0, 40, MAGE, 1, 1, MilitaryFormationTypes.CORPS_FORMATION)
@@ -288,7 +288,7 @@ local function TestBattleMage()
     Fire('PlayerTurnActivated', 0, true)
     check(u.damage == 10, 'corps heals again next turn')
 
-    -- 9. AI 不发通知
+    -- 9. AI does not get notifications
     SetupWorld(); LoadScript('TsoDTE_BattleMage.lua')
     local ai = Players[1]
     ai.units[50] = NewUnit(1, 50, MAGE, 2, 2, MilitaryFormationTypes.ARMY_FORMATION)
@@ -296,22 +296,22 @@ local function TestBattleMage()
     check(ai.wmd[SCAR] == 1 and #World.notifications == 0, 'AI army stocked without notifications')
 end
 
--- 领袖能力
+-- Leader ability
 local function TestLeaderTrait()
     SetupWorld(); LoadScript('TsoDTE_LeaderTrait.lua')
     local p = Players[0]
-    -- 开局：只记录
+    -- Game start: record only
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 0 and #World.notifications == 0, 'first turn only records the era')
 
-    -- 进入新时代（非黑暗）：1+1 和一条通知
+    -- Entering a new era (not Dark Age): 1+1 and one notification
     World.era = 1
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 1 and Count(p.boostedCivic) == 1, 'normal era gives 1 + 1')
     check(NotesOfType(NotificationTypes.USER_DEFINED_4) == 1, 'era notification sent')
     check(World.notifications[1].sum == 'LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME', 'notification summary is the ability name')
 
-    -- 黑暗时代属性晚一回合才出现：补 1+1，只补一次
+    -- Dark Age attribute appears one turn late: add 1+1, only once
     p.props['TSOD_TYPHON_DARK_AGE'] = 1
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 2 and Count(p.boostedCivic) == 2, 'dark age adds 1 + 1 once detected')
@@ -319,7 +319,7 @@ local function TestLeaderTrait()
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 2, 'dark age bonus only once per era')
 
-    -- 进入时就是黑暗时代：同一回合 2+2
+    -- Already a Dark Age on entry: 2+2 in the same turn
     SetupWorld(); LoadScript('TsoDTE_LeaderTrait.lua')
     p = Players[0]
     Fire('PlayerTurnActivated', 0, true)
@@ -328,7 +328,7 @@ local function TestLeaderTrait()
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 2 and Count(p.boostedCivic) == 2, 'entering a dark age gives 2 + 2 at once')
 
-    -- 开局就处于黑暗时代（读旧存档第一次见到）：不补
+    -- Already in a Dark Age at game start (first time reading an old save): no bonus
     SetupWorld(); LoadScript('TsoDTE_LeaderTrait.lua')
     p = Players[0]
     p.props['TSOD_TYPHON_DARK_AGE'] = 1
@@ -336,11 +336,11 @@ local function TestLeaderTrait()
     Fire('PlayerTurnActivated', 0, true)
     check(Count(p.boostedTech) == 0, 'no bonus for the era the script first sees')
 
-    -- 击杀尤里卡：触发并通知，位置是凶手
+    -- Kill Eureka: triggers and notifies, located at the killer
     SetupWorld(); LoadScript('TsoDTE_LeaderTrait.lua')
     p = Players[0]
     local enemy = Players[1]
-    enemy.units[60] = NewUnit(1, 60, 2, 9, 9)      -- 骑士，前置马镫
+    enemy.units[60] = NewUnit(1, 60, 2, 9, 9)      -- Knight, prerequisite Stirrups
     p.units[61] = NewUnit(0, 61, MAGE, 8, 9)
     Fire('UnitKilledInCombat', 1, 60, 0, 61)
     local iStirrups = GameInfo.Technologies['TECH_STIRRUPS'].Index
@@ -352,14 +352,14 @@ local function TestLeaderTrait()
     check(#World.notifications == 1, 'second kill of the same type does nothing')
 end
 
--- 神权理事会
+-- Theocratic Council
 local function TestCongress()
     SetupWorld(); LoadScript('TsoDTE_Congress.lua')
-    -- 没有宗教：从候选里拿掉本决议，其他决议不动
+    -- No religion: remove this resolution from the candidates, leave other resolutions alone
     local tRes = { Resolutions = { 501, 502 } }
     Fire('GE:CanUseResolutions', tRes)
     check(#tRes.Resolutions == 1 and tRes.Resolutions[1] == 501, 'council removed when no religion exists')
-    -- 有宗教：目标只列已创立的宗教，不含万神殿；上一个决议留下的地貌被覆盖
+    -- Has religion: targets list only founded religions, not the Pantheon; the terrain left by the previous resolution is overwritten
     World.religions = { { Religion = 0 }, { Religion = 1 }, { Religion = 2 } }
     tRes = { Resolutions = { 501, 502 } }
     Fire('GE:CanUseResolutions', tRes)

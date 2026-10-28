@@ -1,14 +1,14 @@
--- WP6 燃石酸化工厂（特色建筑，替代工厂；风云变幻规则集）。先例：日本电子厂 BUILDING_ELECTRONICS_FACTORY。
--- 依赖 TsoDTE_Civilization.sql 先加载。
+-- WP6 Burnstone Acidification Works (unique building replacing the Factory; Gathering Storm ruleset). Precedent: Japan's BUILDING_ELECTRONICS_FACTORY.
+-- Depends on TsoDTE_Civilization.sql being loaded first.
 
--- 1. 类型登记
+-- 1. Type registration
 INSERT INTO
     Types (Type, Kind)
 VALUES
     ('BUILDING_TSOD_BURNSTONE_WORKS', 'KIND_BUILDING'),
     ('TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS', 'KIND_TRAIT');
 
--- 2. 特性，挂到文明（官方先例 Traits 只填 Name）
+-- 2. Trait, attached to the civ (base-game precedent: Traits fill only Name)
 INSERT INTO
     Traits (TraitType, Name)
 VALUES
@@ -22,7 +22,7 @@ INSERT INTO
 VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_BUILDING_TSOD_BURNSTONE_WORKS');
 
--- 3. 建筑主表：列值照工厂（风云变幻下 Cost 330），RegionalRange 6 保留范围辐射
+-- 3. Main building row: column values follow the Factory (Cost 330 under Gathering Storm); RegionalRange 6 kept for the regional-range spillover.
 INSERT INTO
     Buildings (
         BuildingType,
@@ -64,7 +64,7 @@ INSERT INTO
 VALUES
     ('BUILDING_TSOD_BURNSTONE_WORKS', 'BUILDING_WORKSHOP');
 
--- 4. 产出：+6 生产力、+3 科技（工厂是 +3 生产力）
+-- 4. Yields: +6 Production, +3 Science (the Factory gives +3 Production)
 INSERT INTO
     Building_YieldChanges (BuildingType, YieldType, YieldChange)
 VALUES
@@ -76,8 +76,8 @@ INSERT INTO
 VALUES
     ('BUILDING_TSOD_BURNSTONE_WORKS', 'GREAT_PERSON_CLASS_ENGINEER', 1);
 
--- 5. 风云变幻用电规则（同工厂）：需 2 电力；通电额外 +3 生产力
--- 不登记 ResourceTypeConvertedToPower，所以不烧资源、不排碳
+-- 5. Gathering Storm power rules (same as the Factory): needs 2 power; +3 Production extra when powered
+-- Does not register ResourceTypeConvertedToPower, so it burns no resources and emits no carbon.
 INSERT INTO
     Buildings_XP2 (BuildingType, RequiredPower)
 VALUES
@@ -88,8 +88,8 @@ INSERT INTO
 VALUES
     ('BUILDING_TSOD_BURNSTONE_WORKS', 'YIELD_PRODUCTION', 3);
 
--- 6. 末日模式「太阳耀斑」会破坏工厂（官方连电子厂也登记了）。该事件由格兰哥伦比亚与玛雅包的
--- 末日模式提供，加载早于本 mod：照抄工厂已有的行，模式未开时查不到行，什么也不插。
+-- 6. Doomsday "Solar Flare" event destroys Factories (the base game registers the Electronics Factory as well). The event comes from the Apocalypse mode of the Gran Colombia and Maya pack, which loads before this mod:
+-- it copies the Factory's existing row; if the mode is off the row is not found and nothing is inserted.
 INSERT INTO
     RandomEvent_PillagedBuildings (RandomEventType, BuildingType)
 SELECT
@@ -100,8 +100,8 @@ FROM
 WHERE
     BuildingType = 'BUILDING_FACTORY';
 
--- 7. 本城所有农场 +5 食物（丰饶之尘；先例水磨 WATERMILL_ADDRICEFOOD）
--- 需求组用官方现成的 REQUIREMENTS_PLOT_HAS_FARM
+-- 7. All farms in this city +5 Food (Dust of Plenty; precedent: the Watermill's WATERMILL_ADDRICEFOOD)
+-- The requirement set uses the official REQUIREMENTS_PLOT_HAS_FARM
 INSERT INTO
     BuildingModifiers (BuildingType, ModifierId)
 VALUES
@@ -122,9 +122,9 @@ VALUES
     ('TSOD_TYPHON_BURNSTONE_WORKS_FARM_FOOD', 'YieldType', 'YIELD_FOOD'),
     ('TSOD_TYPHON_BURNSTONE_WORKS_FARM_FOOD', 'Amount', '5');
 
--- 8. 本城所有矿山、采石场 +2 生产力（原作依据见 docs/notes.md）；只作用于本城，不随 RegionalRange 辐射。
--- 与农场（第 7 节）同形：每个修正一个 TEST_ALL 需求组，需求自己定义。
--- 曾用 TEST_ANY 套官方 REQUIRES_PLOT_HAS_MINE / _QUARRY，I1 实测 +2 不生效。
+-- 8. All mines and quarries in this city +2 Production (base-game basis: see docs/notes.md); applies only to this city, not spilled over by RegionalRange.
+-- Same shape as the farms (section 7): one TEST_ALL requirement set per modifier, each with its own requirements.
+-- Previously used TEST_ANY over the official REQUIRES_PLOT_HAS_MINE / _QUARRY; the I1 in-game test showed the +2 did not apply.
 INSERT INTO
     BuildingModifiers (BuildingType, ModifierId)
 VALUES

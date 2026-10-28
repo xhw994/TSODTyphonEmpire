@@ -1,7 +1,7 @@
--- WP13 湮灭之创：武器与两个能力（紧跟 TsoDTE_Unit_BattleMage.sql 之后）；武器行照可莉的 WMD_JUMPY_DUMPTY。
--- 能力 Inactive=1，由 TsoDTE_BattleMage.lua 授予；没有 UnitAbilityModifiers（效果靠武器和 Lua）。
+-- WP13 Annihilation Scar: the weapons and two abilities (right after TsoDTE_Unit_BattleMage.sql); the weapon rows copy the values of an existing WMD mod.
+-- Abilities are Inactive=1, granted by TsoDTE_BattleMage.lua; no UnitAbilityModifiers (the effect comes from the weapon and Lua).
 
--- 1. 类型登记（先于所有引用它们的行）
+-- 1. Type registration (before all rows that reference them)
 INSERT INTO
     Types (Type, Kind)
 VALUES
@@ -9,7 +9,7 @@ VALUES
     ('ABILITY_TSOD_ANNIHILATION_SCAR', 'KIND_ABILITY'),
     ('ABILITY_TSOD_ARMY_REGENERATION', 'KIND_ABILITY');
 
--- 2. 武器（WMDs）：TsoDTE_UnitPanel.lua 按 Name 的译文认武器
+-- 2. Weapons (WMDs): TsoDTE_UnitPanel.lua recognizes weapons by the localized text of Name
 INSERT INTO
     WMDs (
         WeaponType,
@@ -37,11 +37,11 @@ VALUES
         1,
         0,
         0,
-        8,      -- 同可莉，需实证
-        0       -- 可莉为 8；库存 = 军团数，不按库存收维护费（master plan §6.1）
+        8,      -- value from an existing WMD mod, needs in-game proof
+        0       -- value 8 from an existing WMD mod; stock = legion count, no upkeep charged per stock (master plan §6.1)
     );
 
--- 3. 能力（UnitAbilities）：ShowFloatTextWhenEarned = 0，授予时不弹官方浮字，改用通知。
+-- 3. Abilities (UnitAbilities): ShowFloatTextWhenEarned = 0, so the base-game floating text is not shown on grant; a notification is used instead.
 INSERT INTO
     UnitAbilities (
         UnitAbilityType,

@@ -1,8 +1,8 @@
--- WP8 百科长文、人物与地点条目、领袖引言、载入画面旁白、外交台词（InGame UpdateText）。
--- tag 约定照官方 CivilopediaSupport.lua 的 FindChapterTextKey / FindPageTextKey 与印度甘地的外交台词；数值不写死，以各包 DESCRIPTION 为准。
+-- WP8 Civilopedia articles, character and place entries, leader quotes, loading-screen narration, and diplomatic lines (InGame UpdateText).
+-- Tag conventions follow the official CivilopediaSupport.lua FindChapterTextKey / FindPageTextKey and Gandhi's diplomatic lines; values are not hard-coded, and each pack's DESCRIPTION governs.
 
--- 文明：提丰帝国
--- PARA_1 是文明引言（官方文明页没有引言位，放在历史章节的第一段）
+-- Civilization: Typhon Empire
+-- PARA_1 is the civ's quote (the official civ pages have no quote slot, so it goes in the first paragraph of the history chapter)
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_1',
      '“神明并不是太可靠的保护者。”[NEWLINE]——罗塞塔·奥古斯都'),
@@ -34,7 +34,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_CIVILIZATIONS_PAGE_CIVILIZATION_TSOD_TYPHON_EMPIRE_CHAPTER_HISTORY_PARA_6',
      'After the war Typhon sat at the same table as its former enemy, joined the alliance of human nations and the Theocratic Council, and began a policy of Desanctification at home, prying faith and state apart. The fertilizer produced by the Burnstone Acidification Works, the Dust of Plenty, freed mortals from depending on the blessings of the gods of plenty. An empire that once took pride in god-favored knights is now learning to rely on no one but itself.');
 
--- 领袖：罗塞塔·奥古斯都
+-- Leader: Rosetta Augustus
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE',
      '我们，有着超乎你们想象的韧性。'),
@@ -76,14 +76,14 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_CHAPTER_HISTORY_PARA_5',
      'The greatest gamble of Rosetta’s life came after the Church of the God of War lost its mind: the Winter God-Hunt. He struck a bargain with the Eye of God, cast the lingering avatars of his old friend Malm Dunite, the God of War’s Pope, one by one into a brazier as offerings, and so dragged the God of War himself into the mortal world. At the same time the Obsidian Guard purged the maddened priesthood, and the mountains of Winterhold unleashed several Annihilation Scars at once. In the end, with the help of the Cecil Empire, the god fell. After the war Rosetta led Typhon into the alliance of human nations and the Theocratic Council and set about Desanctification. To this emperor, the gods were never reliable protectors.');
 
--- 载入画面旁白
+-- Loading-screen narration
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS',
      '罗塞塔·奥古斯都陛下，提丰的皇帝，黑铁王座的主人。两百年来，您的家族在噩梦里与神明周旋，却从未低头。如今，用学院锻造超凡者的兵团，用燃石喂饱您的子民，把敌人的每一项发明都化为己用。算清每一份代价，也别害怕押上一切——让世界看看，凡人能走多远。'),
     ('en_US', 'LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS',
      'Your Imperial Majesty Rosetta Augustus, Emperor of Typhon, master of the Black Iron Throne. For two hundred years your house has dueled with a god in its nightmares and never once bowed. Now forge legions of Transcendents in your academies, feed your people with burnstone, and turn every invention of your enemies to your own ends. Weigh every cost, yet never fear to wager everything—show the world how far mortals can go.');
 
--- 特色单位：提丰战斗法师
+-- Unique unit: Typhon Battle Mage
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_1',
      '提丰战斗法师是帝国“量产超凡者”政策的产物。他们大多天赋平平，放在传统法师眼中或许连学徒都不够格，却从童年起便被集中起来，十几年如一日地只练熟一两种战斗法术。单独一人并不起眼，成千上万人集结起来，却能凝聚成令敌军胆寒的“军团级法术”。'),
@@ -100,7 +100,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_UNITS_PAGE_UNIT_TSOD_BATTLE_MAGE_CHAPTER_HISTORY_PARA_3',
      'Unlike other armies, Typhon’s is in no hurry to replace its veterans with new kinds of troops. The empire’s spells, equipment and tactics are refreshed with each age, while these battle-hardened casters stay in the ranks, carrying the lessons of every battle into the next war. Their most fearsome power is the strategic spell once fired in volleys from the peaks of Winterhold to wound a god: the Annihilation Scar.');
 
--- 特色区域：法师塔
+-- Unique district: Mage Tower
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_DISTRICTS_PAGE_DISTRICT_TSOD_MAGE_TOWER_CHAPTER_HISTORY_PARA_1',
      '提丰的法师塔远不只是研究魔法的地方。帝国依靠数量众多的法师塔和大批效忠皇室的皇家法师，对绝大多数城市中的超凡者进行登记与感应，并配套兴建了大量培训设施，专门培养更忠诚、更服从命令的“专职施法者”。这套体系耗资巨大，但提丰负担得起。'),
@@ -117,7 +117,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_DISTRICTS_PAGE_DISTRICT_TSOD_MAGE_TOWER_CHAPTER_HISTORY_PARA_3',
      'And because of this all-seeing web, foreign spies who slip into a Typhon city often discover that the eyes atop the towers have been following their every move.');
 
--- 特色建筑：燃石酸化工厂
+-- Unique building: Burnstone Acidification Works
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_1',
      '燃石是提丰东北海岸常见的一种灰白色沉积岩，经过酸化处理后能变成高效的化肥，提丰人称之为“丰饶之尘”。罗塞塔下令在帝国所有的产粮区就地兴建燃石酸化工厂，让化肥不必长途运输便能撒进田里，农场与养猪场也随之一同兴旺起来。'),
@@ -134,16 +134,16 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PEDIA_BUILDINGS_PAGE_BUILDING_TSOD_BURNSTONE_WORKS_CHAPTER_HISTORY_PARA_3',
      'Even the Cecilians admitted that Typhon’s acidification works were five years ahead of their own alchemical factories. The deeper consequences were spiritual: once mortals could feed themselves with the Dust of Plenty, they had bypassed "divine grace," and corruption began to fester in the divine kingdoms of the gods of plenty. A fertilizer plant thus became a quiet prelude to Typhon’s Desanctification.');
 
--- 自定义分组页：分组名
+-- Custom group page: group name
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PEOPLE_NAME', '提丰帝国：人物'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PEOPLE_NAME', 'Typhon Empire: People'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PLACES_NAME', '提丰帝国：地点'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGEGROUP_TSOD_TYPHON_PLACES_NAME', 'Typhon Empire: Places');
 
--- 人物
+-- Characters
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- 裴迪南
+    -- Ferdinand
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_TITLE', '裴迪南·温德尔'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_TITLE', 'Ferdinand Wendell'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_1',
@@ -155,7 +155,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_FERDINAND_CHAPTER_CONTENT_PARA_2',
      'Ferdinand’s only son, Bard, vanished years ago, and he raised his granddaughter Andesha himself until she became the youngest Wolf General in Typhon’s history. When the Church of the God of War went astray, his old friend Pope Malm twisted his perceptions through mental interference, and the explanation Typhon sent to Cecil was altered into a declaration of war. Rosetta told him it was not his fault—and then handed him the list for purging the church’s influence from the army. Years later, Andesha brought home news: Bard was alive, and living in Cecil.'),
 
-    -- 安德莎
+    -- Andesha
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ANDESHA_CHAPTER_CONTENT_TITLE', '安德莎·温德尔'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ANDESHA_CHAPTER_CONTENT_TITLE', 'Andesha Wendell'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ANDESHA_CHAPTER_CONTENT_PARA_1',
@@ -171,7 +171,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ANDESHA_CHAPTER_CONTENT_PARA_3',
      'The Cecilians healed her wounded eye, but it was left changed, and she asked to keep the mark as a reminder to herself. When she came home, her grandfather told her that although she had not held Winterwolf Keep, she had held on to something far more important.'),
 
-    -- 温莎
+    -- Windsor
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_TITLE', '温莎·玛佩尔'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_TITLE', 'Windsor Marpel'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_1',
@@ -183,7 +183,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINDSOR_CHAPTER_CONTENT_PARA_2',
      'Many of the institutions Rosetta founded were designed by Windsor. She is the most dependable technical pillar of the emperor’s reforms and one of the few privy to the court’s secrets: it is she who regularly maintains the ancient body of the head maid, Diana.'),
 
-    -- 帕林
+    -- Palin
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_PALIN_CHAPTER_CONTENT_TITLE', '帕林·冬堡'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_PALIN_CHAPTER_CONTENT_TITLE', 'Palin Winterhold'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_PALIN_CHAPTER_CONTENT_PARA_1',
@@ -195,7 +195,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_PALIN_CHAPTER_CONTENT_PARA_2',
      'Because he withdrew before Winterwolf Keep fell, Palin faced harsh doubts at court. Some nobles even called him more disgraceful than Andesha, who had surrendered. He answered with deeds, devising a series of effective tactics for the frontline troops against Cecil’s machines. After the Keep fell, Winterhold, once the second line of defense, became the front line—and the battlefield of the Winter God-Hunt. As Annihilation Scars rose one after another from the peaks, it was Palin who directed the fortress complex.'),
 
-    -- 戴安娜
+    -- Diana
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_TITLE', '戴安娜'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_TITLE', 'Diana'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_PARA_1',
@@ -207,7 +207,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_DIANA_CHAPTER_CONTENT_PARA_2',
      'Only later did the world learn that Diana is not human at all, but an "Iron Soldier" of the ancient Gondor Empire—an old-model observatory security unit. She left the Iron Soldier network seven centuries ago and lost part of her memory. When alone, she finds herself drawing the same picture over and over, though even she cannot say what it shows.'),
 
-    -- 玛蒂尔达
+    -- Matilda
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MATILDA_CHAPTER_CONTENT_TITLE', '玛蒂尔达·奥古斯都'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MATILDA_CHAPTER_CONTENT_TITLE', 'Matilda Augustus'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MATILDA_CHAPTER_CONTENT_PARA_1',
@@ -219,7 +219,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MATILDA_CHAPTER_CONTENT_PARA_2',
      'Rosetta teaches his heir himself, letting her sit in on the empire’s most secret conversations in his study and help with affairs of state. Matilda soon learned to think as her father does: what you win at the negotiating table depends on how well you have prepared away from it. The blood of the House of Augustus runs in her veins—and with it, the curse.'),
 
-    -- 马尔姆
+    -- Malm
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_TITLE', '马尔姆·杜尼特'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_TITLE', 'Malm Dunite'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_1',
@@ -231,9 +231,9 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_MALM_CHAPTER_CONTENT_PARA_2',
      'When the god descended into madness, the corruption spread from the very top of the church, and Malm himself became its source. Even after his death his lingering avatars haunted the empire as phantoms, clouding men’s minds. During the Winter God-Hunt, Rosetta cast more than half of the captured avatars one by one into a brazier—the offering in his bargain with the Eye of God—and so dragged the God of War into the mortal world. Precisely because Malm had been his friend, he said, the thing wearing his friend’s face had no right to remain.');
 
--- 地点
+-- Places
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- 奥尔德南
+    -- Ordenan
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_TITLE', '奥尔德南'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_TITLE', 'Ordenan'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_1',
@@ -245,7 +245,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_ORDENAN_CHAPTER_CONTENT_PARA_2',
      'The whole city is laid out with rigorous order, like a sharp-edged geometric figure: Gothic spires crowd one another, the Imperial Avenue runs through its heart, and a fog that never lifts shrouds everything. The Obsidian Palace houses the emperor’s Black Iron Throne, the three spires of the parliament hall stand for crown, nobility and citizens, and in Rosetta’s day the hundred-meter smokestacks of the acidification works joined the skyline.'),
 
-    -- 冬堡
+    -- Winterhold
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERHOLD_CHAPTER_CONTENT_TITLE', '冬堡'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERHOLD_CHAPTER_CONTENT_TITLE', 'Winterhold'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERHOLD_CHAPTER_CONTENT_PARA_1',
@@ -257,7 +257,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERHOLD_CHAPTER_CONTENT_PARA_2',
      'After Winterwolf Keep fell, Winterhold became the linchpin of the front—and the battlefield of the Winter God-Hunt. That night, columns of magical light blazed skyward from the main summit and a dozen peaks around it, while hundreds of thousands of Transcendents below formed one vast magical web. One Annihilation Scar after another fell from the mountaintop arrays upon the God of War, dragged into the mortal world, until the surging mana had burned out every channel of the defensive line.'),
 
-    -- 冬狼堡
+    -- Winterwolf Keep
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_TITLE', '冬狼堡'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_TITLE', 'Winterwolf Keep'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_1',
@@ -269,7 +269,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_WINTERWOLF_KEEP_CHAPTER_CONTENT_PARA_2',
      'When the Church of the God of War dragged Typhon into war, Winterwolf Keep bore the first blow. Its commander, Andesha, gravely wounded, surrendered the garrison. Cecil’s banner soon flew over its walls, and the front moved into Typhon itself. For the empire it was a humiliation, and also a clear-headed cutting of losses: the Keep was lost, but the empire’s finest legions were saved.'),
 
-    -- 奥兰戴尔之喉
+    -- Throat of Orandel
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_TITLE', '奥兰戴尔之喉'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_TITLE', 'Throat of Orandel'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_PARA_1',
@@ -281,7 +281,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_PARA_2',
      'The curse of the House of Augustus began here. Fewer know that the warning came from a dream cult, the Eternal Sleepers, whose headquarters lay hidden deep beneath the ruins. Shielded by mental suggestion and dream wards, they pursued forbidden knowledge there for two full centuries without anyone noticing—until one dawn a low roar rose from the valley, and witnesses saw a vast, spider-like phantom climbing over its rim.'),
 
-    -- 黄昏宫殿
+    -- Twilight Palace
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_TITLE', '黄昏宫殿'),
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_TITLE', 'Twilight Palace'),
     ('zh_Hans_CN', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_PARA_1',
@@ -293,11 +293,11 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_PARA_2',
      'The portraits speak. They offer counsel to their descendants, and they whisper temptations too, hoping to pull the living into their frames. The deeper the corridor runs, the older the portraits and the colder their eyes. All of this was meant to be the Eye of God’s prison for the House of Augustus—or so the Eye always believed. Only on the day of the god-slaying did it learn that the shades of the palace had been playing a part for two hundred years: the first Augustus it ever possessed had never submitted, and his will had passed down the bloodline all the way to Rosetta.');
 
--- 外交台词（基调：阴郁、克制、客气里带刀；master plan §8.4），多数按原著改写（对照见 docs/dialogue-draft.md）。
--- 被玩家消灭、玩家拒绝友好、接受代表团三句保留原稿；照官方甘地的整套 DIPLO_*_LEADER_GANDHI_ANY 做齐。
--- 议程理由句（KUDO / WARNING 的 REASON）由 WP7 写，这里只写 _EXIT 两句。
+-- Diplomatic lines (tone: grim, restrained, polite with a blade in it; master plan §8.4); most are adapted from the original work (comparison in docs/dialogue-draft.md).
+-- The three lines for being destroyed by the player, the player refusing friendship, and accepting a delegation are kept from the original draft; the full set of DIPLO_*_LEADER_GANDHI_ANY entries is covered, following official Gandhi.
+-- Reason sentences for agendas (the REASON of KUDO / WARNING) are written by WP7; only the two _EXIT lines are written here.
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- 初次见面
+    -- First meeting
     ('zh_Hans_CN', 'LOC_DIPLO_FIRST_MEET_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我是罗塞塔·奥古斯都。初次见面，我对任何势力都会保留三份质疑——说说看，你想让提丰相信什么？'),
     ('en_US',      'LOC_DIPLO_FIRST_MEET_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -315,13 +315,13 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_FIRST_MEET_NO_MANS_INFO_EXCHANGE_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'We have wasted too much effort prying into our neighbors’ secrets. Let us exchange the locations of our capitals and spare ourselves the trouble.'),
 
-    -- 问候
+    -- Greetings
     ('zh_Hans_CN', 'LOC_DIPLO_GREETING_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我一向忙得要死。有什么要紧的事，直说。'),
     ('en_US',      'LOC_DIPLO_GREETING_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'I am always swamped. If it matters, say it plainly.'),
 
-    -- 友好宣言
+    -- Declaration of friendship
     ('zh_Hans_CN', 'LOC_DIPLO_DECLARE_FRIEND_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '你是个强大的对手，但在这件事上，你可以是我们的朋友。签一份友好宣言吧。'),
     ('en_US',      'LOC_DIPLO_DECLARE_FRIEND_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -343,7 +343,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_REJECT_DECLARE_FRIEND_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'I would not even trust you personally very far. Typhon can be a partner, but never anyone’s expendable asset.'),
 
-    -- 宣战 / 被宣战
+    -- Declaring war / being declared war on
     ('zh_Hans_CN', 'LOC_DIPLO_DECLARE_WAR_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '这场战争早晚会来。既然你把它带来了，提丰就把它变成一个机会。'),
     ('en_US',      'LOC_DIPLO_DECLARE_WAR_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -353,7 +353,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_DECLARE_WAR_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'The time to act has come. Cost and benefit have reached their best balance.'),
 
-    -- 战败
+    -- Defeat
     ('zh_Hans_CN', 'LOC_DIPLO_DEFEAT_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '必须有人对这一切负责。这一次，轮到我了。'),
     ('en_US',      'LOC_DIPLO_DEFEAT_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -363,7 +363,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_DEFEAT_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'Two hundred years of nightmares could not make an Augustus bow. You have won this round—nothing more.'),
 
-    -- 代表团
+    -- Delegation
     ('zh_Hans_CN', 'LOC_DIPLO_ACCEPT_DELEGATION_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '代表团可以留下。他们会看到很多东西——我们允许他们看到的那些。'),
     ('en_US',      'LOC_DIPLO_ACCEPT_DELEGATION_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -377,7 +377,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_DELEGATION_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'Letters and couriers are never enough. I have sent a delegation—the courtesy and gravity one empire owes another.'),
 
-    -- 谴责
+    -- Condemnation
     ('zh_Hans_CN', 'LOC_DIPLO_DENOUNCE_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '谴责？被诅咒了两百年的奥古斯都，从来没怕过任何人的审判。'),
     ('en_US',      'LOC_DIPLO_DENOUNCE_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -387,7 +387,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_DENOUNCE_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'I never truly trusted your sincerity. For Typhon, trusting someone like you costs far too much. (Denounces You)'),
 
-    -- 议程：赞许 / 警告后的收尾句（理由句归 WP7）
+    -- Agenda: closing line after praise / warning (reason sentences are by WP7)
     ('zh_Hans_CN', 'LOC_DIPLO_KUDO_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '你的军队强过我的预估。你和我是一类人——这样的对手，才值得认真算计。'),
     ('en_US',      'LOC_DIPLO_KUDO_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -397,13 +397,13 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_WARNING_EXIT_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'I have dealt with gods for two hundred years. I can smell the ones they possess with my eyes closed. Get your missionaries out of my cities.'),
 
-    -- 同盟
+    -- Alliance
     ('zh_Hans_CN', 'LOC_DIPLO_MAKE_ALLIANCE_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '战争有很多种形式，合作是其中之一。结盟吧——我们图谋着彼此，这样的盟约才牢靠。'),
     ('en_US',      'LOC_DIPLO_MAKE_ALLIANCE_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'War takes many forms, and cooperation is one of them. Let us ally—each of us scheming against the other is what makes the pact hold.'),
 
-    -- 交易（玩家接受 / 拒绝罗塞塔提出的交易后，他的回应）
+    -- Trade (his response after the player accepts or rejects a trade Rosetta offers)
     ('zh_Hans_CN', 'LOC_DIPLO_ACCEPT_MAKE_DEAL_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '成交。纸张轻薄，契约沉重。'),
     ('en_US',      'LOC_DIPLO_ACCEPT_MAKE_DEAL_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -413,7 +413,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_REJECT_MAKE_DEAL_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'Refuse, then. Deals can always be made in private—someone will always lean toward Typhon.'),
 
-    -- 和平
+    -- Peace
     ('zh_Hans_CN', 'LOC_DIPLO_MAKE_PEACE_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '这场火烧得够旺了。你我都不希望它继续烧下去——不如现在就让它熄灭。'),
     ('en_US',      'LOC_DIPLO_MAKE_PEACE_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -427,7 +427,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_MAKE_PEACE_AI_REFUSE_DEAL_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'Typhon cannot accept that. There is no room to bargain on this.'),
 
-    -- 开放边境
+    -- Open borders
     ('zh_Hans_CN', 'LOC_DIPLO_OPEN_BORDERS_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '我们毗邻而居，各有所产，本应互通有无。开放边境吧，让商路先通起来。'),
     ('en_US',      'LOC_DIPLO_OPEN_BORDERS_FROM_AI_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
@@ -441,7 +441,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US',      'LOC_DIPLO_REJECT_OPEN_BORDERS_FROM_HUMAN_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      'Anything but Typhon’s land can be discussed. The border is not on the table.'),
 
-    -- 边境驻军警告
+    -- Border garrison warning
     ('zh_Hans_CN', 'LOC_DIPLO_WARNING_TOO_MANY_TROOPS_NEAR_ME_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',
      '你的军队，还要在我的边境上驻扎多久？我希望得到你的直接答复。'),
     ('en_US',      'LOC_DIPLO_WARNING_TOO_MANY_TROOPS_NEAR_ME_LEADER_TSOD_ROSETTA_AUGUSTUS_ANY',

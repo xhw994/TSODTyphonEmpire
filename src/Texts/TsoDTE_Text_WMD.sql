@@ -1,5 +1,5 @@
--- WP13 湮灭之创与战场再生文本（InGame UpdateText：开局界面不显示武器与这两个能力）；每个 tag 只由本文件插入一次。
--- 两个能力的 DESCRIPTION 只写名字（同战斗法师其余能力，I1 反馈：悬停提示会整句列出），效果写在 LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION。
+-- WP13 Annihilation Scar and battlefield regeneration text (InGame UpdateText: the start screen does not show the weapon or these two abilities); each tag is inserted only once, by this file.
+-- The two abilities' DESCRIPTION holds only the name (same as the Battle Mage's other abilities; I1 feedback: the hover tip lists the whole sentence); the effect is written in LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION.
 
 INSERT
 OR REPLACE INTO LocalizedText (Language, Tag, Text)
@@ -12,7 +12,7 @@ VALUES
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_ARMY_REGENERATION_NAME', '战场再生'),
     ('zh_Hans_CN', 'LOC_ABILITY_TSOD_ARMY_REGENERATION_DESCRIPTION', '战场再生'),
 
-    -- 通知（消息与摘要）
+    -- Notifications (messages and summary)
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_ANNIHILATION_READY_MESSAGE', '战斗法师军队已能施放湮灭之创。'),
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_ANNIHILATION_READY_SUMMARY', '湮灭之创就绪'),
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_ANNIHILATION_SACRIFICE_MESSAGE', '战斗法师军队施放湮灭之创，全员魔力枯竭阵亡。'),
@@ -20,7 +20,7 @@ VALUES
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_MESSAGE', '战斗法师军团获得了战场再生，每回合恢复生命。'),
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_ARMY_REGENERATION_SUMMARY', '战场再生'),
 
-    -- 地图浮字
+    -- Map floating text
     ('zh_Hans_CN', 'LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED', '魔力枯竭'),
 
     -- en_US

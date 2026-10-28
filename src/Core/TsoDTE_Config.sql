@@ -1,7 +1,7 @@
--- WP1 开局设置界面：文明与领袖条目 + 特色项（FrontEnd UpdateDatabase）；只引用 ID 与 LOC tag（ids.md §3、§4），图标名为拟定的美术名。
--- 规则集只做风云变幻：Domain 'Players:Expansion2_Players'（照官方 Expansion2_Players.xml 与塞西尔）。
+-- WP1 game-setup screen: civ and leader entries + unique items (FrontEnd UpdateDatabase); references only IDs and LOC tags (ids.md §3, §4); icon names are provisional art names.
+-- Ruleset: Gathering Storm only; Domain 'Players:Expansion2_Players' (same as the official Expansion2_Players.xml and Cecil).
 
--- 1. 文明与领袖条目（同时承载文明能力、领袖能力两项展示）
+-- 1. Civ and leader entries (also carries the civ ability and leader ability displays)
 INSERT INTO Players
     (Domain,
      CivilizationType, CivilizationName, CivilizationIcon,
@@ -26,8 +26,8 @@ VALUES
      'LEADER_TSOD_ROSETTA_AUGUSTUS_NEUTRAL',
      'LEADER_TSOD_ROSETTA_AUGUSTUS_BACKGROUND');
 
--- 2. 特色项：特色单位、特色区域、特色建筑
--- Type 照官方填内容本身的类型 ID；SortIndex 照官方 10 / 20 / 30。
+-- 2. Unique items: unique unit, unique district, unique building
+-- Type follows the official convention of using the content's own type ID; SortIndex follows the official 10 / 20 / 30.
 INSERT INTO PlayerItems
     (Domain, CivilizationType, LeaderType, Type, Name, Description, Icon, SortIndex)
 VALUES

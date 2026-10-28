@@ -1,5 +1,5 @@
--- WP2 文明能力文本（InGame + FrontEnd UpdateText：开局界面要显示特性名与说明）。
--- 说明里写「学院」（法师塔替代学院，条件同时认两者）；隐藏能力 ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION 没有文本。
+-- WP2 civ ability text (InGame + FrontEnd UpdateText: the start screen shows the trait name and description).
+-- The description says "Campus" (the Mage Tower replaces Campus, and the condition accepts both); the hidden ability ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION has no text.
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME',

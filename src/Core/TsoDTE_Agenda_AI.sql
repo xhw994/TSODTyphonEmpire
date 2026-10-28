@@ -1,7 +1,7 @@
--- WP7 议程「同类」与 AI 偏好；IG UpdateDatabase 的最后一个文件（ids.md §5.2）。
--- AI 表无外键，对 WP1 / WP4–6 的 ID 只作引用。
+-- WP7 Kindred agenda and AI preferences; the last file in the IG UpdateDatabase (ids.md §5.2).
+-- AI tables have no foreign keys; the WP1 / WP4–6 IDs here are references only.
 
--- 1. 议程「同类」本体（Agendas 不进 Types，官方也不登记；议程特性要进 Types + Traits）
+-- 1. The Kindred agenda itself (Agendas are not in Types and the base game does not register them; the agenda's trait needs Types + Traits)
 
 INSERT INTO Types (Type, Kind)
 VALUES
@@ -15,7 +15,7 @@ INSERT INTO Agendas (AgendaType, Name, Description)
 VALUES
     ('AGENDA_TSOD_KINDRED', 'LOC_AGENDA_TSOD_KINDRED_NAME', 'LOC_AGENDA_TSOD_KINDRED_DESCRIPTION');
 
--- 与隐藏议程「常备军」的军力部分重复，故互斥（同安比奥里克斯、克里奥帕特拉的先例）。
+-- Overlaps with the army part of the hidden Standing Army agenda, so the two are mutually exclusive (precedent: Ambiorix and Cleopatra).
 INSERT INTO ExclusiveAgendas (AgendaOne, AgendaTwo)
 VALUES
     ('AGENDA_TSOD_KINDRED', 'AGENDA_STANDING_ARMY');
@@ -29,8 +29,8 @@ VALUES
     ('AGENDA_TSOD_KINDRED', 'TRAIT_AGENDA_TSOD_KINDRED');
 
 
--- 2. 议程修正（MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER，主体条件决定对哪个文明生效）
--- 军力条件照 AGENDA_HIGH_STANDING_ARMY，StrengthRatio 由 1.2 降为 1.0（不弱于）；态度值依据见 docs/notes.md。
+-- 2. Agenda modifier (MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER; the subject condition decides which civ it applies to)
+-- Army condition copied from AGENDA_HIGH_STANDING_ARMY; StrengthRatio lowered from 1.2 to 1.0 (no weaker than); basis for the attitude values in docs/notes.md.
 
 INSERT INTO TraitModifiers (TraitType, ModifierId)
 VALUES
@@ -42,7 +42,7 @@ VALUES
     ('TSOD_TYPHON_AGENDA_KINDRED_STRONG_MILITARY', 'MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER', 'REQSET_TSOD_TYPHON_KINDRED_STRONG_MILITARY'),
     ('TSOD_TYPHON_AGENDA_KINDRED_RELIGION_RECEIVED', 'MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER', 'REQSET_TSOD_TYPHON_KINDRED_RELIGION_RECEIVED');
 
--- StatementKey 的 tag 不含 ROSETTA_AUGUSTUS，免得落进 WP8 的外交台词命名空间。
+-- The StatementKey tag does not contain ROSETTA_AUGUSTUS, so it does not fall into the WP8 diplomacy-statement namespace.
 INSERT INTO ModifierArguments (ModifierId, Name, Value)
 VALUES
     ('TSOD_TYPHON_AGENDA_KINDRED_STRONG_MILITARY', 'InitialValue', '8'),
@@ -58,7 +58,7 @@ VALUES
     ('TSOD_TYPHON_AGENDA_KINDRED_RELIGION_RECEIVED', 'Sample', 'LOC_TOOLTIP_SAMPLE_DIPLOMACY_ALL');
 
 
--- 3. 需求与需求组（REQUIRES_MAJOR_CIV_OPPONENT / REQUIRES_MET_*_TURNS_AGO 复用官方行；相识回合数各照先例）
+-- 3. Requirements and requirement sets (REQUIRES_MAJOR_CIV_OPPONENT / REQUIRES_MET_*_TURNS_AGO reuse official rows; the turns-known counts follow precedent)
 
 INSERT INTO Requirements (RequirementId, RequirementType)
 VALUES
@@ -86,9 +86,9 @@ VALUES
     ('REQSET_TSOD_TYPHON_KINDRED_RELIGION_RECEIVED', 'REQ_TSOD_TYPHON_KINDRED_RELIGION_RECEIVED');
 
 
--- 4. AI 偏好
--- AiLists.LeaderType 填 Trait（官方 322 处无一填 LEADER_*）；议程自身的清单挂议程特性、走 AgendaType 列。
--- 宗教倾向「中等」：不挂 ForbidReligiousVictory / LowReligiousPreferenceYields / FavorReligiousVictory，只偏好圣地。
+-- 4. AI preferences
+-- AiLists.LeaderType is filled with the Trait (none of the 322 official rows fill LEADER_*); the agenda's own list hangs off the agenda trait and uses the AgendaType column.
+-- Religious inclination "medium": no ForbidReligiousVictory / LowReligiousPreferenceYields / FavorReligiousVictory; only prefers holy sites.
 
 INSERT INTO AiListTypes (ListType)
 VALUES
@@ -108,11 +108,11 @@ VALUES
 
 INSERT INTO AiFavoredItems (ListType, Item, Favored, Value)
 VALUES
-    -- Strategies 的 Value 越小越偏好（征服 -2 照 AlexanderPreferWar，科技 -1 照 FavorScienceVictory）。
+    -- Lower Value in Strategies means a stronger preference (conquest -2 follows AlexanderPreferWar, science -1 follows FavorScienceVictory).
     ('TSOD_TYPHON_ROSETTA_VICTORIES', 'VICTORY_STRATEGY_MILITARY_VICTORY', 1, -2),
     ('TSOD_TYPHON_ROSETTA_VICTORIES', 'VICTORY_STRATEGY_SCIENCE_VICTORY', 1, -1),
 
-    -- 学院与法师塔都列：不论 AI 按被替代的类型还是特色类型打分都能命中。
+    -- Both Campus and Mage Tower are listed, so the match works whether the AI scores by the replaced type or the unique type.
     ('TSOD_TYPHON_ROSETTA_DISTRICTS', 'DISTRICT_CAMPUS', 1, 0),
     ('TSOD_TYPHON_ROSETTA_DISTRICTS', 'DISTRICT_ENCAMPMENT', 1, 0),
     ('TSOD_TYPHON_ROSETTA_DISTRICTS', 'DISTRICT_HOLY_SITE', 1, 0),
@@ -120,9 +120,9 @@ VALUES
 
     ('TSOD_TYPHON_ROSETTA_BUILDINGS', 'BUILDING_TSOD_BURNSTONE_WORKS', 1, 0),
 
-    -- Units 的 Value 调造兵优先级（先例：VictoriaUnits，工坊 Sukritact 的特色单位 1 / 1）。
+    -- Units' Value sets build priority (precedent: VictoriaUnits; the Sukritact unique unit in a Workshop mod, 1 / 1).
     ('TSOD_TYPHON_ROSETTA_UNITS', 'UNIT_TSOD_BATTLE_MAGE', 1, 1),
 
-    -- 议程自身：照 StandingArmyPseudoYields 原值（已与 AGENDA_STANDING_ARMY 互斥，不会叠加）。
+    -- The agenda itself: keeps the original StandingArmyPseudoYields value (already mutually exclusive with AGENDA_STANDING_ARMY, so it does not stack).
     ('TSOD_TYPHON_KINDRED_PSEUDOYIELDS', 'PSEUDOYIELD_STANDING_ARMY_NUMBER', 1, 33),
     ('TSOD_TYPHON_KINDRED_PSEUDOYIELDS', 'PSEUDOYIELD_STANDING_ARMY_VALUE', 1, 50);

@@ -1,4 +1,4 @@
--- WP14 战神教图标（InGame UpdateIcons，criteria TsoDTE_Expansion2）。界面按 "ICON_" .. ReligionType 取图。
--- 临时借官方自定义宗教 4（狮子）；只有玩家自己选了那个自定义宗教才会撞图。
+-- WP14 War God Faith icons (InGame UpdateIcons, criteria TsoDTE_Expansion2). The UI fetches the image by "ICON_" .. ReligionType.
+-- Temporarily borrows official custom religion 4 (the lion); a collision happens only if the player picks that custom religion themselves.
 INSERT INTO IconAliases (Name, OtherName) VALUES
     ('ICON_RELIGION_TSOD_WAR_GOD', 'ICON_RELIGION_CUSTOM_4');

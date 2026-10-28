@@ -7,6 +7,6 @@ INSERT INTO Types (Type, Kind) VALUES
 INSERT INTO Religions (ReligionType, Name, IconString, Pantheon, RequiresCustomName, Color) VALUES
     ('RELIGION_TSOD_WAR_GOD', 'LOC_RELIGION_TSOD_WAR_GOD', 'Wg', 0, 0, 'COLOR_RELIGION_TSOD_WAR_GOD');
 
--- 临时借官方自定义宗教 4 的插图（狮子），与临时图标一致。
+-- Temporarily borrows the illustration of official custom religion 4 (the lion), matching the temporary icon.
 INSERT INTO MomentIllustrations (MomentIllustrationType, MomentDataType, GameDataType, Texture) VALUES
     ('MOMENT_ILLUSTRATION_RELIGION', 'MOMENT_DATA_RELIGION', 'RELIGION_TSOD_WAR_GOD', 'PM_FoundedReligion_Custom4');

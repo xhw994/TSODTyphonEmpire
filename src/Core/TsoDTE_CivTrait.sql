@@ -1,5 +1,5 @@
--- WP2 文明能力「超凡者的帝国」：只挂 TraitModifiers，特性本体由 WP1 建（TsoDTE_Civilization.sql 先加载）。
--- 特性的拥有者是玩家，原版效果都要求城市当拥有者，故先经 MODIFIER_PLAYER_CITIES_ATTACH_MODIFIER 挂到每座城市。
+-- WP2 Empire of the Extraordinary (civ ability): attaches only TraitModifiers; the trait itself is built by WP1 (TsoDTE_Civilization.sql loads first).
+-- The trait belongs to the player, but the base-game effects all require a city as owner, so they are first attached to each city via MODIFIER_PLAYER_CITIES_ATTACH_MODIFIER.
 
 INSERT INTO TraitModifiers (TraitType, ModifierId) VALUES
     ('TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TSOD_TYPHON_CAMPUS_TRAINED_PROMOTION'),
@@ -7,16 +7,16 @@ INSERT INTO TraitModifiers (TraitType, ModifierId) VALUES
     ('TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TSOD_TYPHON_HOLY_SITE_GENERAL_POINTS'),
     ('TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TSOD_TYPHON_ENCAMPMENT_IGNORE_PRESSURE');
 
--- 1. 学院城市训练的陆地军事单位获得一次免费升级
--- 授予层照兵营写法；能力内的 Amount=-1 = 升一级（先例 CORBACI_FREE_PROMOTION）。
+-- 1. Land military units trained in Campus cities get one free promotion
+-- Grant layer follows the Barracks pattern; Amount=-1 inside the ability = one level up (precedent: CORBACI_FREE_PROMOTION).
 INSERT INTO Types (Type, Kind) VALUES
     ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 'KIND_ABILITY');
 
--- Inactive=1：只有被授予的单位才有；不给 Name / Description：隐藏能力，不进单位提示。
+-- Inactive=1: only units that receive it have it; no Name / Description given, since it is a hidden ability and does not show in unit tooltips.
 INSERT INTO UnitAbilities (UnitAbilityType, Inactive, ShowFloatTextWhenEarned, Permanent) VALUES
     ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 1, 0, 1);
 
--- 类别照抄 ABILITY_TOQUI_XP_FROM_GOVERNOR 的陆地部分
+-- Category copied from the land part of ABILITY_TOQUI_XP_FROM_GOVERNOR
 INSERT INTO TypeTags (Type, Tag) VALUES
     ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 'CLASS_RECON'),
     ('ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION', 'CLASS_MELEE'),
@@ -44,9 +44,9 @@ INSERT INTO ModifierArguments (ModifierId, Name, Value) VALUES
     ('TSOD_TYPHON_CAMPUS_TRAINED_PROMOTION_GRANT', 'AbilityType', 'ABILITY_TSOD_CAMPUS_TRAINED_PROMOTION'),
     ('TSOD_TYPHON_CAMPUS_TRAINED_PROMOTION_XP',    'Amount',      '-1');
 
--- 2. 学院、圣地区域各 +1 大将军点数
--- 内层照抄万神殿 DIVINE_SPARK_*_MODIFIER；外层用 PLAYER_CITIES 版 ATTACH，
--- 信仰用的 ALL_CITIES 版会把加成送给全世界的城市。
+-- 2. Campus and Holy Site regions each +1 Great General points
+-- Inner layer copied from the Pantheon DIVINE_SPARK_*_MODIFIER; the outer layer uses the PLAYER_CITIES version of ATTACH,
+-- since the ALL_CITIES version used for faith would give the bonus to cities of the whole world.
 INSERT INTO Modifiers (ModifierId, ModifierType) VALUES
     ('TSOD_TYPHON_CAMPUS_GENERAL_POINTS',    'MODIFIER_PLAYER_CITIES_ATTACH_MODIFIER'),
     ('TSOD_TYPHON_HOLY_SITE_GENERAL_POINTS', 'MODIFIER_PLAYER_CITIES_ATTACH_MODIFIER');
@@ -63,8 +63,8 @@ INSERT INTO ModifierArguments (ModifierId, Name, Value) VALUES
     ('TSOD_TYPHON_HOLY_SITE_GENERAL_POINTS_MODIFIER', 'GreatPersonClassType', 'GREAT_PERSON_CLASS_GENERAL'),
     ('TSOD_TYPHON_HOLY_SITE_GENERAL_POINTS_MODIFIER', 'Amount',               '1');
 
--- 3. 有军营区域的城市不受（非本文明创立的）宗教压力
--- 内层照抄莫克沙「神之堡垒」CARDINAL_CITADEL_OF_GOD_PRESSURE，条件放内层 OwnerRequirementSet（拥有者=城市）。
+-- 3. Cities with an Encampment district are not affected by religious pressure (from religions not founded by this civ)
+-- Inner layer copied from Governor Moksha's "Citadel of God" CARDINAL_CITADEL_OF_GOD_PRESSURE; the condition goes into the inner OwnerRequirementSet (owner = city).
 INSERT INTO Modifiers (ModifierId, ModifierType) VALUES
     ('TSOD_TYPHON_ENCAMPMENT_IGNORE_PRESSURE', 'MODIFIER_PLAYER_CITIES_ATTACH_MODIFIER');
 
@@ -75,8 +75,8 @@ INSERT INTO ModifierArguments (ModifierId, Name, Value) VALUES
     ('TSOD_TYPHON_ENCAMPMENT_IGNORE_PRESSURE',          'ModifierId', 'TSOD_TYPHON_ENCAMPMENT_IGNORE_PRESSURE_MODIFIER'),
     ('TSOD_TYPHON_ENCAMPMENT_IGNORE_PRESSURE_MODIFIER', 'Enable',     'true');
 
--- 需求与需求组：DistrictType 参数没有外键，引用 WP5 的法师塔不受加载顺序影响。
--- 学院条件同时认 DISTRICT_CAMPUS 与法师塔（TEST_ANY），不论原版条件是否认替代区域。
+-- Requirements and requirement sets: the DistrictType parameter has no foreign key, so referencing WP5's Mage Tower is not affected by load order.
+-- The Campus condition accepts both DISTRICT_CAMPUS and the Mage Tower (TEST_ANY), whether or not the base-game condition accepts replacement districts.
 INSERT INTO Requirements (RequirementId, RequirementType) VALUES
     ('REQ_TSOD_TYPHON_CITY_HAS_CAMPUS',         'REQUIREMENT_CITY_HAS_DISTRICT'),
     ('REQ_TSOD_TYPHON_CITY_HAS_MAGE_TOWER',     'REQUIREMENT_CITY_HAS_DISTRICT'),

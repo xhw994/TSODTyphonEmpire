@@ -202,18 +202,18 @@
   </ItemGroup>
   <Import Project="$(MSBuildLocalExtensionPath)Civ6.targets" />
   <!--
-    构建后自动还原 cooker 解析不掉的 BLP entry（照塞西尔）。
+    Restores after build the BLP entries that the cooker cannot resolve (same as Cecil).
 
-    AssetCooker 只在 SDK Assets 里真有 pantry 目录的 project 里查资产，
-    而它只带了 Civ6 / Shared / Expansion1 / Expansion2 / CivRoyaleScenario 五份。
-    法师塔引用埃塞俄比亚包的 DIS_CMP_Alchemical 时，cooker 不报错，只把
-    m_EntryName 悄悄换成 TB_ERROR —— 游戏里的表现就是模型不见了。
-    运行时不受这个限制：装了那个 DLC 的玩家，游戏会照常加载它的 BLP 包。
+    AssetCooker only looks up assets in projects that really have a pantry directory in the SDK Assets,
+    and it ships with only five of them: Civ6 / Shared / Expansion1 / Expansion2 / CivRoyaleScenario.
+    When the Mage Tower references DIS_CMP_Alchemical from the Ethiopia Pack, the cooker reports no error; it silently replaces
+    m_EntryName with TB_ERROR, so the model is missing in-game.
+    At runtime this limit does not apply: players with that DLC installed load its BLP packages as usual.
 
-    挂 AfterTargets="Build"，ReBuild 和 Default 都依赖 Build，
-    命令行和 ModBuddy 图形界面构建都会触发。
+    Attached with AfterTargets="Build": ReBuild and Default both depend on Build,
+    so both command-line builds and ModBuddy's GUI build trigger it.
   -->
-  <!-- 还没有任何 ArtDef 时（阶段 1 纯数据）跳过，免得脚本找不到目录报警告。 -->
+  <!-- Skip while no ArtDef exists yet (phase 1 is data only), so the script does not warn that the directory is missing. -->
   <Target Name="TSODRestoreCookedEntries" AfterTargets="Build" Condition="Exists('$(BuildDir)\ArtDefs')">
     <Message Text="还原 cooker 解析不掉的 BLP entry..." Importance="high" />
     <Exec Command="python &quot;$(MSBuildProjectDirectory)/../tools/restore_cooked_entries.py&quot; &quot;$(MSBuildProjectDirectory)/ArtDefs&quot; &quot;$(BuildDir)&quot;"

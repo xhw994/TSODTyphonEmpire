@@ -1,5 +1,5 @@
--- WP1 提丰帝国：文明本体、城市名、市民名、文明能力的壳（修正由 WP2 的 TsoDTE_CivTrait.sql 挂）。
--- 同动作内排第 1（ids.md §5.2）；领袖与 CivilizationLeaders 在 TsoDTE_Leader.sql。
+-- WP1 Typhon Empire: the civ itself, city names, citizen names, and the shell of the civ ability (modifiers attached by WP2's TsoDTE_CivTrait.sql).
+-- First within its action (ids.md §5.2); the leader and CivilizationLeaders are in TsoDTE_Leader.sql.
 
 -- 1. Types
 INSERT INTO Types (Type, Kind)
@@ -7,7 +7,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE',       'KIND_CIVILIZATION'),
     ('TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE', 'KIND_TRAIT');
 
--- 2. 文明
+-- 2. Civilization
 INSERT INTO Civilizations
     (CivilizationType, Name, Description, Adjective,
      RandomCityNameDepth, StartingCivilizationLevelType, Ethnicity)
@@ -20,7 +20,7 @@ VALUES
      'CIVILIZATION_LEVEL_FULL_CIV',
      'ETHNICITY_EURO');
 
--- 3. 文明能力「超凡者的帝国」的壳（修正由 WP2 挂）
+-- 3. Shell of the civ ability "Empire of the Extraordinary" (modifiers attached by WP2)
 INSERT INTO Traits (TraitType, Name, Description)
 VALUES
     ('TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE',
@@ -31,11 +31,11 @@ INSERT INTO CivilizationTraits (CivilizationType, TraitType)
 VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'TRAIT_CIVILIZATION_TSOD_TYPHON_EMPIRE');
 
--- 4. 城市名：57 个，顺序照 master plan §11.2
--- 插入顺序即自增 ID 顺序，游戏按此顺序取名（RandomCityNameDepth 内随机）。
+-- 4. City names: 57 of them, in the order of master plan §11.2
+-- Insertion order is the auto-increment ID order; the game picks names in this order (random within RandomCityNameDepth).
 INSERT INTO CityNames (CivilizationType, CityName)
 VALUES
-    -- 首都与原作重要城市
+    -- Capital and important cities of the base game
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_ORDENAN'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_WINTERHOLD'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_MOBIUS'),
@@ -43,7 +43,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_WINTERWOLF_KEEP'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_TARENKINS'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_SUTIM'),
-    -- 贵族封地
+    -- Noble fiefs
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_SEWENHOLD'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_DULUR'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_HOLMARK'),
@@ -56,7 +56,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_PLATINPHIS'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_MUSE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_TASSOS_ISLE'),
-    -- 北部
+    -- North
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_SARIEL'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_DUVOSSON_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_HAMAR_SHIRE'),
@@ -70,7 +70,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_GOLDSAND_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_BUTTERFIELD_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_PINEWOOD_TOWN'),
-    -- 中部
+    -- Center
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_RAVENHOLD'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_CORNELIAN'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_KAZ'),
@@ -84,7 +84,7 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_KATROL'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_HEMIT'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_RICKHOLD'),
-    -- 南部
+    -- South
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_SHAFREND_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_VITO_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_KELMAN'),
@@ -98,11 +98,11 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_SOUTHSEA_SHIRE'),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITY_NAME_TSOD_LANIA_SHIRE');
 
--- 5. 市民名（master plan §11.3）：Female 1 = 女
--- 戴安娜按 §11.3 不收（她不是人类）。
+-- 5. Citizen names (master plan §11.3): Female 1 = female
+-- Diana is not included, per §11.3 (she is not human).
 INSERT INTO CivilizationCitizenNames (CivilizationType, CitizenName, Female)
 VALUES
-    -- 男
+    -- Male
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_BOMEL',     0),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_HEMIL',     0),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_MOREY',     0),
@@ -114,11 +114,11 @@ VALUES
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_GEORGE',    0),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_BERTOMUND', 0),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_MALM',      0),
-    -- 女
+    -- Female
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_GINA',      1),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_MARY',      1),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_TALIA',     1),
-    -- 主要角色（可选）
+    -- Main characters (optional)
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_ANDESHA',   1),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_WINDSOR',   1),
     ('CIVILIZATION_TSOD_TYPHON_EMPIRE', 'LOC_CITIZEN_NAME_TSOD_MATILDA',   1),

@@ -1,15 +1,15 @@
--- WP1 文明、领袖名、城市名、市民名的中英文本（IG + FE UpdateText），只含 ids.md §4 归 WP1 的 tag。
--- 用 INSERT OR REPLACE：同一文件被 FrontEnd 与 InGame 各加载一次（照塞西尔）；城市顺序同 CityNames。
+-- WP1 Chinese and English text for the civ, leader names, city names and citizen names (IG + FE UpdateText); only includes the tags that ids.md §4 assigns to WP1.
+-- Uses INSERT OR REPLACE: this file is loaded once by FrontEnd and once by InGame (same as Cecil); the city order matches CityNames.
 
 -- zh_Hans_CN
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
-    -- 文明与领袖
+    -- Civ and leader
     ('zh_Hans_CN', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME', '提丰'),
     ('zh_Hans_CN', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_DESCRIPTION', '提丰帝国'),
     ('zh_Hans_CN', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_ADJECTIVE', '提丰的'),
     ('zh_Hans_CN', 'LOC_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME', '罗塞塔·奥古斯都'),
-    -- 城市名（57，顺序同 CityNames）
+    -- City names (57, same order as CityNames)
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_ORDENAN', '奥尔德南'),
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_WINTERHOLD', '冬堡'),
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_MOBIUS', '莫比乌斯'),
@@ -67,7 +67,7 @@ VALUES
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_ADELIN', '亚德林'),
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_SOUTHSEA_SHIRE', '南海郡'),
     ('zh_Hans_CN', 'LOC_CITY_NAME_TSOD_LANIA_SHIRE', '兰尼亚郡'),
-    -- 市民名
+    -- Citizen names
     ('zh_Hans_CN', 'LOC_CITIZEN_NAME_TSOD_BOMEL', '博迈尔'),
     ('zh_Hans_CN', 'LOC_CITIZEN_NAME_TSOD_HEMIL', '赫米尔'),
     ('zh_Hans_CN', 'LOC_CITIZEN_NAME_TSOD_MOREY', '莫里'),
@@ -92,12 +92,12 @@ VALUES
 -- en_US
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text)
 VALUES
-    -- 文明与领袖
+    -- Civ and leader
     ('en_US', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME', 'Typhon'),
     ('en_US', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_DESCRIPTION', 'Typhon Empire'),
     ('en_US', 'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_ADJECTIVE', 'Typhonian'),
     ('en_US', 'LOC_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME', 'Rosetta Augustus'),
-    -- 城市名（57，顺序同 CityNames）
+    -- City names (57, same order as CityNames)
     ('en_US', 'LOC_CITY_NAME_TSOD_ORDENAN', 'Ordenan'),
     ('en_US', 'LOC_CITY_NAME_TSOD_WINTERHOLD', 'Winterhold'),
     ('en_US', 'LOC_CITY_NAME_TSOD_MOBIUS', 'Mobius'),
@@ -155,7 +155,7 @@ VALUES
     ('en_US', 'LOC_CITY_NAME_TSOD_ADELIN', 'Adelin'),
     ('en_US', 'LOC_CITY_NAME_TSOD_SOUTHSEA_SHIRE', 'Southsea Shire'),
     ('en_US', 'LOC_CITY_NAME_TSOD_LANIA_SHIRE', 'Lania Shire'),
-    -- 市民名
+    -- Citizen names
     ('en_US', 'LOC_CITIZEN_NAME_TSOD_BOMEL', 'Bomel'),
     ('en_US', 'LOC_CITIZEN_NAME_TSOD_HEMIL', 'Hemil'),
     ('en_US', 'LOC_CITIZEN_NAME_TSOD_MOREY', 'Morey'),

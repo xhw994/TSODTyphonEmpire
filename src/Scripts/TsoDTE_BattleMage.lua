@@ -1,5 +1,5 @@
--- WP13 战斗法师：湮灭之创、战场再生、通知（Gameplay；InGame AddGameplayScripts）。
--- 军团（2 个合成）有战场再生；军队（3 个合成）再加湮灭之创，玩家库存 = 场上战斗法师军队数。
+-- WP13 Battle Mage: Annihilation Scar, battlefield regeneration, and notifications (Gameplay; InGame AddGameplayScripts).
+-- A corps (2 units combined) has battlefield regeneration; an army (3 units combined) also gets Annihilation Scar. Player stock = number of Battle Mage armies on the field.
 
 local UNIT_BATTLE_MAGE = 'UNIT_TSOD_BATTLE_MAGE'
 local WEAPON_SCAR      = 'WMD_TSOD_ANNIHILATION_SCAR'
@@ -18,7 +18,7 @@ local TXT_EXHAUSTED     = 'LOC_TSOD_ANNIHILATION_SCAR_EXHAUSTED'
 
 local REGEN_HEAL = 10
 
--- 启动时填
+-- Filled in at startup
 local UnitTypeIndex = -1
 local WeaponIndex = -1
 local FormationCorps = nil
@@ -27,7 +27,7 @@ local NotifyReady = nil
 local NotifySacrifice = nil
 local NotifyRegen = nil
 
--- 基础查询
+-- Basic queries
 local function FindUnit(iPlayer, iUnit)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil then
@@ -57,9 +57,9 @@ end
 
 local STATE_RANK = { standard = 0, corps = 1, army = 2 }
 
--- 按格分组：{ [key] = { lead = pUnit, state = 'army'|'corps'|'standard', members = {...}, spent = bool } }
--- 返回 tGroups 和按 key 排好序的 aKeys（联机各端遍历顺序一致）
--- 同格不可能有两个独立的陆地军事单位，所以每组只认 ID 最小的单位。
+-- Grouped by tile: { [key] = { lead = pUnit, state = 'army'|'corps'|'standard', members = {...}, spent = bool } }
+-- Returns tGroups and aKeys sorted by key (every multiplayer client iterates in the same order)
+-- Two independent land military units can never share a tile, so each group only recognizes the unit with the smallest ID.
 local function CollectGroups(iPlayer)
     local pPlayer = Players[iPlayer]
     local tGroups = {}
@@ -93,7 +93,7 @@ local function CollectGroups(iPlayer)
     return tGroups, aKeys
 end
 
--- 能力按数量授予：要有就保证为 1，不要就保证为 0。返回是否新授予。
+-- Abilities are granted by count: ensure 1 when wanted, ensure 0 when not. Returns whether it was newly granted.
 local function SetAbilityPresence(pUnit, sAbility, bWanted)
     local pAbility = pUnit:GetAbility()
     local iCount = pAbility:GetAbilityCount(sAbility)
@@ -119,8 +119,8 @@ local function NotifyHuman(iPlayer, hType, sMsg, sSum, iX, iY)
     end
 end
 
--- 对账：能力与库存
--- 把能力与库存「设成目标值」，重复调用安全；军队被打死、被俘等边角情况由回合开始的对账兜底。
+-- Reconciliation: abilities and stock
+-- Sets abilities and stock to target values; repeated calls are safe. Corner cases such as the army being killed or captured are backstopped by reconciliation at turn start.
 local function ReconcilePlayer(iPlayer)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil or WeaponIndex < 0 then
@@ -157,16 +157,16 @@ local function ReconcilePlayer(iPlayer)
     end
 end
 
--- 编队变化：只对账（通知在对账里按「新授予」发，不依赖这两个事件在 Gameplay 是否派发）
+-- Formation changes: reconcile only (notifications go out during reconciliation on "newly granted", without relying on whether these two events are dispatched in Gameplay)
 local function OnFormationEvent(iPlayer, iUnit)
     if IsBattleMage(FindUnit(iPlayer, iUnit)) then
         ReconcilePlayer(iPlayer)
     end
 end
 
--- 施放：Gameplay 环境收不到 UnitOperationStarted，只收得到 Deactivated（hOperation == WMD_STRIKE），到这时引擎已扣掉一发库存（2026-10-21 Lua.log 实证）。
--- 故阵亡在这里做：施放者是军队状态的战斗法师且库存 < 军队数 → 整支军队阵亡。
--- 施放过的单位标 PROPERTY_SPENT：Kill 没立刻生效也不再计入库存，免得「没死就每回合补一发」。
+-- Firing: the Gameplay context does not receive UnitOperationStarted, only Deactivated (hOperation == WMD_STRIKE); by then the engine has already deducted one stock (confirmed in Lua.log, 2026-10-21).
+-- So the death is processed here: if the firing unit is a Battle Mage in army state and stock < army size, the whole army dies.
+-- A unit that has fired is marked PROPERTY_SPENT: even if Kill does not take effect at once, it no longer counts toward stock, so a survivor is not re-armed every turn.
 local function CountLiveArmies(iPlayer)
     local tGroups, aKeys = CollectGroups(iPlayer)
     local iArmies = 0
@@ -230,7 +230,7 @@ local function OnUnitOperationDeactivated(iOwner, iUnit, hOperation, iData1)
     ReconcilePlayer(iOwner)
 end
 
--- 读档、重连会让 PlayerTurnActivated 同一回合再来一次：按回合记一笔，每个编队每回合只回一次。
+-- Loading a save or reconnecting can make PlayerTurnActivated fire again in the same turn: logged per turn, so each formation responds only once per turn.
 local function HealFormations(iPlayer)
     local iTurn = Game.GetCurrentGameTurn()
     local tGroups, aKeys = CollectGroups(iPlayer)
@@ -274,7 +274,7 @@ local function InitTsoDTEBattleMage()
         return
     end
 
--- 自定义类型的通知实机不出现，用官方剧本的 USER_DEFINED_1..3。
+-- Custom notification types do not appear in-game, so the official scenario's USER_DEFINED_1..3 are used.
     if NotificationTypes ~= nil then
         NotifyReady = NotificationTypes.USER_DEFINED_1
         NotifySacrifice = NotificationTypes.USER_DEFINED_2

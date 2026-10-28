@@ -1,5 +1,5 @@
--- WP8 文明百科的自定义分组页（人物、地点）：照风云变幻 Expansion2_Civilopedia.xml 的 PageGroupId 分组，页面全用官方 "Simple" 版式。
--- 文本 tag 由 FindChapterTextKey 按约定拼出（PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_TITLE / _PARA_1..n），文本在 Texts/TsoDTE_Text_Pedia.sql。
+-- WP8 custom Civilopedia group pages (characters, places): grouped by PageGroupId as in the expansion's Expansion2_Civilopedia.xml; all pages use the official "Simple" layout.
+-- Text tags are assembled by FindChapterTextKey by convention (PEDIA_CONCEPTS_PAGE_<PageId>_CHAPTER_CONTENT_TITLE / _PARA_1..n); the text is in Texts/TsoDTE_Text_Pedia.sql.
 
 INSERT OR REPLACE INTO CivilopediaPageGroups
     (SectionId, PageGroupId, Name, Tooltip, VisibleIfEmpty, SortIndex)
@@ -23,7 +23,7 @@ VALUES
     ('CONCEPTS', 'TSOD_TYPHON_THROAT_OF_ORANDEL','TSOD_TYPHON_PLACES', 'Simple', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_THROAT_OF_ORANDEL_CHAPTER_CONTENT_TITLE','', 40),
     ('CONCEPTS', 'TSOD_TYPHON_TWILIGHT_PALACE',  'TSOD_TYPHON_PLACES', 'Simple', 'LOC_PEDIA_CONCEPTS_PAGE_TSOD_TYPHON_TWILIGHT_PALACE_CHAPTER_CONTENT_TITLE',  '', 50);
 
--- 搜索词：搜「提丰 / Typhon」时列出这些页面（Term 是 LOC tag，引用文明名）
+-- Search terms: searching "Typhon" lists these pages (Term is a LOC tag that references the civ name)
 INSERT OR REPLACE INTO CivilopediaPageSearchTerms (SectionId, PageId, Term)
 VALUES
     ('CONCEPTS', 'TSOD_TYPHON_FERDINAND',         'LOC_CIVILIZATION_TSOD_TYPHON_EMPIRE_NAME'),

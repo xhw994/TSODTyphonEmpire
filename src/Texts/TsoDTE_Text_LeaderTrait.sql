@@ -1,4 +1,4 @@
--- WP3 领袖能力文本（InGame + FrontEnd UpdateText）；描述只写效果、不用第二人称（I1 反馈），介绍性文字在领袖百科。
+-- WP3 leader ability text (InGame + FrontEnd UpdateText); descriptions state only the effect and do not use second person (I1 feedback); the introductory text is in the leader Civilopedia.
 
 INSERT OR REPLACE INTO LocalizedText
         (Language,      Tag,                                                    Text)
@@ -7,7 +7,7 @@ VALUES  ('zh_Hans_CN',  'LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME',          
         ('en_US',       'LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME',           'Resilience of Mortals'),
         ('en_US',       'LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_DESCRIPTION',    'Entering a new era grants 1 random [ICON_TechBoosted] Eureka and 1 random [ICON_CivicBoosted] Inspiration from that era, or 2 of each if it is a Dark Age.[NEWLINE]Killing an enemy unit in combat grants the [ICON_TechBoosted] Eureka for that unit''s prerequisite technology, if it has not been researched yet.');
 
--- 通知（摘要直接用领袖能力名 LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME）
+-- Notification (the summary uses the leader ability name directly, LOC_TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS_NAME)
 INSERT OR REPLACE INTO LocalizedText
         (Language,      Tag,                                        Text)
 VALUES  ('zh_Hans_CN',  'LOC_TSOD_TYPHON_BOOST_NOTIFY_ERA',         '进入新时代，获得{1_Items}。'),

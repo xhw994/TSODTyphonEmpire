@@ -1,5 +1,5 @@
--- WP17 神权理事会：决议的目标列表（已创立的宗教，不含万神殿）与可用性（Gameplay；InGame AddGameplayScripts）。
--- 官方决议的目标都由 Expansion2/Scripts/WorldCongress.lua 的 GameEvents.WC_Validate_* 填写，本决议的 ValidationLua 同理。
+-- WP17 Theocratic Council: resolution target list (founded religions, excluding the Pantheon) and availability (Gameplay; InGame AddGameplayScripts).
+-- Official resolution targets are filled by GameEvents.WC_Validate_* in Expansion2/Scripts/WorldCongress.lua; this resolution's ValidationLua works the same way.
 
 local RESOLUTION_TYPE = 'WC_RES_TSOD_THEOCRATIC_COUNCIL'
 
@@ -19,14 +19,14 @@ local function FoundedReligionHashes()
     return tHashes
 end
 
--- 沿用官方 WC_Validate_RegliousBan（没有 Lua 处理函数）时，目标列表是上一个决议留下的地貌，游戏崩溃（10-22 实测）。
+-- Reusing the official WC_Validate_RegliousBan (which has no Lua handler), the target list keeps the terrain left by the previous resolution, and the game crashes (in-game test 10-22).
 local function OnValidateTheocraticCouncil(resolutionType, playerId, options)
     local tHashes = FoundedReligionHashes()
     options.ResolutionOptions = tHashes
     print('[TsoDTE] Theocratic council: ' .. #tHashes .. ' religion target(s) for player ' .. tostring(playerId))
 end
 
--- 没有已创立的宗教时从候选里拿掉本决议，避免空目标列表（官方 WorldCongressPopup.lua 遇到空列表会中止世界议会）。
+-- With no founded religion, this resolution is removed from the candidates to avoid an empty target list (the official WorldCongressPopup.lua aborts the World Congress on an empty list).
 local function OnCanUseResolutions(resolutions)
     local tRow = GameInfo.Resolutions[RESOLUTION_TYPE]
     if tRow == nil or #FoundedReligionHashes() > 0 then

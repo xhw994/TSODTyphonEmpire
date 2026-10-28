@@ -110,7 +110,7 @@ def icons(filled, line, moment_mask):
     religion = os.path.join(ROOT, 'src', 'Core', 'TsoDTE_Religion_WarGod.sql')
     text = open(religion, encoding='utf-8').read()
     if INTERIM_MOMENT in text:
-        text = text.replace("-- 临时借官方自定义宗教 4 的插图（狮子），与临时图标一致。\n", '')
+        text = text.replace("-- Temporarily borrows the illustration of official custom religion 4 (the lion), matching the temporary icon.\n", '')
         with open(religion, 'w', encoding='utf-8', newline='\n') as f:
             f.write(text.replace("'%s'" % INTERIM_MOMENT, "'%s'" % MOMENT))
     return made

@@ -21,7 +21,7 @@ SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
 SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
 # Loading screen background (2880 x 1440, exactly 2:1, so it scales to 1920 x 960 without a crop).
 SRC_LOADING = '奥尔德南 冬日 修图.jpg'
-# images/法师塔.jpg is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
+# SRC_TOWER (below) is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
 SRC_TOWER = '法师塔.jpg'
 SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
 
@@ -168,7 +168,7 @@ def _bezier(p0, p1, p2, p3, n=24):
     return pts
 
 
-# Heater shield as on the banner in 提丰地图和国徽.jpg: peaked top edge, straight sides, curved base.
+# Heater shield as on the Typhon map-and-arms banner (source image): peaked top edge, straight sides, curved base.
 SHIELD = ([(184, 211), (514, 110), (844, 211), (844, 560)]
           + _bezier((844, 560), (844, 760), (700, 880), (514, 930))
           + _bezier((514, 930), (328, 880), (184, 760), (184, 560)))

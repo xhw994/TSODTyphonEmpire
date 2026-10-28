@@ -1,8 +1,8 @@
--- WP18 系列联动文本（InGame UpdateText，无 criteria：未加载的联动不会引用它们；只在局内生效，不进 FrontEnd）。
--- 中文写 LocalizedText，英文写 BaseGameText（官方视图，等价于 LocalizedText 的 en_US，塞西尔同用）。
+-- WP18 series crossover text (InGame UpdateText, no criteria: crossovers not loaded will not reference them; in-game only, not in FrontEnd).
+-- Chinese goes in LocalizedText and English in BaseGameText (the official view, equivalent to LocalizedText en_US; Cecil uses it too).
 
 INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
-    -- 态度说明（外交界面「态度」条目）
+    -- Attitude description (the "attitude" entry in the diplomacy screen)
     ('zh_Hans_CN', 'LOC_DIPLO_MODIFIER_TSOD_CECIL_ROSETTA_TO_GAWAIN',
      '罗塞塔·奥古斯都视高文·塞西尔为宿敌，宿敌亦是同类'),
     ('zh_Hans_CN', 'LOC_DIPLO_MODIFIER_TSOD_CECIL_GAWAIN_TO_ROSETTA',

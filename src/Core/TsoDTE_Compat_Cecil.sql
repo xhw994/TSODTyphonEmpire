@@ -1,7 +1,7 @@
--- WP18 系列联动：塞西尔（独立 action，criteria TsoDTE_ModCecil，LoadOrder 200，两位领袖的特性都已建立）。
--- 罗塞塔对高文、高文对罗塞塔各一条外交态度修正（master plan §8.6）；InitialValue 取值依据与台词取舍见 docs/notes.md。
+-- WP18 series crossover: Cecil (separate action, criteria TsoDTE_ModCecil, LoadOrder 200; both leaders' traits already exist).
+-- One diplomatic-attitude modifier each way: Rosetta Augustus toward Gawain, and Gawain toward Rosetta (master plan §8.6); the basis for the InitialValue values and the choice of statements is in docs/notes.md.
 
--- 1. 需求：对方是高文 / 对方是罗塞塔（作用于 Subject）
+-- 1. Requirements: the other party is Gawain / the other party is Rosetta (applies to Subject)
 INSERT INTO Requirements (RequirementId, RequirementType) VALUES
     ('REQ_TSOD_TYPHON_CECIL_OTHER_IS_GAWAIN',  'REQUIREMENT_PLAYER_LEADER_TYPE_MATCHES'),
     ('REQ_TSOD_TYPHON_CECIL_OTHER_IS_ROSETTA', 'REQUIREMENT_PLAYER_LEADER_TYPE_MATCHES');
@@ -18,8 +18,8 @@ INSERT INTO RequirementSetRequirements (RequirementSetId, RequirementId) VALUES
     ('REQSET_TSOD_TYPHON_CECIL_OTHER_IS_GAWAIN',  'REQ_TSOD_TYPHON_CECIL_OTHER_IS_GAWAIN'),
     ('REQSET_TSOD_TYPHON_CECIL_OTHER_IS_ROSETTA', 'REQ_TSOD_TYPHON_CECIL_OTHER_IS_ROSETTA');
 
--- 2. 态度修正：罗塞塔对高文、高文对罗塞塔（两条对称）
--- 没有 StatementKey：不是议程，AI 不会因此发出赞许或警告。
+-- 2. Attitude modifiers: Rosetta toward Gawain and Gawain toward Rosetta (two symmetric entries)
+-- No StatementKey: not an agenda, so the AI will not give praise or warnings because of it.
 INSERT INTO Modifiers (ModifierId, ModifierType, SubjectRequirementSetId) VALUES
     ('TSOD_TYPHON_CECIL_ROSETTA_TO_GAWAIN', 'MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER', 'REQSET_TSOD_TYPHON_CECIL_OTHER_IS_GAWAIN'),
     ('TSOD_TYPHON_CECIL_GAWAIN_TO_ROSETTA', 'MODIFIER_PLAYER_DIPLOMACY_SIMPLE_MODIFIER', 'REQSET_TSOD_TYPHON_CECIL_OTHER_IS_ROSETTA');

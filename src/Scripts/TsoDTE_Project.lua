@@ -1,5 +1,5 @@
--- WP16 去神圣化（城市项目；Gameplay）：完成时把一半信仰值（向下取整）转为等量当前研究进度，只对提丰玩家，通知只发人类玩家。
--- 外交支持 +25 与「对提丰可见」不在这里：分别见 Core/TsoDTE_Project.sql 的完成修正与解锁修正。
+-- WP16 Desanctification (city project; Gameplay): on completion, converts half the faith (rounded down) into an equal amount of current research progress; only for Typhon players, and notifications go only to human players.
+-- The +25 diplomatic support and "visible to Typhon" are not here: see the completion modifier and unlock modifier in Core/TsoDTE_Project.sql.
 
 local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
@@ -7,12 +7,12 @@ local PROJECT_DESANC = 'PROJECT_TSOD_DESANCTIFICATION'
 local TXT_DESANC_MSG = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE'
 local TXT_DESANC_SUM = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY'
 
--- 启动时填入
+-- Filled in at startup
 local ProjectIndex = -1
 local NotifyType = nil         -- NotificationTypes.USER_DEFINED_5
 local TyphonLeaders = {}      -- [LeaderType] = true
 
--- 判断玩家是不是提丰（领袖判断，口径与 TsoDTE_LeaderTrait.lua 的 CollectTyphonPlayers 相同）
+-- Checks whether a player is Typhon (by leader; same criteria as CollectTyphonPlayers in TsoDTE_LeaderTrait.lua)
 local function CollectTyphonLeaders()
     local tLeaders = { [LEADER_TYPHON] = true }
     for row in GameInfo.LeaderTraits() do
@@ -51,7 +51,7 @@ local function ConvertFaithToResearch(iPlayer, iCity)
     local pReligion = pPlayer:GetReligion()
     local pTechs = pPlayer:GetTechs()
 
-    -- P5：没有当前研究时不转换，信仰原样保留（退路见 test-plan §9.5）。
+    -- P5: with no current research, nothing is converted and the faith is kept as is (fallback: see test-plan §9.5).
     local iTech = pTechs:GetResearchingTech()
     if iTech == nil or iTech < 0 then
         print('[TsoDTE] Desanctification: player ' .. iPlayer .. ' has no current research, nothing converted (P5)')
@@ -59,14 +59,14 @@ local function ConvertFaithToResearch(iPlayer, iCity)
     end
 
     local iFaith = pReligion:GetFaithBalance()
-    -- P3：一半，向下取整（Lua 5.1 没有整除运算符，用 math.floor）
+    -- P3: half, rounded down (Lua 5.1 has no integer-division operator, so math.floor is used)
     local iAmount = math.floor(iFaith / 2)
     if iAmount <= 0 then
         print('[TsoDTE] Desanctification: player ' .. iPlayer .. ' faith ' .. tostring(iFaith) .. ', too little to convert')
         return
     end
 
-    -- P6：SetResearchProgress 的第二个参数是绝对值（官方只有 NapoleonScenario_StartScript.lua 一例），先读再写、读回核对。
+    -- P6: the second argument of SetResearchProgress is an absolute value (the official code has only one example, NapoleonScenario_StartScript.lua), so read first, write, then read back to verify.
     local iProgressBefore = pTechs:GetResearchProgress(iTech)
     pTechs:SetResearchProgress(iTech, iProgressBefore + iAmount)
     local iProgressAfter = pTechs:GetResearchProgress(iTech)
@@ -82,7 +82,7 @@ local function ConvertFaithToResearch(iPlayer, iCity)
         .. ' (expected +' .. tostring(iAmount) .. ')')
 end
 
--- 参数：playerID, cityID, projectID（即 GameInfo.Projects 的 Index）, buildingIndex, iX, iY, bCancelled
+-- Parameters: playerID, cityID, projectID (the GameInfo.Projects Index), buildingIndex, iX, iY, bCancelled
 local function OnTsoDTECityProjectCompleted(iPlayer, iCity, iProject, iBuilding, iX, iY, bCancelled)
     if iProject ~= ProjectIndex then
         return
@@ -90,7 +90,7 @@ local function OnTsoDTECityProjectCompleted(iPlayer, iCity, iProject, iBuilding,
     print('[TsoDTE] Desanctification: completion event player ' .. tostring(iPlayer) .. ' city ' .. tostring(iCity)
         .. ' cancelled ' .. tostring(bCancelled) .. ' (P1)')
 
-    -- P2：bCancelled 为真时跳过并留日志，便于实测对照。
+    -- P2: when bCancelled is true, skip and leave a log entry for comparison in testing.
     if bCancelled then
         print('[TsoDTE] Desanctification: completion event with bCancelled=true, skipped (P2)')
         return
@@ -106,7 +106,7 @@ local function OnTsoDTECityProjectCompleted(iPlayer, iCity, iProject, iBuilding,
         return
     end
 
-    -- P1：城市取不到只记日志，不影响转换（转换只依赖玩家）；退路见 test-plan §9.5。
+    -- P1: if the city cannot be read, only log it; conversion is not affected (it depends only on the player); fallback: see test-plan §9.5.
     local pCity = pPlayer:GetCities():FindID(iCity)
     if pCity == nil then
         print('[TsoDTE] Desanctification: city ' .. tostring(iCity) .. ' not found under player ' .. tostring(iPlayer) .. ' (P1)')
