@@ -1,6 +1,6 @@
-"""Turn the generated icon images in images/ into Civ6 icon sets (called from make_art.py).
+"""Turn the generated icon images (make_art.ICON_SRC) into Civ6 icon sets (called from make_art.py).
 
-Source images and prompts: docs/icon-prompts.md. Styles follow the official icons (images/icon-refs/).
+Source images and prompts: docs/icon-prompts.md. Styles follow the official icons (make_art.ICON_REFS).
 """
 import math
 import os

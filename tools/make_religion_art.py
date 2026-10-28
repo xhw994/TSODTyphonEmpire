@@ -7,7 +7,7 @@ import random
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
-from make_art import GEN_DIR, IMG, ROOT, TEX, TEX_DIR, write_dds, write_packages
+from make_art import GEN_DIR, ICON_SRC, ROOT, TEX, TEX_DIR, write_dds, write_packages
 
 SRC = '战神教标志.png'
 MOMENT_SRC = '战神教历史时刻.png'
@@ -118,9 +118,9 @@ def icons(filled, line, moment_mask):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--src', default=os.path.join(IMG, SRC))
+    ap.add_argument('--src', default=os.path.join(ICON_SRC, SRC))
     ap.add_argument('--line')
-    ap.add_argument('--moment', default=os.path.join(IMG, MOMENT_SRC))
+    ap.add_argument('--moment', default=os.path.join(ICON_SRC, MOMENT_SRC))
     ap.add_argument('--icons', action='store_true')
     ap.add_argument('--preview')
     a = ap.parse_args()

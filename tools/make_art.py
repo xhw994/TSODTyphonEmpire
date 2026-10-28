@@ -1,4 +1,5 @@
-"""Generate the mod's textures from images/ (repo root): python -X utf8 tools/make_art.py [--preview DIR]
+"""Generate the mod's textures from the art library (../Civ6 modding/黎明之剑-素材/, catalogue in its README.md):
+python -X utf8 tools/make_art.py [--preview DIR]
 Writes src/Textures/<NAME>.dds + .tex and art/generated/<NAME>.png (editable source); --preview also writes contact sheets to DIR.
 Crops are in source-image pixels; adjust them here and re-run.
 """
@@ -10,20 +11,23 @@ import sys
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-IMG = os.path.join(ROOT, 'images')
+# The user's art library in the workspace, outside the repo
+IMG = os.path.join(ROOT, '..', 'Civ6 modding', '黎明之剑-素材')
+ICON_SRC = os.path.join(IMG, '模组', '提丰帝国', '图标源图')   # generated icon sources (docs/icon-prompts.md)
+ICON_REFS = os.path.join(IMG, '..', '通用模板', '官方图标参考')
 TEX_DIR = os.path.join(ROOT, 'src', 'Textures')
 GEN_DIR = os.path.join(ROOT, 'art', 'generated')
 
 CIV_SIZES = [22, 30, 32, 36, 44, 45, 48, 50, 64, 80, 128, 200, 256]
 LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
 
-SRC_ROSETTA = '罗塞塔·奥古斯都大帝.jpg'
-SRC_RAIN = '奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
+SRC_ROSETTA = '人物/罗塞塔·奥古斯都大帝.jpg'
+SRC_RAIN = '地点与场景/奥尔德南，雨夜，从燃石酸化工厂前的大道上驶过的马车.png'
 # Loading screen background (2880 x 1440, exactly 2:1, so it scales to 1920 x 960 without a crop).
-SRC_LOADING = '奥尔德南 冬日 修图.jpg'
+SRC_LOADING = '地点与场景/奥尔德南 冬日 修图.jpg'
 # SRC_TOWER (below) is Cecil's mage tower; the user agreed to use a short crop of it for the Mage Tower moment.
-SRC_TOWER = '法师塔.jpg'
-SRC_MATILDA = '玛蒂尔达·奥古斯都.jpg'
+SRC_TOWER = '建筑与造物/法师塔.jpg'
+SRC_MATILDA = '人物/玛蒂尔达·奥古斯都.jpg'
 
 # Colors: src/Core/TsoDTE_Colors.sql
 BLACK = (22, 20, 22, 255)
@@ -343,10 +347,10 @@ def main():
 
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import icon_art
-    icons = icon_art.build(IMG, emit, icon_sizes)
+    icons = icon_art.build(ICON_SRC, emit, icon_sizes)
 
     if preview:
-        refs = os.path.join(IMG, 'icon-refs')
+        refs = ICON_REFS
         pairs = [('unit', 'unit_icon_crossbowman'), ('unit_fow', 'unit_icon_crossbowman_FOW'),
                  ('portrait', 'unit_portrait_crossbowman'), ('district', 'district_campus'),
                  ('district_fow', 'district_campus_FOW'), ('building', 'building_factory'),
