@@ -14,9 +14,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # The user's art library in the workspace, outside the repo
 IMG = os.path.join(ROOT, '..', 'Civ6 modding', '黎明之剑-素材')
 ICON_SRC = os.path.join(IMG, '模组', '提丰帝国', '图标源图')   # generated icon sources (docs/icon-prompts.md)
-ICON_REFS = os.path.join(IMG, '..', '通用模板', '官方图标参考')
 TEX_DIR = os.path.join(ROOT, 'src', 'Textures')
 GEN_DIR = os.path.join(ROOT, 'art', 'generated')
+# Official icons beside ours in --preview; fill with the civ6-modding skill:
+#   art_pipeline.py ref ICON_UNIT_CROSSBOWMAN --out art/generated/refs   (and the other icons in the preview pairs)
+ICON_REFS = os.path.join(GEN_DIR, 'refs')
 
 CIV_SIZES = [22, 30, 32, 36, 44, 45, 48, 50, 64, 80, 128, 200, 256]
 LEADER_SIZES = [32, 45, 48, 50, 55, 64, 80, 256]
@@ -351,16 +353,16 @@ def main():
 
     if preview:
         refs = ICON_REFS
-        pairs = [('unit', 'unit_icon_crossbowman'), ('unit_fow', 'unit_icon_crossbowman_FOW'),
-                 ('portrait', 'unit_portrait_crossbowman'), ('district', 'district_campus'),
-                 ('district_fow', 'district_campus_FOW'), ('building', 'building_factory'),
-                 ('building_fow', 'building_factory_FOW'), ('project', 'project_campus')]
+        pairs = [('unit', 'ICON_UNIT_CROSSBOWMAN_256'), ('unit_fow', 'ICON_UNIT_CROSSBOWMAN_FOW_256'),
+                 ('portrait', 'ICON_UNIT_CROSSBOWMAN_PORTRAIT_256'), ('district', 'ICON_DISTRICT_CAMPUS_256'),
+                 ('district_fow', 'ICON_DISTRICT_CAMPUS_FOW_256'), ('building', 'ICON_BUILDING_FACTORY_256'),
+                 ('building_fow', 'ICON_BUILDING_FACTORY_FOW_256'), ('project', 'ICON_PROJECT_ENHANCE_DISTRICT_CAMPUS_256')]
         sheet = Image.new('RGBA', (256 * len(pairs), 512 + 80), (70, 90, 120, 255))
         for i, (k, ref) in enumerate(pairs):
             sheet.alpha_composite(icons[k][-1], (i * 256, 0))
             rp = os.path.join(refs, ref + '.png')
             if os.path.exists(rp):
-                sheet.paste(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
+                sheet.alpha_composite(Image.open(rp).convert('RGBA').resize((256, 256)), (i * 256, 256))
             x = i * 256 + 8
             for im in icons[k][:3]:
                 sheet.alpha_composite(im, (x, 520))
