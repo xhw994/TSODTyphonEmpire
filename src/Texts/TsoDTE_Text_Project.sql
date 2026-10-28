@@ -11,6 +11,8 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     -- Notifications (messages and summary)
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
      '去神圣化完成：信仰值的一半已转化为科技值，并获得 25 点外交支持。'),
+    ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE_NOTHING_CONVERTED',
+     '去神圣化完成：获得 25 点外交支持。没有正在研究的科技或信仰值不足，本次没有转化信仰值。'),
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY', '去神圣化完成'),
 
     -- en_US
@@ -21,4 +23,6 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
 
     ('en_US', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
      'Desanctification complete: half of the Faith was converted into Science, and 25 Diplomatic Favor was granted.'),
+    ('en_US', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE_NOTHING_CONVERTED',
+     'Desanctification complete: 25 Diplomatic Favor was granted. No Faith was converted, because nothing is being researched or the Faith is too low.'),
     ('en_US', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY', 'Desanctification Complete');

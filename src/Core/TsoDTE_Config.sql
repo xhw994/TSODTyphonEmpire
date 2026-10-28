@@ -1,4 +1,4 @@
--- WP1 game-setup screen: civ and leader entries + unique items (FrontEnd UpdateDatabase); references only IDs and LOC tags (ids.md §3, §4); icon names are provisional art names.
+-- WP1 game-setup screen: civ and leader entries + unique items (FrontEnd UpdateDatabase); references only IDs and LOC tags (ids.md §3, §4).
 -- Ruleset: Gathering Storm only; Domain 'Players:Expansion2_Players' (same as the official Expansion2_Players.xml and Cecil).
 
 -- 1. Civ and leader entries (also carries the civ ability and leader ability displays)

@@ -8,7 +8,7 @@ VALUES
     (
         'zh_Hans_CN',
         'LOC_UNIT_TSOD_BATTLE_MAGE_DESCRIPTION',
-        '中世纪提丰特色远程单位，替代弩手。其 [ICON_Strength] 战斗力随时代成长。与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。组成军团或军队后每回合恢复生命；组成军队后可施放一次“湮灭之创”，施放后整支军队阵亡。'
+        '中世纪提丰特色远程单位，替代弩手。其 [ICON_Strength] 战斗力随研究弹道学和高级弹道学提升。与至少一个其他战斗法师相邻时，+5 [ICON_Ranged] 远程攻击力（不叠加）。组成军团或军队后每回合恢复生命；组成军队后可施放一次“湮灭之创”，施放后整支军队阵亡。'
     ),
 
     -- Ability: Ballistics Growth

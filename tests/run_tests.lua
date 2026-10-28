@@ -370,12 +370,46 @@ local function TestCongress()
         'targets are founded religions only')
 end
 
+-- Desanctification: the notification says what actually happened
+local function TestProject()
+    SetupWorld()
+    GameInfo.Projects = MakeInfoTable({ { ProjectType = 'PROJECT_TSOD_DESANCTIFICATION' } }, 'ProjectType')
+    local p = Players[0]
+    local tState = { faith = 100, tech = 7, progress = 10 }
+    function p:GetReligion()
+        return { GetFaithBalance = function() return tState.faith end,
+                 ChangeFaithBalance = function(_, n) tState.faith = tState.faith + n end }
+    end
+    function p:GetTechs()
+        return { GetResearchingTech = function() return tState.tech end,
+                 GetResearchProgress = function() return tState.progress end,
+                 SetResearchProgress = function(_, _, n) tState.progress = n end }
+    end
+    function p:GetCities() return { FindID = function() return {} end } end
+    LoadScript('TsoDTE_Project.lua')
+
+    Fire('CityProjectCompleted', 0, 1, 0, -1, 2, 3, false)
+    check(tState.faith == 50 and tState.progress == 60, 'half the faith goes to the current research')
+    check(World.notifications[1].msg == 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE', 'conversion notification')
+
+    tState.tech = -1
+    Fire('CityProjectCompleted', 0, 1, 0, -1, 2, 3, false)
+    check(tState.faith == 50, 'no research: faith kept')
+    check(World.notifications[2].msg == 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE_NOTHING_CONVERTED',
+        'no research: notification says nothing was converted')
+
+    Fire('CityProjectCompleted', 1, 1, 0, -1, 2, 3, false)
+    check(#World.notifications == 2, 'other civilizations are ignored')
+end
+
 local ok, err = pcall(TestBattleMage)
 if not ok then failures = failures + 1; print('ERROR in battle mage tests: ' .. tostring(err)) end
 ok, err = pcall(TestLeaderTrait)
 if not ok then failures = failures + 1; print('ERROR in leader trait tests: ' .. tostring(err)) end
 ok, err = pcall(TestCongress)
 if not ok then failures = failures + 1; print('ERROR in congress tests: ' .. tostring(err)) end
+ok, err = pcall(TestProject)
+if not ok then failures = failures + 1; print('ERROR in project tests: ' .. tostring(err)) end
 
 print(string.format('%d passed, %d failed', passes, failures))
 os.exit(failures == 0 and 0 or 1)
