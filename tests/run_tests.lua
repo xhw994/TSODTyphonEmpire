@@ -370,7 +370,7 @@ local function TestCongress()
         'targets are founded religions only')
 end
 
--- Desanctification: the notification says what actually happened
+-- Desanctification: half the faith goes to the current research
 local function TestProject()
     SetupWorld()
     GameInfo.Projects = MakeInfoTable({ { ProjectType = 'PROJECT_TSOD_DESANCTIFICATION' } }, 'ProjectType')
@@ -392,14 +392,8 @@ local function TestProject()
     check(tState.faith == 50 and tState.progress == 60, 'half the faith goes to the current research')
     check(World.notifications[1].msg == 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE', 'conversion notification')
 
-    tState.tech = -1
-    Fire('CityProjectCompleted', 0, 1, 0, -1, 2, 3, false)
-    check(tState.faith == 50, 'no research: faith kept')
-    check(World.notifications[2].msg == 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE_NOTHING_CONVERTED',
-        'no research: notification says nothing was converted')
-
     Fire('CityProjectCompleted', 1, 1, 0, -1, 2, 3, false)
-    check(#World.notifications == 2, 'other civilizations are ignored')
+    check(#World.notifications == 1, 'other civilizations are ignored')
 end
 
 local ok, err = pcall(TestBattleMage)

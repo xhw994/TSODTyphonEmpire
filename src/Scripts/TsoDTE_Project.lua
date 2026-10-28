@@ -5,7 +5,6 @@ local LEADER_TYPHON  = 'LEADER_TSOD_ROSETTA_AUGUSTUS'
 local TRAIT_TYPHON   = 'TRAIT_LEADER_TSOD_ROSETTA_AUGUSTUS'
 local PROJECT_DESANC = 'PROJECT_TSOD_DESANCTIFICATION'
 local TXT_DESANC_MSG = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE'
-local TXT_DESANC_NONE = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE_NOTHING_CONVERTED'
 local TXT_DESANC_SUM = 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_SUMMARY'
 
 -- Filled in at startup
@@ -29,7 +28,7 @@ local function IsTyphonPlayer(iPlayer)
     return pConfig ~= nil and TyphonLeaders[pConfig:GetLeaderTypeName()] == true
 end
 
-local function NotifyHuman(iPlayer, iX, iY, sMessage)
+local function NotifyHuman(iPlayer, iX, iY)
     local pPlayer = Players[iPlayer]
     if pPlayer == nil or not pPlayer:IsHuman() then
         return
@@ -40,7 +39,7 @@ local function NotifyHuman(iPlayer, iX, iY, sMessage)
     end
     local bOk, sErr = pcall(function()
         NotificationManager.SendNotification(iPlayer, NotifyType,
-            Locale.Lookup(sMessage), Locale.Lookup(TXT_DESANC_SUM), iX, iY)
+            Locale.Lookup(TXT_DESANC_MSG), Locale.Lookup(TXT_DESANC_SUM), iX, iY)
     end)
     if not bOk then
         print('[TsoDTE] Desanctification: notification failed: ' .. tostring(sErr))
@@ -56,7 +55,7 @@ local function ConvertFaithToResearch(iPlayer, iCity)
     local iTech = pTechs:GetResearchingTech()
     if iTech == nil or iTech < 0 then
         print('[TsoDTE] Desanctification: player ' .. iPlayer .. ' has no current research, nothing converted (P5)')
-        return false
+        return
     end
 
     local iFaith = pReligion:GetFaithBalance()
@@ -64,7 +63,7 @@ local function ConvertFaithToResearch(iPlayer, iCity)
     local iAmount = math.floor(iFaith / 2)
     if iAmount <= 0 then
         print('[TsoDTE] Desanctification: player ' .. iPlayer .. ' faith ' .. tostring(iFaith) .. ', too little to convert')
-        return false
+        return
     end
 
     -- P6: the second argument of SetResearchProgress is an absolute value (the official code has only one example, NapoleonScenario_StartScript.lua), so read first, write, then read back to verify.
@@ -81,7 +80,6 @@ local function ConvertFaithToResearch(iPlayer, iCity)
         .. ', research ' .. (tTech and tTech.TechnologyType or tostring(iTech))
         .. ' progress ' .. tostring(iProgressBefore) .. ' -> ' .. tostring(iProgressAfter)
         .. ' (expected +' .. tostring(iAmount) .. ')')
-    return true
 end
 
 -- Parameters: playerID, cityID, projectID (the GameInfo.Projects Index), buildingIndex, iX, iY, bCancelled
@@ -114,8 +112,8 @@ local function OnTsoDTECityProjectCompleted(iPlayer, iCity, iProject, iBuilding,
         print('[TsoDTE] Desanctification: city ' .. tostring(iCity) .. ' not found under player ' .. tostring(iPlayer) .. ' (P1)')
     end
 
-    local bConverted = ConvertFaithToResearch(iPlayer, iCity)
-    NotifyHuman(iPlayer, iX, iY, bConverted and TXT_DESANC_MSG or TXT_DESANC_NONE)
+    ConvertFaithToResearch(iPlayer, iCity)
+    NotifyHuman(iPlayer, iX, iY)
 end
 
 local function InitTsoDTEProject()
