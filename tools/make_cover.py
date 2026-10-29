@@ -1,4 +1,4 @@
-"""Workshop cover, 1024x1024 JPEG: python -X utf8 tools/make_cover.py [--art FILE] [--crop L T R B]
+"""Workshop cover, 1024x1024 JPEG: python -X utf8 tools/make_cover.py [--art FILE] [--crop L T R B] [--cn TEXT] [--en TEXT] [--out FILE]
 Series layout (as Dream City's tools/make_cover.py): small top title, black plate with gold border and two gold title lines.
 Output goes to art/generated/ (not shipped in the mod; the uploader picks the preview file separately).
 """
@@ -85,14 +85,16 @@ def main():
     ap.add_argument('--art', default=ART)
     ap.add_argument('--crop', type=int, nargs=4, default=CROP)
     ap.add_argument('--out', default=OUT)
+    ap.add_argument('--cn', default=TEXT_CN)
+    ap.add_argument('--en', default=TEXT_EN)
     a = ap.parse_args()
     img = draw_plate(background(a.art, tuple(a.crop)))
     d = ImageDraw.Draw(img)
     draw_tracked(d, SIZE // 2, None, TOP_TITLE, ImageFont.truetype(TOP_TITLE_FONT, TOP_TITLE_SIZE),
                  TOP_TITLE_TRACK, fill=(255, 255, 255), stroke=0, top_y=TOP_TITLE_TOP)
     cx = (PLATE_BOX[0] + PLATE_BOX[2]) // 2
-    draw_tracked(d, cx, MID_CN, TEXT_CN, ImageFont.truetype(FONT_CN, SIZE_CN), TRACK_CN)
-    draw_tracked(d, cx, MID_EN, TEXT_EN, ImageFont.truetype(FONT_EN, SIZE_EN), TRACK_EN)
+    draw_tracked(d, cx, MID_CN, a.cn, ImageFont.truetype(FONT_CN, SIZE_CN), TRACK_CN)
+    draw_tracked(d, cx, MID_EN, a.en, ImageFont.truetype(FONT_EN, SIZE_EN), TRACK_EN)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     img.save(a.out, 'JPEG', quality=92, subsampling=0)
     print('wrote %s (%d KB)' % (a.out, os.path.getsize(a.out) // 1024))
