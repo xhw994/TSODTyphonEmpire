@@ -27,8 +27,7 @@
 </Associations>]]></AssociationData>
     <SpecialThanks>
     </SpecialThanks>
-    <Homepage>
-    </Homepage>
+    <Homepage>https://steamcommunity.com/sharedfiles/filedetails/?id=3829307748</Homepage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
     <OutputPath>.</OutputPath>

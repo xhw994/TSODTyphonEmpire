@@ -3,7 +3,7 @@
 > A fan-made Civilization VI mod introducing the **Typhon Empire** from the Chinese web novel *Sword of Dawn (黎明之剑)*.
 
 <!-- Badges -->
-[![Steam Workshop](https://img.shields.io/badge/Steam-Workshop-blue?logo=steam)](https://steamcommunity.com/workshop/)
+[![Steam Workshop](https://img.shields.io/badge/Steam-Workshop-blue?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3829307748)
 ![Civ VI](https://img.shields.io/badge/Civilization_VI-Gathering_Storm-green)
 ![Lua](https://img.shields.io/badge/language-Lua-blue)
 
@@ -146,7 +146,7 @@ A loyalty lens overlay with the Typhon emblem, 57 city names from the fan map of
 
 ### Steam Workshop *(recommended)*
 
-1. Subscribe on the [Steam Workshop page](#) *(link to be added)*.
+1. Subscribe on the [Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3829307748).
 2. Launch Civilization VI → **Additional Content** → enable **Typhon Empire**.
 
 ### Manual Installation
