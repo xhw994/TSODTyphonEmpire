@@ -1,6 +1,7 @@
 """Write src/ArtDefs/Units.artdef for the battle mage from official unit art entries: python -X utf8 tools/make_unit_artdef.py "<Civ6 install dir>"
-Unit entry: copy of UNIT_SLINGER (4-member squad, ranged combat, sounds). Member TSOD_BattleMage: copy of the Inquisitor (robe and staff, civ-coloured)
-keeping its Movement=Slinger / Combat=SlingerCombat ranged animations (the Secret Societies Cultist had only melee ones).
+Unit entry: copy of UNIT_SLINGER (4-member squad, ranged combat) with the Inquisitor's Audio (build and select sounds; user, 10-28).
+Member TSOD_BattleMage: copy of the Inquisitor (robe and staff, civ-coloured) keeping its Movement=Slinger / Combat=SlingerCombat
+ranged animations (the Secret Societies Cultist had only melee ones).
 """
 import copy
 import os
@@ -9,6 +10,7 @@ import xml.etree.ElementTree as ET
 
 SOURCE_UNIT = 'UNIT_SLINGER'
 SOURCE_MEMBER = 'Slinger'
+AUDIO_UNIT = 'UNIT_INQUISITOR'
 TARGET_UNIT = 'UNIT_TSOD_BATTLE_MAGE'
 BASE_MEMBER = 'Inquisitor'
 MEMBER = 'TSOD_BattleMage'
@@ -46,6 +48,13 @@ for coll in official.find('m_RootCollections'):
                         swapped += 1
         assert swapped, 'member not found in ' + SOURCE_UNIT
         report['members swapped'] = swapped
+        kids = el.find('m_ChildCollections')
+        audio = next(ch for ch in kids if ch.find('m_CollectionName').get('text') == 'Audio')
+        donor = next(ch for ch in find(coll, AUDIO_UNIT).find('m_ChildCollections')
+                     if ch.find('m_CollectionName').get('text') == 'Audio')
+        kids.insert(list(kids).index(audio), copy.deepcopy(donor))
+        kids.remove(audio)
+        report['audio'] = [x.get('text') for x in donor.iter('m_Value') if x.get('text')]
         new.append(el)
     elif name == 'UnitMemberTypes':
         el = copy.deepcopy(find(coll, BASE_MEMBER))

@@ -11,6 +11,7 @@ from make_art import GEN_DIR, ICON_SRC, ROOT, TEX, TEX_DIR, write_dds, write_pac
 
 SRC = '战神教标志.png'
 MOMENT_SRC = '战神教历史时刻.png'
+LINE_SRC = '战神教标志-线稿.png'      # optional; without it the outline is traced from SRC
 OVERLAY = 'RELIGION_OVERLAY_TSOD_WAR_GOD'
 PRESSURE = 'RELIGION_PRESSURE_TSOD_WAR_GOD'
 SPRITE = 'RELIGION_PRESSURE_ICON_TSOD_WAR_GOD'
@@ -18,8 +19,9 @@ ICON = 'ICON_RELIGION_TSOD_WAR_GOD'
 ATLAS = 'ICON_ATLAS_TSOD_TYPHON_RELIGION'
 MOMENT = 'MOMENT_RELIGION_TSOD_WAR_GOD'
 INTERIM_MOMENT = 'PM_FoundedReligion_Custom4'
-FILLED_SIZES = [22, 50, 100]
-LINE_SIZE = 270
+# Official religion atlases: 22 and 50 are solid; 100 (the religion picker) and 270 are thin line art with a sparkle.
+FILLED_SIZES = [22, 50]
+LINE_SIZES = [100, 270]
 BROWN = (64, 48, 23)
 M = 1024
 
@@ -86,11 +88,11 @@ def lens(filled, line):
 
 
 def stamp(mask, figure=False):
-    # A full figure (the moment art) needs most of the seal to stay legible; a symbol keeps the official margin.
+    # A full figure (the moment art) needs most of the seal to stay legible (99 px, user's choice 10-28); a symbol keeps the official margin.
     rnd = random.Random(14)
     grain = Image.new('L', (166, 122))
     grain.putdata([rnd.randint(150, 255) for _ in range(166 * 122)])
-    out = paint(mask, BROWN, 116 if figure else 80, 166, 122, center=(86, 61) if figure else (86, 55))
+    out = paint(mask, BROWN, 99 if figure else 80, 166, 122, center=(86, 61) if figure else (86, 55))
     out.putalpha(ImageChops.multiply(out.getchannel('A'), grain.filter(ImageFilter.GaussianBlur(0.8))))
     return out
 
@@ -98,10 +100,10 @@ def stamp(mask, figure=False):
 def icons(filled, line, moment_mask, figure):
     made = [emit(paint(filled, (255, 255, 255), round(s * 0.88), s), '%s_%d' % (ICON, s), 'UserInterface',
                  ['UserInterface'], False) for s in FILLED_SIZES]
-    made.append(emit(paint(line, (255, 255, 255), round(LINE_SIZE * 0.82), LINE_SIZE), '%s_%d' % (ICON, LINE_SIZE),
-                     'UserInterface', ['UserInterface'], False))
+    made += [emit(paint(line, (255, 255, 255), round(s * 0.82), s), '%s_%d' % (ICON, s), 'UserInterface',
+                  ['UserInterface'], False) for s in LINE_SIZES]
     made.append(emit(stamp(moment_mask, figure), MOMENT, 'UserInterface', ['UserInterface'], False))
-    rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + [LINE_SIZE])
+    rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + LINE_SIZES)
     with open(os.path.join(ROOT, 'src', 'Icons', 'TsoDTE_Icons_Religion.sql'), 'w', encoding='utf-8', newline='\n') as f:
         f.write('-- War God Faith icons (InGame UpdateIcons), written by tools/make_religion_art.py --icons.\n'
                 '-- The UI looks up "ICON_" .. ReligionType; sizes follow the official religion atlases 22 / 50 / 100 / 270.\n'
@@ -120,14 +122,14 @@ def icons(filled, line, moment_mask, figure):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--src', default=os.path.join(ICON_SRC, SRC))
-    ap.add_argument('--line')
+    ap.add_argument('--line', default=os.path.join(ICON_SRC, LINE_SRC))
     ap.add_argument('--moment', default=os.path.join(ICON_SRC, MOMENT_SRC))
     ap.add_argument('--icons', action='store_true')
     ap.add_argument('--preview')
     a = ap.parse_args()
     os.makedirs(GEN_DIR, exist_ok=True)
     filled = master(mask_of(a.src))
-    line = master(mask_of(a.line)) if a.line else contour(filled)
+    line = master(mask_of(a.line)) if os.path.exists(a.line) else contour(filled)
     made = lens(filled, line)
     if a.icons:
         figure = os.path.exists(a.moment)

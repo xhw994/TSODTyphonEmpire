@@ -6,7 +6,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME', '去神圣化'),
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', '去神圣化'),
     ('zh_Hans_CN', 'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',
-     '需要“法师塔”区域与“大众传媒”市政。[NEWLINE]完成时：将 [ICON_Faith] 信仰值的一半转化为等量的 [ICON_Science] 科技值，计入当前研究。[NEWLINE]获得 25 点 [ICON_Favor] 外交支持。'),
+     '完成时：将 [ICON_Faith] 信仰值的一半转化为等量的 [ICON_Science] 科技值，计入当前研究。[NEWLINE]获得 25 点 [ICON_Favor] 外交支持。'),
 
     -- Notifications (messages and summary)
     ('zh_Hans_CN', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
@@ -17,7 +17,7 @@ INSERT OR REPLACE INTO LocalizedText (Language, Tag, Text) VALUES
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_NAME', 'Desanctification'),
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_SHORT_NAME', 'Desanctification'),
     ('en_US', 'LOC_PROJECT_TSOD_DESANCTIFICATION_DESCRIPTION',
-     'Requires a Mage Tower district and the Mass Media civic.[NEWLINE]On completion: converts half of the current [ICON_Faith] Faith into an equal amount of [ICON_Science] Science toward the current research.[NEWLINE]Grants 25 [ICON_Favor] Diplomatic Favor.'),
+     'On completion: converts half of the current [ICON_Faith] Faith into an equal amount of [ICON_Science] Science toward the current research.[NEWLINE]Grants 25 [ICON_Favor] Diplomatic Favor.'),
 
     ('en_US', 'LOC_NOTIFICATION_TSOD_DESANCTIFICATION_MESSAGE',
      'Desanctification complete: half of the Faith was converted into Science, and 25 Diplomatic Favor was granted.'),

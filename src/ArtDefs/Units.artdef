@@ -127,20 +127,20 @@
 								</m_Values>
 							</m_Fields>
 							<m_ChildCollections />
-							<m_Name text="" />
+							<m_Name text="Entry" />
 							<m_AppendMergedParameterCollections>false</m_AppendMergedParameterCollections>
 						</Element>
 						<Element>
 							<m_Fields>
 								<m_Values>
 									<Element class="AssetObjects..StringValue">
-										<m_Value text="Slinger" />
+										<m_Value text="Inquisitor" />
 										<m_ParamName text="XrefName" />
 									</Element>
 								</m_Values>
 							</m_Fields>
 							<m_ChildCollections />
-							<m_Name text="SLINGER" />
+							<m_Name text="MISSIONARY" />
 							<m_AppendMergedParameterCollections>false</m_AppendMergedParameterCollections>
 						</Element>
 					</Element>
