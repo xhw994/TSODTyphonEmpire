@@ -24,6 +24,10 @@ FILLED_SIZES = [22, 50]
 LINE_SIZES = [100, 270]
 BROWN = (64, 48, 23)
 M = 1024
+# Official line icons (e.g. Religion_Custom4.dds): line gray ~164, bright 255 nodes on the line, a four-point sparkle top right.
+LINE_GRAY = 164
+LINE_WIDTH = 8           # traced outline width on the 1024 master (~2 px at 270, ~1 px at 100), as thin as the lion
+NODE_R, SPARKLE_L = 8, 50
 
 
 def mask_of(path):
@@ -60,6 +64,48 @@ def paint(mask, color, box, w, h=None, center=None):
     return out
 
 
+def extremes(mask):
+    """Line pixels furthest out in 8 directions, NE first (where the sparkle goes)."""
+    px = mask.load()
+    pts = [(x, y) for y in range(0, M, 3) for x in range(0, M, 3) if px[x, y] > 128]
+    dirs = [(1, -1), (0, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
+    out = []
+    for dx, dy in dirs:
+        p = max(pts, key=lambda q: q[0] * dx + q[1] * dy)
+        if all((p[0] - o[0]) ** 2 + (p[1] - o[1]) ** 2 > 120 ** 2 for o in out):
+            out.append(p)
+    return out
+
+
+def constellation(line):
+    """Line art in the official religion style: gray line, bright nodes, a sparkle; RGBA on the 1024 master."""
+    out = Image.new('RGBA', (M, M), (255, 255, 255, 0))
+    out.paste(Image.new('RGBA', (M, M), (LINE_GRAY,) * 3 + (255,)), mask=line)
+    lights = Image.new('L', (M, M), 0)
+    d = ImageDraw.Draw(lights)
+    pts = extremes(line)
+    (sx, sy), nodes = pts[0], pts[1:]
+    for x, y in nodes:
+        d.ellipse((x - NODE_R, y - NODE_R, x + NODE_R, y + NODE_R), fill=255)
+    w = SPARKLE_L * 0.16
+    d.polygon([(sx, sy - SPARKLE_L), (sx + w, sy - w), (sx + SPARKLE_L, sy), (sx + w, sy + w),
+               (sx, sy + SPARKLE_L), (sx - w, sy + w), (sx - SPARKLE_L, sy), (sx - w, sy - w)], fill=255)
+    d.ellipse((sx - NODE_R * 1.4, sy - NODE_R * 1.4, sx + NODE_R * 1.4, sy + NODE_R * 1.4), fill=255)
+    lights = ImageChops.lighter(lights, lights.filter(ImageFilter.GaussianBlur(6)).point(lambda v: min(255, v * 2)))
+    out.alpha_composite(Image.merge('RGBA', [Image.new('L', (M, M), 255)] * 3 + [lights]))
+    return out
+
+
+def place(rgba, box, w):
+    """Fit an RGBA master into a w x w canvas (premultiplied, so edges stay clean)."""
+    m = rgba.crop(rgba.getchannel('A').getbbox()).convert('RGBa')
+    m.thumbnail((box, box), Image.LANCZOS)
+    m = m.convert('RGBA')
+    out = Image.new('RGBA', (w, w), (255, 255, 255, 0))
+    out.alpha_composite(m, ((w - m.width) // 2, (w - m.height) // 2))
+    return out
+
+
 def halo(canvas, radius, blur, peak):
     disc = Image.new('L', (canvas, canvas), 0)
     c = canvas // 2
@@ -78,9 +124,9 @@ def emit(img, name, cls, tags, mips):
     return img
 
 
-def lens(filled, line):
+def lens(filled, star):
     overlay = halo(512, 200, 45, 110)
-    overlay.alpha_composite(paint(line, (255, 255, 255), 300, 512))
+    overlay.alpha_composite(place(star, 300, 512))
     pip = paint(filled, (255, 255, 255), 50, 128)
     return [emit(overlay, OVERLAY, 'Generic_BaseColor', ['Generic_BaseColor'], True),
             emit(pip, PRESSURE, 'Generic_BaseColor', ['Generic_BaseColor'], True),
@@ -97,10 +143,10 @@ def stamp(mask, figure=False):
     return out
 
 
-def icons(filled, line, moment_mask, figure):
+def icons(filled, star, moment_mask, figure):
     made = [emit(paint(filled, (255, 255, 255), round(s * 0.88), s), '%s_%d' % (ICON, s), 'UserInterface',
                  ['UserInterface'], False) for s in FILLED_SIZES]
-    made += [emit(paint(line, (255, 255, 255), round(s * 0.82), s), '%s_%d' % (ICON, s), 'UserInterface',
+    made += [emit(place(star, round(s * 0.82), s), '%s_%d' % (ICON, s), 'UserInterface',
                   ['UserInterface'], False) for s in LINE_SIZES]
     made.append(emit(stamp(moment_mask, figure), MOMENT, 'UserInterface', ['UserInterface'], False))
     rows = ',\n'.join("    ('%s', %d, 1, 1, '%s_%d')" % (ATLAS, s, ICON, s) for s in FILLED_SIZES + LINE_SIZES)
@@ -129,12 +175,13 @@ def main():
     a = ap.parse_args()
     os.makedirs(GEN_DIR, exist_ok=True)
     filled = master(mask_of(a.src))
-    line = master(mask_of(a.line)) if os.path.exists(a.line) else contour(filled)
-    made = lens(filled, line)
+    line = master(mask_of(a.line)) if os.path.exists(a.line) else contour(filled, LINE_WIDTH)
+    star = constellation(line)
+    made = lens(filled, star)
     if a.icons:
         figure = os.path.exists(a.moment)
         moment_mask = master(mask_of(a.moment)) if figure else filled
-        made += icons(filled, line, moment_mask, figure)
+        made += icons(filled, star, moment_mask, figure)
         print('packages (ui, fallback):', write_packages())
     if a.preview:
         os.makedirs(a.preview, exist_ok=True)
