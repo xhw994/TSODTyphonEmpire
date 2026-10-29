@@ -1,5 +1,6 @@
-"""Workshop cover, 1024x1024 JPEG: python -X utf8 tools/make_cover.py [--art FILE] [--crop L T R B] [--cn TEXT] [--en TEXT] [--out FILE]
+"""Workshop cover, 1024x1024 JPEG: python -X utf8 tools/make_cover.py [--art FILE] [--crop L T R B] [--cn TEXT] [--en TEXT] [--layout square|wide] [--out FILE]
 Series layout (as Dream City's tools/make_cover.py): small top title, black plate with gold border and two gold title lines.
+--layout wide makes a 1920x1080 (16:9) cover with the plate at the lower left, e.g. for a Workshop collection.
 Output goes to art/generated/ (not shipped in the mod; the uploader picks the preview file separately).
 """
 import argparse
@@ -15,6 +16,9 @@ CROP = (0, 150, 1236, 1386)               # square around Rosetta's head and the
 OUT = os.path.join(ROOT, 'art', 'generated', 'TSODTyphonEmpire_cover.jpg')
 
 SIZE = 1024
+W, H = SIZE, SIZE          # canvas; main() switches it for the wide layout
+TOP_CX = SIZE // 2
+WIDE = dict(size=(1920, 1080), plate=(48, 720, 948, 1032), mid_cn=806, mid_en=950)
 GOLD = (228, 182, 78)
 
 TOP_TITLE = 'The Sword of Dawn'
@@ -39,17 +43,17 @@ TRACK_CN, TRACK_EN = 0.06, 0.02
 
 
 def background(path, crop):
-    img = Image.open(path).convert('RGB').crop(crop).resize((SIZE, SIZE), Image.LANCZOS)
+    img = Image.open(path).convert('RGB').crop(crop).resize((W, H), Image.LANCZOS)
     # Darken the top edge a little so the white top title stays readable on any art.
-    shade = Image.new('L', (SIZE, SIZE), 0)
+    shade = Image.new('L', (W, H), 0)
     d = ImageDraw.Draw(shade)
     for y in range(140):
-        d.line((0, y, SIZE, y), fill=int(150 * (1 - y / 140) ** 1.5))
+        d.line((0, y, W, y), fill=int(150 * (1 - y / 140) ** 1.5))
     return Image.composite(Image.new('RGB', img.size, (0, 0, 0)), img, shade)
 
 
 def plate_mask(spread=0, offset=(0, 0)):
-    m = Image.new('L', (SIZE, SIZE), 0)
+    m = Image.new('L', (W, H), 0)
     l, t, r, b = PLATE_BOX
     ImageDraw.Draw(m).rectangle((l - spread + offset[0], t - spread + offset[1],
                                  r + spread + offset[0], b + spread + offset[1]), fill=255)
@@ -87,10 +91,18 @@ def main():
     ap.add_argument('--out', default=OUT)
     ap.add_argument('--cn', default=TEXT_CN)
     ap.add_argument('--en', default=TEXT_EN)
+    ap.add_argument('--layout', choices=('square', 'wide'), default='square')
     a = ap.parse_args()
+    global W, H, PLATE_BOX, MID_CN, MID_EN, TOP_CX
+    if a.layout == 'wide':
+        (W, H), PLATE_BOX, MID_CN, MID_EN = WIDE['size'], WIDE['plate'], WIDE['mid_cn'], WIDE['mid_en']
+        TOP_CX = (PLATE_BOX[0] + PLATE_BOX[2]) // 2       # the top title sits above the plate, clear of the figures
+    cw, ch = a.crop[2] - a.crop[0], a.crop[3] - a.crop[1]
+    if abs(cw / ch - W / H) > 0.01:
+        raise SystemExit('crop %dx%d is not %d:%d; the art would be stretched' % (cw, ch, W, H))
     img = draw_plate(background(a.art, tuple(a.crop)))
     d = ImageDraw.Draw(img)
-    draw_tracked(d, SIZE // 2, None, TOP_TITLE, ImageFont.truetype(TOP_TITLE_FONT, TOP_TITLE_SIZE),
+    draw_tracked(d, TOP_CX, None, TOP_TITLE, ImageFont.truetype(TOP_TITLE_FONT, TOP_TITLE_SIZE),
                  TOP_TITLE_TRACK, fill=(255, 255, 255), stroke=0, top_y=TOP_TITLE_TOP)
     cx = (PLATE_BOX[0] + PLATE_BOX[2]) // 2
     draw_tracked(d, cx, MID_CN, a.cn, ImageFont.truetype(FONT_CN, SIZE_CN), TRACK_CN)
