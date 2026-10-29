@@ -16,17 +16,6 @@ Typhon's unique building, replaces the Factory. Its +6 Production and +3 Science
 
 [hr][/hr]
 [code]
-[h2]City project: Desanctification[/h2]
-Typhon only. Requires a Mage Tower district and unlocks with the Mass Media civic. Repeatable, and the cost grows with game progress. On completion, half of your Faith is converted into an equal amount of Science, and you gain 25 Diplomatic Favor.
-[h2]World Congress: Theocratic Council[/h2]
-A new World Congress resolution that appears from the Modern era and targets one founded Religion.
-Desanctification: -10 Strength (Combat and Religious) for all units of the chosen Religion.
-Secular Oversight: all players may condemn units of the chosen Religion, and each condemnation grants 25 Diplomatic Favor.
-It joins the resolution pool whenever the MOD is enabled, whether or not Typhon is in the game.
-[/code]
-
-[hr][/hr]
-[code]
 [h1]Leader: Rosetta Augustus[/h1]
 [h2]Leader's Ability: Resilience of Mortals[/h2]
 Entering a new era grants 1 random Eureka and 1 random Inspiration from that era, or 2 of each if it is a Dark Age.
@@ -40,6 +29,17 @@ Typhon is a civilization whose Campuses and Holy Sites both work for the army. P
 
 [hr][/hr]
 [code]
+[h2]City project: Desanctification[/h2]
+Typhon only. Requires a Mage Tower district and unlocks with the Mass Media civic. Repeatable, and the cost grows with game progress. On completion, half of your Faith is converted into an equal amount of Science, and you gain 25 Diplomatic Favor.
+[h2]World Congress: Theocratic Council[/h2]
+A new World Congress resolution that appears from the Modern era and targets one founded Religion.
+Desanctification: -10 Strength (Combat and Religious) for all units of the chosen Religion.
+Secular Oversight: all players may condemn units of the chosen Religion, and each condemnation grants 25 Diplomatic Favor.
+It joins the resolution pool whenever the MOD is enabled, whether or not Typhon is in the game.
+[/code]
+
+[hr][/hr]
+[code]
 [h1]Optional Religion: War God Faith[/h1]
 The Church of the God of War from The Sword of Dawn, devoted to Kel, added as a religion. Any civilization can found it.
 [/code]
@@ -48,11 +48,11 @@ The Church of the God of War from The Sword of Dawn, devoted to Kel, added as a 
 [h1]Compatibility[/h1]
 Requires the Gathering Storm ruleset, Rise and Fall, and the Ethiopia Pack.
 With the [b]Cecil Empire[/b] MOD enabled as well, Rosetta Augustus and Gawain Cecil each get a diplomatic attitude toward the other.
-This MOD replaces the Unit Panel script so that only Annihilation Scar is shown, and it chains with other MODs that also change the Unit Panel (for example the Klee MOD) following the community convention. If another UI MOD replaces the Unit Panel outright, extra base-game nuclear weapon buttons may appear on the Battle Mage.
+This MOD replaces the Unit Panel script so that only Annihilation Scar is shown, and it chains with other MODs that also change the Unit Panel following the community convention. If another UI MOD replaces the Unit Panel outright, extra base-game nuclear weapon buttons may appear on the Battle Mage.
 If you run into any issues, please provide the list of MODs and the Database.log and Lua.log files.
 
 [h1]Source[/h1]
-Unit, district and building models reuse official assets from the base game and the Ethiopia Pack. The emblem, leader portraits, backgrounds and historic moment illustrations come from artwork posted by the novel's author, 远瞳, on Bilibili and from official Sword of Dawn setting art. Some icons were generated with AI (Gemini) and then processed. Please contact for removal in case of any infringement.
+Unit, district and building models reuse official assets from the base game and the Ethiopia Pack. The emblem, leader portraits, backgrounds and historic moment illustrations come from artwork posted by the novel's author, 远瞳, on Bilibili and from official Sword of Dawn setting art. Some icons were generated with AI and then processed. Please contact for removal in case of any infringement.
 
 [h1]Special Thanks[/h1]
-Thanks to Hemmelfort, QQ group 711403691, and Sukritact for their tutorials, tools, and knowledge base. Thanks to Shimamura and the other creators of the Sun and Moon of Teyvat Pack (Klee) MOD. Thanks to Civilopedia and Civilization Fandom for providing detailed information. Thanks to the three Claude sisters and Gemini Argon.
+Thanks to Hemmelfort, and Sukritact for their tutorials, tools, and knowledge base. Thanks to Shimamura and the other creators of the Sun and Moon of Teyvat Pack MOD. Thanks to Civilopedia and Civilization Fandom for providing detailed information. Thanks to the three Claude sisters and Gemini Argon.
