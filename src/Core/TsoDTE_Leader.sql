@@ -41,14 +41,12 @@ VALUES
      'LOC_PEDIA_LEADERS_PAGE_LEADER_TSOD_ROSETTA_AUGUSTUS_QUOTE');
 
 -- 6. Loading screen (art name follows the Cecil pattern)
--- PlayDawnOfManAudio = 0: no dedicated narration audio, so the official narration is not triggered (needs in-game proof)
 INSERT INTO LoadingInfo
-    (LeaderType, ForegroundImage, BackgroundImage, PlayDawnOfManAudio, LeaderText)
+    (LeaderType, ForegroundImage, BackgroundImage, LeaderText)
 VALUES
     ('LEADER_TSOD_ROSETTA_AUGUSTUS',
      'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_FOREGROUND',
      'LEADER_TSOD_ROSETTA_AUGUSTUS_LOADING_BACKGROUND',
-     0,
      'LOC_LOADING_INFO_LEADER_TSOD_ROSETTA_AUGUSTUS');
 
 -- 7. Diplomacy screen background
