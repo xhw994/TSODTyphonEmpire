@@ -1,5 +1,6 @@
 [h1]↑ Please give me a thumb up if you like this MOD. This means a lot![/h1]
 [b]This MOD adds the civilization Typhon Empire from the online novel "The Sword of Dawn", led by Emperor Rosetta Augustus.[/b]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3829784925]The Sword of Dawn series collection: subscribe to all the MODs at once (Cecil Empire, Typhon Empire, Dream City)[/url]
 
 [hr][/hr]
 [code]

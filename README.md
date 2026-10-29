@@ -13,7 +13,7 @@
 
 This mod adds the **Typhon Empire** civilization to Civilization VI, led by Emperor **Rosetta Augustus**. Inspired by the web novel *Sword of Dawn*, it is a conquest civilization whose Campuses and Holy Sites both serve the army: Mage Towers and Encampments are planned in pairs, Battle Mages grow stronger without being upgraded, and the late game turns Faith into Science and Diplomatic Favor. It suits players who like a strong land army with a technology engine behind it.
 
-It is a companion to the **Cecil Empire** mod, the old rival from the same novel.
+It is a companion to the **Cecil Empire** mod, the old rival from the same novel. The whole series is in the [Sword of Dawn series collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3829784925) on the Steam Workshop: subscribe to all of the mods with one click.
 
 ---
 
