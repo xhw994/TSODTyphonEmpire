@@ -14,7 +14,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIBRARY = os.path.join(ROOT, '..', 'Civ6 modding', '黎明之剑-素材')
 ART = os.path.join(LIBRARY, '人物', '罗塞塔·奥古斯都大帝.jpg')
-CROP = (0, 150, 1236, 1386)               # square around Rosetta's head and the emblem banners
+CROP = (380, 441, 800, 861)               # Rosetta's head, the cup and the chest: the body fills ~64% of the width (user, 10-30)
 OUT = os.path.join(ROOT, 'art', 'generated', 'TSODTyphonEmpire_cover.jpg')
 
 SIZE = 1024
